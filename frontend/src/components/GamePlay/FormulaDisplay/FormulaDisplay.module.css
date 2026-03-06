@@ -1,0 +1,93 @@
+.formula {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  padding: 24px 16px;
+  user-select: none;
+  flex-wrap: wrap;
+}
+
+.value {
+  min-width: 48px;
+  text-align: center;
+}
+
+.hidden {
+  min-width: 48px;
+  text-align: center;
+  color: var(--accent-color, #6c63ff);
+  background: rgba(108, 99, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px 8px;
+  box-shadow: 0 0 0 3px transparent;
+  transition: box-shadow 0.3s ease-out;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(255, 160, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 160, 0, 0.7);
+  }
+}
+
+.pulsing {
+  animation: pulse-border 2.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulsing {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(255, 160, 0, 0.5);
+  }
+}
+
+.operator {
+  color: #666;
+  font-weight: 400;
+}
+
+.separator {
+  color: #666;
+  font-weight: 400;
+  margin: 0 4px;
+}
+
+/* ── Word problem (rule of three) ────────────────────────── */
+
+.wordProblem {
+  text-align: center;
+  padding: 8px 16px;
+  user-select: none;
+}
+
+.problemText {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 12px;
+  line-height: 1.5;
+  max-width: 400px;
+  margin-inline: auto;
+}
+
+@media (max-width: 480px) {
+  .formula {
+    font-size: 1.8rem;
+    gap: 8px;
+    padding: 16px 8px;
+  }
+
+  .value,
+  .hidden {
+    min-width: 36px;
+  }
+
+  .problemText {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,85 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  min-height: 44px;
+  position: relative;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.card:hover {
+  border-color: #1565C0;
+  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.15);
+}
+
+.selectButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.selectButton:focus-visible {
+  outline: 3px solid #1565C0;
+  outline-offset: 2px;
+}
+
+.avatar {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  text-align: left;
+}
+
+.score {
+  font-size: 0.8rem;
+  color: #888;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: #999;
+  transition: background-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.deleteButton:hover {
+  background: #ffebee;
+  color: #D32F2F;
+}
+
+.deleteButton:focus-visible {
+  outline: 3px solid #D32F2F;
+  outline-offset: 2px;
+}
