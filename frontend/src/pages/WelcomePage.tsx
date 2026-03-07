@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useSession } from '../hooks/useSession.tsx';
 import { usePlayers } from '../hooks/usePlayers';
@@ -8,6 +8,8 @@ import NewPlayerForm from '../components/WelcomeScreen/NewPlayerForm';
 import PlayerList from '../components/WelcomeScreen/PlayerList';
 import Header from '../components/Header/Header';
 import { setPlayerTypeTag } from '../services/clarityService';
+import { getHashParam } from '../services/hashUrlParams';
+import { setPendingSeed } from '../services/sessionManager';
 import styles from './WelcomePage.module.css';
 
 /**
@@ -24,6 +26,14 @@ export default function WelcomePage() {
   const [showNewPlayerForm, setShowNewPlayerForm] = useState(false);
   const [evictionMessage, setEvictionMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Check for seed in URL and persist it before profile selection
+  useEffect(() => {
+    const seed = getHashParam('seed');
+    if (seed) {
+      setPendingSeed(seed);
+    }
+  }, []);
 
   // If session is active already, redirect to main experience
   if (isActive) {

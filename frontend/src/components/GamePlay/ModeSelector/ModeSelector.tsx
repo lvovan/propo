@@ -5,6 +5,7 @@ import styles from './ModeSelector.module.css';
 interface ModeSelectorProps {
   onStartPlay: () => void;
   onStartImprove: () => void;
+  onStartCompetition: () => void;
   trickyCategories: QuestionType[];
   showImprove: boolean;
   showEncouragement: boolean;
@@ -29,6 +30,7 @@ const CATEGORY_LABEL_KEYS: Record<QuestionType, string> = {
 export default function ModeSelector({
   onStartPlay,
   onStartImprove,
+  onStartCompetition,
   trickyCategories,
   showImprove,
   showEncouragement,
@@ -67,6 +69,15 @@ export default function ModeSelector({
           {t('mode.encouragement')}
         </p>
       )}
+
+      <button
+        className={styles.competitionButton}
+        onClick={onStartCompetition}
+        aria-label={t('mode.competitionAriaLabel')}
+      >
+        <span className={styles.buttonLabel}>{t('mode.competition')}</span>
+        <span className={styles.descriptor}>{t('mode.competitionDesc')}</span>
+      </button>
     </div>
   );
 }

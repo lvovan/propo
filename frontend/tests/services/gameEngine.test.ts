@@ -398,6 +398,49 @@ describe('gameReducer', () => {
     });
   });
 
+  describe('competitive mode', () => {
+    it('stores seed in game state', () => {
+      const state = gameReducer(initialGameState, {
+        type: 'START_GAME',
+        formulas: createMockFormulas(),
+        mode: 'competitive',
+        seed: 'test-seed',
+      });
+      expect(state.gameMode).toBe('competitive');
+      expect(state.seed).toBe('test-seed');
+    });
+
+    it('skips replay after 10 rounds with incorrect answers', () => {
+      let state = gameReducer(initialGameState, {
+        type: 'START_GAME',
+        formulas: createMockFormulas(),
+        mode: 'competitive',
+        seed: 'abc',
+      });
+
+      // Answer 10 rounds: first 3 incorrect, rest correct
+      for (let i = 0; i < 10; i++) {
+        const round = getCurrentRound(state)!;
+        const correctAnswer = getCorrectAnswer(round.formula);
+        const answer = i < 3 ? correctAnswer + 1 : correctAnswer;
+        state = gameReducer(state, { type: 'SUBMIT_ANSWER', answer, elapsedMs: 2000 });
+        state = gameReducer(state, { type: 'NEXT_ROUND' });
+      }
+
+      // Should go directly to completed, not replay
+      expect(state.status).toBe('completed');
+    });
+
+    it('seed is undefined for play mode', () => {
+      const state = gameReducer(initialGameState, {
+        type: 'START_GAME',
+        formulas: createMockFormulas(),
+        mode: 'play',
+      });
+      expect(state.seed).toBeUndefined();
+    });
+  });
+
   describe('firstTryCorrect tracking', () => {
     it('sets firstTryCorrect to true when a correct answer is submitted during primary play', () => {
       const formulas = createMockFormulas();

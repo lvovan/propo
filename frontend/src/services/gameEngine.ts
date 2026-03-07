@@ -1,10 +1,10 @@
 import type { Formula, GameState, Round } from '../types/game';
-import type { RoundResult } from '../types/player';
+import type { GameMode, RoundResult } from '../types/player';
 import { calculateScore } from '../constants/scoring';
 
 /** Actions that can be dispatched to the game reducer. */
 export type GameAction =
-  | { type: 'START_GAME'; formulas: Formula[]; mode?: 'play' | 'improve' }
+  | { type: 'START_GAME'; formulas: Formula[]; mode?: GameMode; seed?: string }
   | { type: 'SUBMIT_ANSWER'; answer: number; elapsedMs: number }
   | { type: 'NEXT_ROUND' }
   | { type: 'RESET_GAME' };
@@ -49,7 +49,7 @@ export function getCurrentRound(state: GameState): Round | null {
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'START_GAME':
-      return handleStartGame(state, action.formulas, action.mode);
+        return handleStartGame(state, action.formulas, action.mode, action.seed);
     case 'SUBMIT_ANSWER':
       return handleSubmitAnswer(state, action.answer, action.elapsedMs);
     case 'NEXT_ROUND':
@@ -61,7 +61,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
-function handleStartGame(state: GameState, formulas: Formula[], mode?: 'play' | 'improve'): GameState {
+function handleStartGame(state: GameState, formulas: Formula[], mode?: GameMode, seed?: string): GameState {
   if (state.status !== 'not-started') {
     return state;
   }
@@ -83,6 +83,7 @@ function handleStartGame(state: GameState, formulas: Formula[], mode?: 'play' | 
     currentPhase: 'input',
     score: 0,
     gameMode: mode ?? 'play',
+    seed,
   };
 }
 
@@ -170,10 +171,19 @@ function handleNextRoundPlaying(state: GameState): GameState {
     };
   }
 
-  // Round 10 complete — check for failures
-  const failedIndices = state.rounds
-    .map((round, index) => (round.isCorrect === false ? index : -1))
-    .filter((index) => index !== -1);
+    // Round 10 complete — competitive mode skips replay
+    if (state.gameMode === 'competitive') {
+      return {
+        ...state,
+        status: 'completed',
+        currentPhase: 'input',
+      };
+    }
+
+    // Check for failures
+    const failedIndices = state.rounds
+      .map((round, index) => (round.isCorrect === false ? index : -1))
+      .filter((index) => index !== -1);
 
   if (failedIndices.length === 0) {
     // All correct — game complete

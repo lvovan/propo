@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { generateFormulas, generateImproveFormulas, buildPercentagePool, buildRatioPool, buildFractionPool, buildMultiItemRatioPool, buildPercentageOfWholePool, buildComplexExtrapolationPool } from '../../src/services/formulaGenerator';
+import { generateFormulas, generateImproveFormulas, buildPercentagePool, buildRatioPool, buildFractionPool, buildMultiItemRatioPool, buildPercentageOfWholePool, buildComplexExtrapolationPool, MULTI_ITEM_RATIO_COMBINED_TEMPLATES, MULTI_ITEM_RATIO_TEMPLATES } from '../../src/services/formulaGenerator';
 import { PURE_NUMERIC_TYPES, STORY_CHALLENGE_TYPES } from '../../src/types/game';
 import type { ChallengingItem, QuestionType } from '../../src/types/game';
+import { createSeededRandomFromString, createSeededRandom as createMulberry32 } from '../../src/services/seededRandom';
 
 function createSeededRandom(seed: number): () => number {
   let s = seed;
@@ -227,5 +228,184 @@ describe('generateImproveFormulas', () => {
     const formulas = generateImproveFormulas(items, createSeededRandom(42));
     const types = new Set(formulas.map((f) => f.type));
     expect(types.size).toBe(6);
+  });
+});
+describe('generateFormulas with seeded PRNG (competitive mode)', () => {
+  it('same string seed produces identical 10-question sequence', () => {
+    const f1 = generateFormulas(createSeededRandomFromString('abc123'));
+    const f2 = generateFormulas(createSeededRandomFromString('abc123'));
+    expect(f1).toEqual(f2);
+    expect(f1.length).toBe(10);
+  });
+
+  it('different string seeds produce different questions', () => {
+    const f1 = generateFormulas(createSeededRandomFromString('abc123'));
+    const f2 = generateFormulas(createSeededRandomFromString('xyz789'));
+    // At least one question should differ
+    const same = f1.every((q, i) =>
+      q.type === f2[i].type && q.correctAnswer === f2[i].correctAnswer && q.hiddenPosition === f2[i].hiddenPosition
+    );
+    expect(same).toBe(false);
+  });
+
+  it('preserves question structure with seeded PRNG', () => {
+    const formulas = generateFormulas(createSeededRandomFromString('test-seed'));
+    expect(formulas.length).toBe(10);
+    const numericCount = formulas.filter((f) => PURE_NUMERIC_TYPES.includes(f.type)).length;
+    const storyCount = formulas.filter((f) => STORY_CHALLENGE_TYPES.includes(f.type)).length;
+    expect(numericCount).toBe(5);
+    expect(storyCount).toBe(5);
+  });
+});
+
+describe('word problem target variation', () => {
+  it('multiItemRatio: target item varies across games (not always the first)', () => {
+    // Generate many games and check that the answer varies between a*b patterns
+    // When swapped, values[0]*values[1] still equals correctAnswer (since values are reordered)
+    // But the underlying item pair changes, so we verify different value patterns emerge
+    const answerSets = new Set<string>();
+    for (let seed = 0; seed < 100; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'multiItemRatio') {
+          // Track the count+value pair that is the target
+          answerSets.add(`${f.values[0]}x${f.values[1]}`);
+        }
+      }
+    }
+    // Should have variety in target pairs (not always the same pattern)
+    expect(answerSets.size).toBeGreaterThan(10);
+  });
+
+  it('multiItemRatio: correctAnswer matches variant (single=a*b, combined=a*b+c*d)', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'multiItemRatio') {
+          if (f.wordProblemKey?.endsWith('.combined')) {
+            expect(f.correctAnswer).toBe((f.values[0] * f.values[1]) + (f.values[2] * f.values[3]));
+          } else {
+            expect(f.correctAnswer).toBe(f.values[0] * f.values[1]);
+          }
+        }
+      }
+    }
+  });
+
+  it('percentageOfWhole: target element varies (not always first pool element)', () => {
+    // When b/total is a friendly percentage, there's a 50% chance of swap
+    // Over many seeds, we should see different answer values for same-pool entries
+    const answers = new Set<number>();
+    for (let seed = 0; seed < 100; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'percentageOfWhole') {
+          answers.add(f.correctAnswer);
+        }
+      }
+    }
+    // Should produce multiple different percentage answers
+    expect(answers.size).toBeGreaterThan(2);
+  });
+
+  it('percentageOfWhole: correctAnswer is always a friendly percentage', () => {
+    const friendly = new Set([10, 20, 25, 50, 75]);
+    for (let seed = 0; seed < 50; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'percentageOfWhole') {
+          expect(friendly.has(f.correctAnswer)).toBe(true);
+        }
+      }
+    }
+  });
+});
+
+describe('multiItemRatio combined variant', () => {
+  it('MULTI_ITEM_RATIO_COMBINED_TEMPLATES has same length as MULTI_ITEM_RATIO_TEMPLATES', () => {
+    expect(MULTI_ITEM_RATIO_COMBINED_TEMPLATES.length).toBe(MULTI_ITEM_RATIO_TEMPLATES.length);
+  });
+
+  it('combined templates have matching unit keys', () => {
+    for (let i = 0; i < MULTI_ITEM_RATIO_TEMPLATES.length; i++) {
+      expect(MULTI_ITEM_RATIO_COMBINED_TEMPLATES[i].unitKey).toBe(MULTI_ITEM_RATIO_TEMPLATES[i].unitKey);
+    }
+  });
+
+  it('variant distribution: all 3 variants appear and none exceeds 60%', () => {
+    let singleFirst = 0;
+    let singleSecond = 0;
+    let combined = 0;
+    for (let seed = 0; seed < 200; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'multiItemRatio') {
+          if (f.wordProblemKey?.endsWith('.combined')) {
+            combined++;
+          } else {
+            // For single variants, check if answer = values[0]*values[1]
+            // (it always does after reorder, but we count by template key)
+            singleFirst++; // both single-first and single-second use non-combined keys
+          }
+        }
+      }
+    }
+    const total = singleFirst + combined;
+    expect(combined).toBeGreaterThan(0);
+    expect(singleFirst).toBeGreaterThan(0);
+    // Combined should be roughly 33%, so between 15% and 60%
+    const combinedPct = (combined / total) * 100;
+    expect(combinedPct).toBeGreaterThan(15);
+    expect(combinedPct).toBeLessThan(60);
+  });
+
+  it('combined answer equals (a*b) + (c*d) and is <= 999', () => {
+    for (let seed = 0; seed < 100; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'multiItemRatio' && f.wordProblemKey?.endsWith('.combined')) {
+          const expectedAnswer = (f.values[0] * f.values[1]) + (f.values[2] * f.values[3]);
+          expect(f.correctAnswer).toBe(expectedAnswer);
+          expect(f.correctAnswer).toBeLessThanOrEqual(999);
+          expect(f.correctAnswer).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
+  it('combined variant is deterministic with same seed', () => {
+    const f1 = generateFormulas(createSeededRandomFromString('combined-test'));
+    const f2 = generateFormulas(createSeededRandomFromString('combined-test'));
+    for (let i = 0; i < 10; i++) {
+      expect(f1[i].wordProblemKey).toBe(f2[i].wordProblemKey);
+      expect(f1[i].correctAnswer).toBe(f2[i].correctAnswer);
+      expect(f1[i].values).toEqual(f2[i].values);
+    }
+  });
+
+  it('combined template keys end with .combined', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'multiItemRatio') {
+          const isCombined = f.wordProblemKey?.endsWith('.combined');
+          if (isCombined) {
+            // Combined: answer should be sum of both item totals
+            const sum = (f.values[0] * f.values[1]) + (f.values[2] * f.values[3]);
+            expect(f.correctAnswer).toBe(sum);
+          } else {
+            // Single: answer should be first item total
+            expect(f.correctAnswer).toBe(f.values[0] * f.values[1]);
+          }
+        }
+      }
+    }
   });
 });

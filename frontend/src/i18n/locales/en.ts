@@ -129,6 +129,48 @@ const en = {
   'mode.encouragement': 'No tricky areas right now — keep playing to unlock Improve mode!',
   /** Aria-label for the mode selector group. */
   'mode.groupLabel': 'Game mode selection',
+  /** Competition mode button label. */
+  'mode.competition': 'Competition',
+  /** Competition mode descriptor. */
+  'mode.competitionDesc': 'Challenge a friend!',
+  /** Aria-label for the Competition button. */
+  'mode.competitionAriaLabel': 'Competition — Challenge a friend!',
+
+  // ── Competition Setup ─────────────────────────────────────────
+
+  /** Seed input label. */
+  'competition.seedInputLabel': 'Game seed',
+  /** Seed input placeholder. */
+  'competition.seedPlaceholder': 'Enter a seed or generate one',
+  /** Generate seed button. */
+  'competition.generateSeed': 'Generate seed',
+  /** Start game button. */
+  'competition.startGame': 'Start game',
+  /** Back button. */
+  'competition.back': 'Back',
+  /** Total time label on results screen. */
+  'competition.totalTime': 'Total time',
+  /** Seed label on results screen. */
+  'competition.seed': 'Seed',
+  /** Share button label. */
+  'competition.share': 'Share result',
+  /** Clipboard copy confirmation. */
+  'competition.shareCopied': 'Link copied!',
+
+  // ── Shared Result Page ────────────────────────────────────────
+
+  /** Heading for the shared result page. */
+  'sharedResult.title': 'Competition Result',
+  /** Play this game button. */
+  'sharedResult.playThisGame': 'Play this game',
+  /** Score label on shared result. */
+  'sharedResult.score': 'Score',
+  /** Time label on shared result. */
+  'sharedResult.time': 'Time',
+  /** Player label on shared result. */
+  'sharedResult.player': 'Player',
+  /** Error message for invalid result link. */
+  'sharedResult.error': 'This result link is invalid or incomplete.',
 
   // ── Score Summary ──────────────────────────────────────────────
 
@@ -352,6 +394,80 @@ const en = {
   // extra
   'story.multiItemRatio.market2': 'A farmer has {a} bags of apples ({b}kg each) and {c} bags of oranges ({d}kg each). What is the total weight of just the apple bags?',
   'story.multiItemRatio.electronics': 'A desk has {a} tablets (${b} each) and {c} headphones (${d} each). What is the total cost of just the tablets?',
+
+  // ── Story Challenge: Multi-Item Ratio — Combined Templates ─────
+  // Each is a 1:1 counterpart of the single-item template above, asking about ALL items.
+
+  // g (grams) — combined
+  'story.multiItemRatio.backpack.combined': 'A backpack has {a} blue folders ({b}g each) and {c} red notebooks ({d}g each). What is the total weight of everything in the backpack?',
+  'story.multiItemRatio.kitchen.combined': 'A kitchen drawer has {a} forks ({b}g each) and {c} spoons ({d}g each). What is the total weight of all the cutlery?',
+  'story.multiItemRatio.mail.combined': 'A mailbox has {a} postcards ({b}g each) and {c} letters ({d}g each). What is the total weight of all the mail?',
+  'story.multiItemRatio.toolbox.combined': 'A toolbox has {a} screws ({b}g each) and {c} bolts ({d}g each). What is the total weight of all the hardware?',
+  'story.multiItemRatio.jewelry.combined': 'A jewelry box has {a} silver bracelets ({b}g each) and {c} gold rings ({d}g each). What is the total weight of all the jewelry?',
+  'story.multiItemRatio.geology.combined': 'A rock collection has {a} quartz pieces ({b}g each) and {c} granite chunks ({d}g each). What is the total weight of all the rocks?',
+  'story.multiItemRatio.party.combined': 'A party table has {a} bags of chips ({b}g each) and {c} bags of popcorn ({d}g each). What is the total weight of all the snacks?',
+  // kg — combined
+  'story.multiItemRatio.grocery.combined': 'A shopping cart has {a} watermelons ({b}kg each) and {c} pumpkins ({d}kg each). What is the total weight of everything in the cart?',
+  'story.multiItemRatio.camping.combined': 'A campsite has {a} sleeping bags ({b}kg each) and {c} tents ({d}kg each). What is the total weight of all the gear?',
+  'story.multiItemRatio.gym.combined': 'A gym rack has {a} dumbbells ({b}kg each) and {c} kettlebells ({d}kg each). What is the total weight of all the weights?',
+  'story.multiItemRatio.warehouse.combined': 'A warehouse has {a} small crates ({b}kg each) and {c} large crates ({d}kg each). What is the total weight of all the crates?',
+  'story.multiItemRatio.fishing.combined': 'A cooler has {a} trout ({b}kg each) and {c} catfish ({d}kg each). What is the total weight of all the fish?',
+  'story.multiItemRatio.pet.combined': 'A pet store has {a} bags of cat food ({b}kg each) and {c} bags of dog food ({d}kg each). What is the total weight of all the food?',
+  // cal — combined
+  'story.multiItemRatio.lunchbox.combined': 'A lunchbox has {a} apples ({b} calories each) and {c} cookies ({d} calories each). How many calories are in the entire lunchbox?',
+  'story.multiItemRatio.cafeteria.combined': 'A tray has {a} sandwiches ({b} calories each) and {c} wraps ({d} calories each). How many calories are on the whole tray?',
+  'story.multiItemRatio.breakfast.combined': 'A plate has {a} pancakes ({b} calories each) and {c} muffins ({d} calories each). How many calories are on the whole plate?',
+  'story.multiItemRatio.snack.combined': 'A snack box has {a} granola bars ({b} calories each) and {c} yogurts ({d} calories each). How many calories are in the whole snack box?',
+  'story.multiItemRatio.smoothie.combined': 'A blender has {a} bananas ({b} calories each) and {c} strawberries ({d} calories each). How many calories are in the whole smoothie?',
+  'story.multiItemRatio.picnic.combined': 'A picnic basket has {a} juice boxes ({b} calories each) and {c} fruit cups ({d} calories each). How many calories are in the whole basket?',
+  'story.multiItemRatio.dinner.combined': 'A plate has {a} chicken drumsticks ({b} calories each) and {c} fish sticks ({d} calories each). How many calories are on the whole plate?',
+  // $ — combined
+  'story.multiItemRatio.toybox.combined': 'A toy box has {a} cars (${b} each) and {c} dolls (${d} each). What is the total cost of all the toys?',
+  'story.multiItemRatio.shop.combined': 'A store display has {a} t-shirts (${b} each) and {c} caps (${d} each). What is the total cost of everything?',
+  'story.multiItemRatio.bookstore.combined': 'A bookshop has {a} novels (${b} each) and {c} magazines (${d} each). What is the total cost of all the items?',
+  'story.multiItemRatio.arcade.combined': 'An arcade sells {a} game tokens (${b} each) and {c} ride tickets (${d} each). What is the total cost of everything?',
+  'story.multiItemRatio.stationery.combined': 'A stationery shop has {a} pens (${b} each) and {c} erasers (${d} each). What is the total cost of all the supplies?',
+  'story.multiItemRatio.bakery.combined': 'A bakery sells {a} cupcakes (${b} each) and {c} brownies (${d} each). What is the total cost of all the treats?',
+  'story.multiItemRatio.craft.combined': 'A craft store sells {a} paint sets (${b} each) and {c} sketch pads (${d} each). What is the total cost of everything?',
+  // cm — combined
+  'story.multiItemRatio.garden.combined': 'A garden has {a} roses ({b}cm tall) and {c} sunflowers ({d}cm tall). What is the total height of all the flowers together?',
+  'story.multiItemRatio.aquarium2.combined': 'An aquarium has {a} guppies ({b}cm long) and {c} tetras ({d}cm long). What is the total length of all the fish?',
+  'story.multiItemRatio.model.combined': 'A display has {a} model trains ({b}cm long) and {c} model planes ({d}cm long). What is the total length of all the models?',
+  'story.multiItemRatio.sewing.combined': 'A sewing kit has {a} red ribbons ({b}cm each) and {c} blue ribbons ({d}cm each). What is the total length of all the ribbons?',
+  'story.multiItemRatio.paper.combined': 'An art project uses {a} red paper strips ({b}cm each) and {c} blue strips ({d}cm each). What is the total length of all the strips?',
+  'story.multiItemRatio.terrarium.combined': 'A terrarium has {a} small ferns ({b}cm tall) and {c} mosses ({d}cm tall). What is the total height of all the plants?',
+  'story.multiItemRatio.music.combined': 'A music room has {a} guitar strings ({b}cm each) and {c} violin strings ({d}cm each). What is the total length of all the strings?',
+  // pages — combined
+  'story.multiItemRatio.shelf.combined': 'A shelf has {a} science books ({b} pages each) and {c} comic books ({d} pages each). How many pages are in all the books?',
+  'story.multiItemRatio.library.combined': 'A library cart has {a} novels ({b} pages each) and {c} textbooks ({d} pages each). How many pages are in all the books?',
+  'story.multiItemRatio.homework.combined': 'A student has {a} math worksheets ({b} pages each) and {c} history reports ({d} pages each). How many pages are there in total?',
+  'story.multiItemRatio.reading.combined': 'A reading list has {a} short stories ({b} pages each) and {c} articles ({d} pages each). How many pages are there in total?',
+  'story.multiItemRatio.magazine.combined': 'A stand has {a} sports magazines ({b} pages each) and {c} nature magazines ({d} pages each). How many pages are there in total?',
+  // ml — combined
+  'story.multiItemRatio.art.combined': 'An art kit has {a} paint tubes ({b}ml each) and {c} glue sticks ({d}ml each). What is the total volume of everything?',
+  'story.multiItemRatio.lab.combined': 'A lab has {a} test tubes ({b}ml each) and {c} flasks ({d}ml each). What is the total volume of all the containers?',
+  'story.multiItemRatio.drink.combined': 'A fridge has {a} juice bottles ({b}ml each) and {c} water bottles ({d}ml each). What is the total volume of all the drinks?',
+  'story.multiItemRatio.cleaning.combined': 'A cupboard has {a} soap bottles ({b}ml each) and {c} spray bottles ({d}ml each). What is the total volume of all the bottles?',
+  'story.multiItemRatio.cooking.combined': 'A pantry has {a} olive oil bottles ({b}ml each) and {c} vinegar bottles ({d}ml each). What is the total volume of all the bottles?',
+  // L — combined
+  'story.multiItemRatio.pool.combined': 'A pool supply has {a} small buckets ({b}L each) and {c} large buckets ({d}L each). What is the total volume of all the buckets?',
+  'story.multiItemRatio.gardening.combined': 'A shed has {a} watering cans ({b}L each) and {c} spray tanks ({d}L each). What is the total volume of all the containers?',
+  // min — combined
+  'story.multiItemRatio.playlist.combined': 'A playlist has {a} rock songs ({b} min each) and {c} pop songs ({d} min each). What is the total time of the whole playlist?',
+  'story.multiItemRatio.workout.combined': 'A workout has {a} warm-up drills ({b} min each) and {c} cool-down stretches ({d} min each). What is the total time of the workout?',
+  'story.multiItemRatio.gaming.combined': 'A gaming session has {a} tutorial levels ({b} min each) and {c} bonus levels ({d} min each). What is the total time of the whole session?',
+  'story.multiItemRatio.cooking2.combined': 'A menu has {a} appetizers ({b} min to cook each) and {c} desserts ({d} min to cook each). What is the total cooking time for everything?',
+  // pts — combined
+  'story.multiItemRatio.quiz.combined': 'A quiz has {a} easy questions ({b} points each) and {c} hard questions ({d} points each). What is the total from all the questions?',
+  'story.multiItemRatio.videogame.combined': 'A level has {a} silver coins ({b} points each) and {c} gold coins ({d} points each). What is the total from all the coins?',
+  'story.multiItemRatio.contest.combined': 'A contest has {a} drawings ({b} points each) and {c} photos ({d} points each). What is the total from all the entries?',
+  // m — combined
+  'story.multiItemRatio.fence.combined': 'A fence is made of {a} short panels ({b}m each) and {c} long panels ({d}m each). What is the total length of the whole fence?',
+  'story.multiItemRatio.track.combined': 'A relay has {a} short sprints ({b}m each) and {c} long sprints ({d}m each). What is the total distance of the whole relay?',
+  'story.multiItemRatio.rope.combined': 'A climbing wall has {a} thin ropes ({b}m each) and {c} thick ropes ({d}m each). What is the total length of all the ropes?',
+  // extra — combined
+  'story.multiItemRatio.market2.combined': 'A farmer has {a} bags of apples ({b}kg each) and {c} bags of oranges ({d}kg each). What is the total weight of all the bags?',
+  'story.multiItemRatio.electronics.combined': 'A desk has {a} tablets (${b} each) and {c} headphones (${d} each). What is the total cost of everything on the desk?',
 
   // ── Story Challenge: Percentage of the Whole Templates ─────────
 

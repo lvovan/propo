@@ -1,7 +1,7 @@
 // Types for ScoreSummary component
 
 import type { Round } from '../../../../types/game';
-import type { GameRecord } from '../../../../types/player';
+import type { GameMode, GameRecord } from '../../../../types/player';
 
 export interface ScoreSummaryProps {
   /** The completed rounds from the game (Round[] from game.ts). */
@@ -13,7 +13,11 @@ export interface ScoreSummaryProps {
   /** Callback fired when the player clicks "Back to Menu". */
   onBackToMenu: () => void;
   /** Which mode the game was played in. Defaults to 'play'. */
-  gameMode?: 'play' | 'improve';
+  gameMode?: GameMode;
   /** Game history for sparkline display. */
   history?: GameRecord[];
+  /** Seed used for competitive mode (displayed on results). */
+  seed?: string;
+  /** Player name for share URL (competitive mode). */
+  playerName?: string;
 }

@@ -1,7 +1,7 @@
 import type { QuestionType } from './game';
 
-/** The two valid game modes. */
-export type GameMode = 'play' | 'improve';
+/** The valid game modes. */
+export type GameMode = 'play' | 'improve' | 'competitive';
 
 /** A record of a single round's outcome within a completed game. */
 export interface RoundResult {

@@ -1,0 +1,121 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.seedInput {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.seedInput:focus {
+  outline: none;
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25);
+}
+
+.buttonRow {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.generateButton,
+.startButton,
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.generateButton {
+  flex: 1;
+  background: #e0e0e0;
+  color: #333;
+}
+
+.generateButton:hover {
+  background: #d0d0d0;
+}
+
+.startButton {
+  flex: 2;
+  background: #4caf50;
+  color: #fff;
+}
+
+.startButton:hover:not(:disabled) {
+  background: #43a047;
+}
+
+.startButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.startButton:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.backButton {
+  width: 100%;
+  background: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+}
+
+.backButton:hover {
+  background: #f5f5f5;
+}
+
+.seedDisplay {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  margin: 0;
+  min-height: 1.3em;
+}
+
+@media (max-width: 480px) {
+  .container {
+    gap: 12px;
+  }
+
+  .buttonRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .generateButton,
+  .startButton {
+    flex: none;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .generateButton,
+  .startButton,
+  .backButton {
+    transition: none;
+  }
+}

@@ -6,6 +6,7 @@ import {
   getCurrentRound,
 } from '../services/gameEngine';
 import { generateFormulas, generateImproveFormulas } from '../services/formulaGenerator';
+import { createSeededRandomFromString } from '../services/seededRandom';
 import { getChallengingItemsForPlayer } from '../services/challengeAnalyzer';
 import type { GameState, Round } from '../types/game';
 import type { GameMode } from '../types/player';
@@ -19,6 +20,8 @@ export interface UseGameReturn {
   correctAnswer: number | null;
   /** Start a new game. Generates formulas and dispatches START_GAME. */
   startGame: (mode?: GameMode, playerName?: string) => void;
+  /** Start a competitive game with a seed string. */
+  startCompetitiveGame: (seed: string) => void;
   /** Submit an answer for the current round. */
   submitAnswer: (answer: number, elapsedMs: number) => void;
   /** Advance to the next round after feedback. */
@@ -27,6 +30,8 @@ export interface UseGameReturn {
   resetGame: () => void;
   /** Which mode the current game is being played in. */
   gameMode: GameMode;
+  /** The seed used for competitive mode, or undefined. */
+  seed: string | undefined;
 }
 
 /**
@@ -55,6 +60,12 @@ export function useGame(): UseGameReturn {
     dispatch({ type: 'START_GAME', formulas, mode: mode ?? 'play' });
   }, []);
 
+    const startCompetitiveGame = useCallback((seed: string) => {
+      const randomFn = createSeededRandomFromString(seed);
+      const formulas = generateFormulas(randomFn);
+      dispatch({ type: 'START_GAME', formulas, mode: 'competitive', seed });
+    }, []);
+
   const submitAnswer = useCallback((answer: number, elapsedMs: number) => {
     dispatch({ type: 'SUBMIT_ANSWER', answer, elapsedMs });
   }, []);
@@ -72,9 +83,11 @@ export function useGame(): UseGameReturn {
     currentRound,
     correctAnswer,
     startGame,
+    startCompetitiveGame,
     submitAnswer,
     nextRound,
     resetGame,
     gameMode: gameState.gameMode,
+    seed: gameState.seed,
   };
 }

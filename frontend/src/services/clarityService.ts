@@ -67,7 +67,7 @@ export function initClarity(): void {
  * Fires: game_started_play | game_started_improve
  * Also sets session tag: game_mode = play | improve
  */
-export function trackGameStarted(mode: 'play' | 'improve'): void {
+export function trackGameStarted(mode: 'play' | 'improve' | 'competitive'): void {
   safeEvent(`game_started_${mode}`);
   safeSet('game_mode', mode);
 }
@@ -87,7 +87,7 @@ export function trackAnswerSubmitted(isCorrect: boolean, elapsedMs: number): voi
  * Fires: game_completed_play | game_completed_improve
  * Sets tags: final_score, correct_count
  */
-export function trackGameCompleted(mode: 'play' | 'improve', score: number, correctCount: number): void {
+export function trackGameCompleted(mode: 'play' | 'improve' | 'competitive', score: number, correctCount: number): void {
   safeEvent(`game_completed_${mode}`);
   safeSet('final_score', String(score));
   safeSet('correct_count', String(correctCount));

@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useSession } from '../hooks/useSession.tsx';
 import { useGame } from '../hooks/useGame';
@@ -16,6 +16,9 @@ import ScoreSummary from '../components/GamePlay/ScoreSummary/ScoreSummary';
 import RecentHighScores from '../components/GamePlay/RecentHighScores/RecentHighScores';
 import ProgressionGraph from '../components/GamePlay/ProgressionGraph/ProgressionGraph';
 import ModeSelector from '../components/GamePlay/ModeSelector/ModeSelector';
+import CompetitionSetup from '../components/GamePlay/CompetitionSetup/CompetitionSetup';
+import { getHashParam } from '../services/hashUrlParams';
+import { consumePendingSeed } from '../services/sessionManager';
 import { useTranslation } from '../i18n';
 import { trackGameStarted, trackAnswerSubmitted, trackGameCompleted, trackReplayStarted, trackReplayCompleted } from '../services/clarityService';
 import styles from './MainPage.module.css';
@@ -27,13 +30,26 @@ import styles from './MainPage.module.css';
 export default function MainPage() {
   const navigate = useNavigate();
   const { session, isActive } = useSession();
-  const { gameState, currentRound, correctAnswer, startGame, submitAnswer, nextRound, resetGame, gameMode } =
+  const { gameState, currentRound, correctAnswer, startGame, startCompetitiveGame, submitAnswer, nextRound, resetGame, gameMode, seed } =
     useGame();
   const { t } = useTranslation();
   const { displayRef, barRef, start, stop, reset, setDuration } = useRoundTimer();
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scorePersistedRef = useRef(false);
   const prevStatusRef = useRef(gameState.status);
+  const [showCompetitionSetup, setShowCompetitionSetup] = useState(false);
+  const [initialSeed, setInitialSeed] = useState<string | undefined>(undefined);
+
+  // Check for seed from URL or pending seed from WelcomePage redirect
+  useEffect(() => {
+    const urlSeed = getHashParam('seed');
+    const pendingSeed = consumePendingSeed();
+    const seed = urlSeed ?? pendingSeed;
+    if (seed) {
+      setInitialSeed(seed);
+      setShowCompetitionSetup(true);
+    }
+  }, []);
 
   // Update timer duration when round changes
   useEffect(() => {
@@ -110,12 +126,28 @@ export default function MainPage() {
     start();
   }, [startGame, start, session]);
 
+  const handleStartCompetition = useCallback(() => {
+    setShowCompetitionSetup(true);
+  }, []);
+
+  const handleCompetitionStart = useCallback((competitionSeed: string) => {
+    setShowCompetitionSetup(false);
+    startCompetitiveGame(competitionSeed);
+    trackGameStarted('competitive');
+    start();
+  }, [startCompetitiveGame, start]);
+
+  const handleCompetitionBack = useCallback(() => {
+    setShowCompetitionSetup(false);
+  }, []);
+
   const handlePlayAgain = useCallback(() => {
     if (feedbackTimeoutRef.current) {
       clearTimeout(feedbackTimeoutRef.current);
       feedbackTimeoutRef.current = null;
     }
     resetGame();
+    setShowCompetitionSetup(false);
   }, [resetGame]);
 
   const handleBackToMenu = useCallback(() => {
@@ -124,6 +156,7 @@ export default function MainPage() {
       feedbackTimeoutRef.current = null;
     }
     resetGame();
+    setShowCompetitionSetup(false);
     navigate('/');
   }, [resetGame, navigate]);
 
@@ -149,7 +182,7 @@ export default function MainPage() {
     <div>
       <Header />
       <main style={{ padding: '24px 16px', textAlign: 'center' }}>
-        {gameState.status === 'not-started' && (
+        {gameState.status === 'not-started' && !showCompetitionSetup && (
           <div>
             <h1 className={styles.readyHeading}>{t('game.readyToPlay')}</h1>
             <p className={styles.instructions}>{t('game.instructions')}</p>
@@ -158,9 +191,21 @@ export default function MainPage() {
             <ModeSelector
               onStartPlay={handleStartGame}
               onStartImprove={handleStartImprove}
+              onStartCompetition={handleStartCompetition}
               trickyCategories={trickyCategories}
               showImprove={showImprove}
               showEncouragement={showEncouragement}
+            />
+          </div>
+        )}
+
+        {gameState.status === 'not-started' && showCompetitionSetup && (
+          <div>
+            <h1 className={styles.readyHeading}>{t('mode.competition')}</h1>
+            <CompetitionSetup
+              initialSeed={initialSeed}
+              onStart={handleCompetitionStart}
+              onBack={handleCompetitionBack}
             />
           </div>
         )}
@@ -216,6 +261,8 @@ export default function MainPage() {
             onPlayAgain={handlePlayAgain}
             onBackToMenu={handleBackToMenu}
             gameMode={gameMode}
+            seed={seed}
+            playerName={session?.playerName}
             history={[...gameHistory, {
               score: gameState.score,
               completedAt: Date.now(),

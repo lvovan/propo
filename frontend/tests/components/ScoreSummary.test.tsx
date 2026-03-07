@@ -423,4 +423,74 @@ describe('ScoreSummary', () => {
       expect(screen.queryByRole('img', { name: /^correct on first try$/i })).not.toBeInTheDocument();
     });
   });
+
+  describe('competitive mode display', () => {
+    it('displays total time for competitive mode', () => {
+      render(
+        <ScoreSummary
+          rounds={createMockRounds()}
+          score={20}
+          onPlayAgain={vi.fn()}
+          onBackToMenu={vi.fn()}
+          gameMode="competitive"
+          seed="abc123"
+        />,
+      );
+      expect(screen.getByText(/total time/i)).toBeInTheDocument();
+    });
+
+    it('displays seed for competitive mode', () => {
+      render(
+        <ScoreSummary
+          rounds={createMockRounds()}
+          score={20}
+          onPlayAgain={vi.fn()}
+          onBackToMenu={vi.fn()}
+          gameMode="competitive"
+          seed="abc123"
+        />,
+      );
+      expect(screen.getByText('abc123')).toBeInTheDocument();
+    });
+
+    it('displays Share button for competitive mode', () => {
+      render(
+        <ScoreSummary
+          rounds={createMockRounds()}
+          score={20}
+          onPlayAgain={vi.fn()}
+          onBackToMenu={vi.fn()}
+          gameMode="competitive"
+          seed="abc123"
+        />,
+      );
+      expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument();
+    });
+
+    it('does NOT display total time for play mode', () => {
+      render(
+        <ScoreSummary
+          rounds={createMockRounds()}
+          score={20}
+          onPlayAgain={vi.fn()}
+          onBackToMenu={vi.fn()}
+          gameMode="play"
+        />,
+      );
+      expect(screen.queryByText(/total time/i)).not.toBeInTheDocument();
+    });
+
+    it('does NOT display total time for improve mode', () => {
+      render(
+        <ScoreSummary
+          rounds={createMockRounds()}
+          score={20}
+          onPlayAgain={vi.fn()}
+          onBackToMenu={vi.fn()}
+          gameMode="improve"
+        />,
+      );
+      expect(screen.queryByText(/total time/i)).not.toBeInTheDocument();
+    });
+  });
 });

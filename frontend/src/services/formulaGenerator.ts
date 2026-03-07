@@ -185,6 +185,79 @@ export const MULTI_ITEM_RATIO_TEMPLATES: StoryTemplate[] = [
 
 export const MULTI_ITEM_RATIO_KEYS: string[] = MULTI_ITEM_RATIO_TEMPLATES.map(t => t.key);
 
+export const MULTI_ITEM_RATIO_COMBINED_TEMPLATES: StoryTemplate[] = [
+  // g (grams) — combined
+  { key: 'story.multiItemRatio.backpack.combined', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.kitchen.combined', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.mail.combined', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.toolbox.combined', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.jewelry.combined', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.geology.combined', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.party.combined', unitKey: 'unit.g' },
+  // kg — combined
+  { key: 'story.multiItemRatio.grocery.combined', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.camping.combined', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.gym.combined', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.warehouse.combined', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.fishing.combined', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.pet.combined', unitKey: 'unit.kg' },
+  // cal — combined
+  { key: 'story.multiItemRatio.lunchbox.combined', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.cafeteria.combined', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.breakfast.combined', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.snack.combined', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.smoothie.combined', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.picnic.combined', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.dinner.combined', unitKey: 'unit.cal' },
+  // $ — combined
+  { key: 'story.multiItemRatio.toybox.combined', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.shop.combined', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.bookstore.combined', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.arcade.combined', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.stationery.combined', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.bakery.combined', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.craft.combined', unitKey: 'unit.dollars' },
+  // cm — combined
+  { key: 'story.multiItemRatio.garden.combined', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.aquarium2.combined', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.model.combined', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.sewing.combined', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.paper.combined', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.terrarium.combined', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.music.combined', unitKey: 'unit.cm' },
+  // pages — combined
+  { key: 'story.multiItemRatio.shelf.combined', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.library.combined', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.homework.combined', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.reading.combined', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.magazine.combined', unitKey: 'unit.pages' },
+  // ml — combined
+  { key: 'story.multiItemRatio.art.combined', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.lab.combined', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.drink.combined', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.cleaning.combined', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.cooking.combined', unitKey: 'unit.ml' },
+  // L — combined
+  { key: 'story.multiItemRatio.pool.combined', unitKey: 'unit.L' },
+  { key: 'story.multiItemRatio.gardening.combined', unitKey: 'unit.L' },
+  // min — combined
+  { key: 'story.multiItemRatio.playlist.combined', unitKey: 'unit.min' },
+  { key: 'story.multiItemRatio.workout.combined', unitKey: 'unit.min' },
+  { key: 'story.multiItemRatio.gaming.combined', unitKey: 'unit.min' },
+  { key: 'story.multiItemRatio.cooking2.combined', unitKey: 'unit.min' },
+  // pts — combined
+  { key: 'story.multiItemRatio.quiz.combined', unitKey: 'unit.pts' },
+  { key: 'story.multiItemRatio.videogame.combined', unitKey: 'unit.pts' },
+  { key: 'story.multiItemRatio.contest.combined', unitKey: 'unit.pts' },
+  // m — combined
+  { key: 'story.multiItemRatio.fence.combined', unitKey: 'unit.m' },
+  { key: 'story.multiItemRatio.track.combined', unitKey: 'unit.m' },
+  { key: 'story.multiItemRatio.rope.combined', unitKey: 'unit.m' },
+  // extra — combined
+  { key: 'story.multiItemRatio.market2.combined', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.electronics.combined', unitKey: 'unit.dollars' },
+];
+
 const FRIENDLY_VALUES = [2, 3, 4, 5, 10, 15, 20, 25, 50] as const;
 
 export function buildMultiItemRatioPool(): Quad[] {
@@ -207,13 +280,37 @@ export function buildMultiItemRatioPool(): Quad[] {
 
 function generateMultiItemRatioFormula(pool: Quad[], randomFn: () => number): Formula {
   const quad = pickRandom(pool, randomFn);
-  // values: [countA, valueA, countB, valueB] — all visible in template as noise + data
-  // Answer: countA * valueA (total of subset A) — not in values array
+
+  // 3-way variant selection: single-first (~33%), single-second (~33%), combined (~33%)
+  const variantRoll = randomFn();
+  const templateIndex = Math.floor(randomFn() * MULTI_ITEM_RATIO_TEMPLATES.length);
+
+  if (variantRoll < 0.67) {
+    // Single-item variant: ask about just one item type
+    const swapItems = variantRoll >= 0.33; // first 33% → first item, next 33% → second item
+    const countTarget = swapItems ? quad.c : quad.a;
+    const valueTarget = swapItems ? quad.d : quad.b;
+    const countOther = swapItems ? quad.a : quad.c;
+    const valueOther = swapItems ? quad.b : quad.d;
+    const values = [countTarget, valueTarget, countOther, valueOther];
+    const correctAnswer = countTarget * valueTarget;
+    const template = MULTI_ITEM_RATIO_TEMPLATES[templateIndex];
+    return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
+  }
+
+  // Combined variant: ask about both item types
   const values = [quad.a, quad.b, quad.c, quad.d];
-  const correctAnswer = quad.a * quad.b;
-  const template = pickRandom(MULTI_ITEM_RATIO_TEMPLATES, randomFn);
-  // hiddenPosition 'D' is used for the answer preview display, but all template values stay visible
-  return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
+  const combinedAnswer = (quad.a * quad.b) + (quad.c * quad.d);
+
+  // Defensive: fall back to single-first if combined answer exceeds 999
+  if (combinedAnswer > 999) {
+    const template = MULTI_ITEM_RATIO_TEMPLATES[templateIndex];
+    const correctAnswer = quad.a * quad.b;
+    return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
+  }
+
+  const template = MULTI_ITEM_RATIO_COMBINED_TEMPLATES[templateIndex];
+  return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer: combinedAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
 }
 
 // ── Percentage of the Whole pool (Story Challenge) ───────────────
@@ -308,8 +405,15 @@ export function buildPercentageOfWholePool(): Triple[] {
 function generatePercentageOfWholeFormula(pool: Triple[], randomFn: () => number): Formula {
   const triple = pickRandom(pool, randomFn);
   // values: [targetCount, otherCount, total] — template uses {a}, {b}, {c}
-  const values = [triple.a, triple.b, triple.c];
-  const correctAnswer = (triple.a / triple.c) * 100; // integer by pool construction
+  // Randomly swap a and b so the target isn't always the first element mentioned.
+  // Only swap when b/c also yields a friendly percentage; otherwise keep original order.
+  const bPct = (triple.b / triple.c) * 100;
+  const canSwap = FRIENDLY_WHOLE_PERCENTAGES.has(bPct);
+  const shouldSwap = canSwap && randomFn() < 0.5;
+  const targetCount = shouldSwap ? triple.b : triple.a;
+  const otherCount = shouldSwap ? triple.a : triple.b;
+  const values = [targetCount, otherCount, triple.c];
+  const correctAnswer = (targetCount / triple.c) * 100;
   const template = pickRandom(PERCENTAGE_OF_WHOLE_TEMPLATES, randomFn);
   return { type: 'percentageOfWhole', values, hiddenPosition: 'C', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
 }

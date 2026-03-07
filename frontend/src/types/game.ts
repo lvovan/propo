@@ -1,3 +1,5 @@
+import type { GameMode } from './player';
+
 /** The six question categories in the proportional reasoning game. */
 export type QuestionType = 'percentage' | 'ratio' | 'fraction' | 'multiItemRatio' | 'percentageOfWhole' | 'complexExtrapolation';
 
@@ -86,5 +88,7 @@ export interface GameState {
   /** Running total score. */
   score: number;
   /** Which mode this game is being played in. */
-  gameMode: 'play' | 'improve';
+  gameMode: GameMode;
+  /** The seed string used for competitive mode (undefined for play/improve). */
+  seed?: string;
 }

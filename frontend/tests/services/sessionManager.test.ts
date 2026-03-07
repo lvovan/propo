@@ -5,6 +5,8 @@ import {
   getActiveSession,
   hasActiveSession,
   SESSION_KEY,
+  setPendingSeed,
+  consumePendingSeed,
 } from '../../src/services/sessionManager';
 import * as playerStorage from '../../src/services/playerStorage';
 
@@ -80,6 +82,30 @@ describe('sessionManager', () => {
       const session = getActiveSession();
       expect(session).not.toBeNull();
       expect(session!.playerName).toBe('Mia');
+    });
+  });
+
+  describe('seed persistence', () => {
+    it('setPendingSeed stores seed in sessionStorage', () => {
+      setPendingSeed('abc123');
+      expect(sessionStorage.getItem('propo_pending_seed')).toBe('abc123');
+    });
+
+    it('consumePendingSeed reads and deletes the seed', () => {
+      setPendingSeed('abc123');
+      const seed = consumePendingSeed();
+      expect(seed).toBe('abc123');
+      expect(sessionStorage.getItem('propo_pending_seed')).toBeNull();
+    });
+
+    it('consumePendingSeed returns null when no seed exists', () => {
+      expect(consumePendingSeed()).toBeNull();
+    });
+
+    it('consumePendingSeed can only be consumed once', () => {
+      setPendingSeed('test');
+      expect(consumePendingSeed()).toBe('test');
+      expect(consumePendingSeed()).toBeNull();
     });
   });
 

@@ -34,6 +34,9 @@ export const FEEDBACK_DURATION_MS = 1200;
 /** Number of primary rounds per game. */
 export const ROUNDS_PER_GAME = 10;
 
+/** Time penalty (ms) added per incorrect answer in Competition mode. */
+export const WRONG_ANSWER_PENALTY_MS = 60_000;
+
 /**
  * Calculate points for a single round answer.
  * Scoring is based on percentage of time remaining, normalized across timer durations.
