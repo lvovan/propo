@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+
 import { decodeShareUrl } from '../services/shareUrl';
 import { formatTotalTime } from '../services/totalTime';
 import { useTranslation } from '../i18n';
 import Header from '../components/Header/Header';
 
 export default function SharedResultPage() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
   const result = decodeShareUrl(window.location.hash);
 

@@ -7,7 +7,7 @@ interface FormulaDisplayProps {
   playerAnswer?: number;
   typedDigits?: string;
   isInputPhase?: boolean;
-  gameMode?: 'play' | 'improve';
+  gameMode?: 'play' | 'improve' | 'competitive';
 }
 
 /**
