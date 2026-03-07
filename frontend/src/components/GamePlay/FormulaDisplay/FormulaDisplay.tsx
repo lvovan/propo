@@ -104,6 +104,9 @@ export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isI
       <p className={styles.problemText}>{problemText}</p>
       <div className={styles.answerPreview}>
         <span className={hiddenClassName}>{hiddenValue}</span>
+        {formula.answerUnitKey && (
+          <span className={styles.unit}>{t(formula.answerUnitKey as Parameters<typeof t>[0])}</span>
+        )}
       </div>
       {gameMode === 'improve' && (
         <div className={styles.formula}>

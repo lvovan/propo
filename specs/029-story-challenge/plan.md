@@ -17,7 +17,7 @@ Expand the proportional reasoning game with a 50/50 round split: 5 Pure Numeric 
 **Project Type**: Single frontend directory (`frontend/`)  
 **Performance Goals**: Lighthouse ≥90, TTI <3s on 3G  
 **Constraints**: WCAG 2.1 AA, 320–1920px viewport, ages 6–12 audience  
-**Scale/Scope**: 10 source files modified/created, 6 locale files updated
+**Scale/Scope**: 10 source files modified/created, 6 locale files updated, 180 story templates (60 per sub-type)
 
 ## Constitution Check
 
@@ -26,7 +26,7 @@ Expand the proportional reasoning game with a 50/50 round split: 5 Pure Numeric 
 | Principle | Status | Notes |
 |-----------|--------|-------|
 | I. Accessibility First | **PASS** | Story text gets WCAG AA contrast in dark mode (FR-014). ARIA labels extended for new question types. Color never sole indicator. |
-| II. Simplicity & Clarity | **PASS** | Minimal new abstractions: extends existing `QuestionType` union, reuses `Formula` interface. Per-round timer driven by formula metadata. No new screens. |
+| II. Simplicity & Clarity | **PASS** | Minimal new abstractions: extends existing `QuestionType` union, reuses `Formula` interface with new `answerUnitKey` field. Per-round timer driven by formula metadata. `StoryTemplate` pairs carry unit info. No new screens. |
 | III. Responsive Design | **PASS** | Story text container uses existing `max-width: 400px` with `margin-inline: auto`. Font sizes scale via existing media queries. |
 | IV. Static SPA | **PASS** | All logic client-side. Question pools built at runtime. No backend. |
 | V. Test-First | **PASS** | Acceptance tests for 5/5 split, scoring normalization, pool validation, dark mode contrast. Axe checks on Story Challenge display. |
@@ -54,11 +54,11 @@ specs/029-story-challenge/
 frontend/
 ├── src/
 │   ├── types/
-│   │   └── game.ts                          # Extend QuestionType, add timerDurationMs to Formula
+│   │   └── game.ts                          # Extend QuestionType, add timerDurationMs and answerUnitKey to Formula
 │   ├── constants/
 │   │   └── scoring.ts                       # Replace fixed-ms tiers with %-based scoring
 │   ├── services/
-│   │   ├── formulaGenerator.ts              # New pools, 5/5 split, absorb ruleOfThree
+│   │   ├── formulaGenerator.ts              # New pools, 5/5 split, absorb ruleOfThree, StoryTemplate pairs
 │   │   ├── gameEngine.ts                    # Pass timer duration through to scoring
 │   │   └── challengeAnalyzer.ts             # 6-category analysis
 │   ├── hooks/
@@ -67,8 +67,8 @@ frontend/
 │   ├── components/
 │   │   └── GamePlay/
 │   │       ├── FormulaDisplay/
-│   │       │   ├── FormulaDisplay.tsx        # Render 3 new story sub-types
-│   │       │   └── FormulaDisplay.module.css # Dark mode story text styles
+│   │       │   ├── FormulaDisplay.tsx        # Render 3 new story sub-types, answer unit labels
+│   │       │   └── FormulaDisplay.module.css # Dark mode story text styles, unit label styles
 │   │       ├── GameStatus/
 │   │       │   └── GameStatus.tsx            # Dynamic timer reset value
 │   │       ├── CountdownBar/
@@ -77,12 +77,12 @@ frontend/
 │   │           └── ScoreSummary.tsx          # Problem type column in table
 │   ├── i18n/
 │   │   └── locales/
-│   │       ├── en.ts                         # New story templates + sub-type labels
-│   │       ├── fr.ts                         # Translations
-│   │       ├── es.ts                         # Translations
-│   │       ├── de.ts                         # Translations
-│   │       ├── ja.ts                         # Translations
-│   │       └── pt.ts                         # Translations
+│   │       ├── en.ts                         # 60 story templates per sub-type (180 total) + unit labels
+│   │       ├── fr.ts                         # Full French translations
+│   │       ├── es.ts                         # Translations (EN fallback for new keys)
+│   │       ├── de.ts                         # Translations (EN fallback for new keys)
+│   │       ├── ja.ts                         # Translations (EN fallback for new keys)
+│   │       └── pt.ts                         # Translations (EN fallback for new keys)
 │   └── pages/
 │       └── MainPage.tsx                     # Thread timer duration to useRoundTimer
 └── tests/

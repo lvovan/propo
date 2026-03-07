@@ -34,11 +34,12 @@ Story Challenges come in three sub-categories that test different aspects of pro
 
 **Acceptance Scenarios**:
 
-1. **Given** a Story Challenge round uses the "Multi-Item Ratio" sub-type, **When** it is displayed, **Then** it presents a scenario with multiple item types at different values and asks for the total/value of a specific subset (e.g., "A backpack has 3 Blue Folders (100g each) and 2 Red Notebooks (200g each). What is the total weight of just the Blue Folders?").
-2. **Given** a Story Challenge round uses the "Percentage of the Whole" sub-type, **When** it is displayed, **Then** it presents a group of different items and asks what percentage one type represents (e.g., "A pet shop has 8 kittens, 7 puppies, and 5 hamsters. What percentage of the 20 total animals are the hamsters?").
+1. **Given** a Story Challenge round uses the "Multi-Item Ratio" sub-type, **When** it is displayed, **Then** it presents a scenario with multiple item types at different values and asks for the total/value of a specific subset (e.g., "A backpack has 3 Blue Folders (5g each) and 2 Red Notebooks (10g each). What is the total weight of just the Blue Folders?"). Per-item values are restricted to friendly round numbers: {2, 3, 4, 5, 10, 15, 20, 25, 50}.
+2. **Given** a Story Challenge round uses the "Percentage of the Whole" sub-type, **When** it is displayed, **Then** it presents a group of different items and asks what percentage one type represents (e.g., "A pet shop has 8 kittens, 7 puppies, and 5 hamsters. What percentage of the 20 total animals are the hamsters?"). The answer is always one of the friendly percentages: 10%, 20%, 25%, 50%, or 75%.
 3. **Given** a Story Challenge round uses the "Complex Extrapolation" sub-type, **When** it is displayed, **Then** it presents a ratio for one set and asks the player to predict the outcome for a larger set (e.g., "If 2 Space Scouts need 10 oxygen tanks, how many tanks do 12 Space Scouts need?").
 4. **Given** any Story Challenge round, **When** the player reads the problem, **Then** the problem contains at least one piece of "noise" information that is not needed to solve the answer but adds to the reasoning challenge.
 5. **Given** any Story Challenge round, **When** the correct answer is computed, **Then** it is always a positive whole number.
+6. **Given** any Story Challenge round, **When** the answer input area is displayed, **Then** the appropriate unit label (e.g., "g", "cal", "$", "eggs", "%") is shown next to the input box so the player knows what unit the answer is in.
 
 ---
 
@@ -85,7 +86,9 @@ When the user's system is in dark mode, Story Challenge text is displayed with h
 - **What happens if all 5 Story Challenges are answered incorrectly?** They enter the replay queue like any other round. The same story text and timer duration (50s) are used during replay.
 - **What happens with very young players who can't read the stories?** The game is designed for ages 6–12. Story Challenges are written at a reading level appropriate for 8+ year olds. Players aged 6–7 will still benefit from the Pure Numeric rounds.
 - **Are Story Challenge answers ever non-integer?** No. All problems are designed so the correct answer is always a positive whole number. Problem pools are pre-validated for this constraint.
+- **Are arbitrary percentages possible for Percentage of the Whole?** No. To keep the mental math achievable for children, the answer must be one of the friendly percentages: 10%, 20%, 25%, 50%, or 75%. The generator discards any combination that would produce a different percentage.
 - **What about i18n?** Story Challenge text templates are i18n keys, translated into all 6 supported languages. The scenarios (backpacks, pet shops, space scouts) are culturally neutral.
+- **How many story templates are there?** Each sub-type has 60 distinct templates (180 total across all 3 types), using varied real-world scenarios (kitchens, camps, farms, arcades, music rooms, etc.) at a reading level suitable for ages 10–14. This ensures high replay variety.
 
 ## Requirements *(mandatory)*
 
@@ -96,6 +99,9 @@ When the user's system is in dark mode, Story Challenge text is displayed with h
 - **FR-003**: Story Challenges MUST come in three sub-types: Multi-Item Ratio, Percentage of the Whole, and Complex Extrapolation. Each game MUST include at least 1 of each sub-type; the remaining 2 Story Challenge slots are filled randomly from any sub-type.
 - **FR-004**: Each Story Challenge MUST present a multi-sentence word problem with at least one piece of information not needed to solve the problem ("noise").
 - **FR-005**: All Story Challenge answers MUST be positive whole numbers.
+- **FR-005a**: Percentage of the Whole answers MUST be restricted to the set {10, 20, 25, 50, 75}. The generator MUST discard any combination that produces a percentage outside this set.
+- **FR-005b**: Multi-Item Ratio per-item values (weight, calories, cost, length, etc.) MUST be restricted to the set {2, 3, 4, 5, 10, 15, 20, 25, 50} to ensure the mental math is feasible for children.
+- **FR-005c**: The answer input area MUST display the appropriate unit label next to the input box for all story types (e.g., "g", "kg", "cal", "$", "cm", "pages", "ml", "%", "eggs", "tanks"). The unit is carried on the `Formula` via `answerUnitKey`.
 - **FR-006**: Story Challenge word problems MUST be translatable via i18n template keys in all 6 supported languages.
 - **FR-007**: Pure Numeric rounds MUST use a 20-second countdown timer.
 - **FR-008**: Story Challenge rounds MUST use a 50-second countdown timer.
@@ -112,9 +118,9 @@ When the user's system is in dark mode, Story Challenge text is displayed with h
 
 ### Key Entities
 
-- **Formula (extended)**: The existing formula entity is extended with a new question type value `'storyChallenge'` (or sub-types). Story Challenges carry longer `wordProblemKey` templates, a `values` array for computations, and a `correctAnswer`. They also carry metadata indicating the timer duration applicable to this round.
+- **Formula (extended)**: The existing formula entity is extended with a new question type value `'storyChallenge'` (or sub-types). Story Challenges carry longer `wordProblemKey` templates, a `values` array for computations, a `correctAnswer`, and an `answerUnitKey` (i18n key for the unit label displayed next to the answer input, e.g., `'unit.g'`, `'unit.eggs'`, `'unit.percent'`). They also carry metadata indicating the timer duration applicable to this round.
 - **Round (extended)**: Each round now tracks which timer duration was used (20s or 50s) so the score summary can display the correct context.
-- **Story Challenge Pool**: A pre-built collection of word-problem templates for each sub-type (Multi-Item Ratio, Percentage of the Whole, Complex Extrapolation), parameterized with variable values that produce whole-number answers.
+- **Story Challenge Pool**: A pre-built collection of word-problem templates for each sub-type (Multi-Item Ratio, Percentage of the Whole, Complex Extrapolation), parameterized with variable values that produce whole-number answers. Each sub-type has 60 templates (180 total) using `StoryTemplate { key: string; unitKey: string }` pairs, covering 12+ unit types and diverse real-world scenarios.
 
 ## Success Criteria *(mandatory)*
 

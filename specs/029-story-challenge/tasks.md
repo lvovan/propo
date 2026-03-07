@@ -14,7 +14,7 @@
 
 **Purpose**: Type system changes and scoring foundation that all user stories depend on.
 
-- [X] T001 Expand `QuestionType` union from 4 to 6 values (remove `ruleOfThree`, add `multiItemRatio`, `percentageOfWhole`, `complexExtrapolation`) and add `timerDurationMs: number` field to `Formula` interface in `frontend/src/types/game.ts`
+- [X] T001 Expand `QuestionType` union from 4 to 6 values (remove `ruleOfThree`, add `multiItemRatio`, `percentageOfWhole`, `complexExtrapolation`), add `timerDurationMs: number` and `answerUnitKey?: string` fields to `Formula` interface in `frontend/src/types/game.ts`
 - [X] T002 [P] Add category helper constants `PURE_NUMERIC_TYPES`, `STORY_CHALLENGE_TYPES`, and `isStoryChallenge()` function in `frontend/src/types/game.ts`
 - [X] T003 [P] Remove `ScoringTier` interface from `frontend/src/types/game.ts`
 
@@ -58,16 +58,16 @@
 
 **Independent Test**: Play 20 games, verify all 3 sub-types appear with noise data and correct integer answers.
 
-- [X] T014 [US2] Implement `buildMultiItemRatioPool()` in `frontend/src/services/formulaGenerator.ts` — generates problems with multiple item types at different values, asking for a subset total (constraints: answer ≤ 999, positive integer)
-- [X] T015 [P] [US2] Implement `buildPercentageOfWholePool()` in `frontend/src/services/formulaGenerator.ts` — generates problems where a group has different item types and player finds what percentage one type represents (answer is whole number 1–100)
+- [X] T014 [US2] Implement `buildMultiItemRatioPool()` in `frontend/src/services/formulaGenerator.ts` — generates problems with multiple item types at different friendly values ({2, 3, 4, 5, 10, 15, 20, 25, 50}), asking for a subset total (constraints: answer ≤ 999, positive integer)
+- [X] T015 [P] [US2] Implement `buildPercentageOfWholePool()` in `frontend/src/services/formulaGenerator.ts` — generates problems where a group has different item types and player finds what percentage one type represents (answer is restricted to friendly percentages: 10, 20, 25, 50, 75)
 - [X] T016 [P] [US2] Implement `buildComplexExtrapolationPool()` in `frontend/src/services/formulaGenerator.ts` — generates proportional scaling problems with noise context (subsumes old ruleOfThree pool)
-- [X] T017 [US2] Add 6 i18n template keys per story sub-type (18 total) plus 3 sub-type label keys (`questionType.multiItemRatio`, `questionType.percentageOfWhole`, `questionType.complexExtrapolation`) to English locale in `frontend/src/i18n/locales/en.ts`
-- [X] T018 [P] [US2] Add corresponding story template translations and sub-type labels to French locale in `frontend/src/i18n/locales/fr.ts`
-- [X] T019 [P] [US2] Add corresponding story template translations and sub-type labels to Spanish locale in `frontend/src/i18n/locales/es.ts`
-- [X] T020 [P] [US2] Add corresponding story template translations and sub-type labels to German locale in `frontend/src/i18n/locales/de.ts`
-- [X] T021 [P] [US2] Add corresponding story template translations and sub-type labels to Japanese locale in `frontend/src/i18n/locales/ja.ts`
-- [X] T022 [P] [US2] Add corresponding story template translations and sub-type labels to Portuguese locale in `frontend/src/i18n/locales/pt.ts`
-- [X] T023 [US2] Update `FormulaDisplay.tsx` to render the 3 new story challenge sub-types (multiItemRatio, percentageOfWhole, complexExtrapolation) using word problem templates with `wordProblemKey`, removing the old `ruleOfThree` rendering branch in `frontend/src/components/GamePlay/FormulaDisplay/FormulaDisplay.tsx`
+- [X] T017 [US2] Add 60 i18n template keys per story sub-type (180 total) plus 3 sub-type label keys and ~64 unit label keys to English locale in `frontend/src/i18n/locales/en.ts` — templates use `StoryTemplate { key, unitKey }` pairs covering 12+ unit types (g, kg, cal, $, cm, m, pages, ml, L, min, pts, and object-specific units)
+- [X] T018 [P] [US2] Add corresponding 180 story template translations, sub-type labels, and unit labels to French locale in `frontend/src/i18n/locales/fr.ts`
+- [X] T019 [P] [US2] Add corresponding story template keys (EN fallback) and unit labels to Spanish locale in `frontend/src/i18n/locales/es.ts`
+- [X] T020 [P] [US2] Add corresponding story template keys (EN fallback) and unit labels to German locale in `frontend/src/i18n/locales/de.ts`
+- [X] T021 [P] [US2] Add corresponding story template keys (EN fallback) and unit labels to Japanese locale in `frontend/src/i18n/locales/ja.ts`
+- [X] T022 [P] [US2] Add corresponding story template keys (EN fallback) and unit labels to Portuguese locale in `frontend/src/i18n/locales/pt.ts`
+- [X] T023 [US2] Update `FormulaDisplay.tsx` to render the 3 new story challenge sub-types (multiItemRatio, percentageOfWhole, complexExtrapolation) using word problem templates with `wordProblemKey`, answer unit label via `answerUnitKey`, removing the old `ruleOfThree` rendering branch in `frontend/src/components/GamePlay/FormulaDisplay/FormulaDisplay.tsx`
 - [X] T024 [US2] Update `formatFormula()` in `frontend/src/components/GamePlay/ScoreSummary/ScoreSummary.tsx` to handle the 3 new story sub-types and remove the `ruleOfThree` case
 - [X] T025 [US2] Update `formatForAria()` in `frontend/src/components/GamePlay/FormulaDisplay/FormulaDisplay.tsx` to produce accessible prose for the 3 new story sub-types
 - [X] T026 [US2] Update tests in `frontend/tests/components/FormulaDisplay.test.tsx` to cover rendering for all 3 story sub-types

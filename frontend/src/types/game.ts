@@ -36,6 +36,8 @@ export interface Formula {
   correctAnswer: number;
   /** i18n key for the word-problem template (story challenge types). */
   wordProblemKey?: string;
+  /** i18n key for the answer unit label shown next to the input (e.g., 'unit.g', 'unit.percent'). */
+  answerUnitKey?: string;
   /** Timer duration in ms for this round (20000 for numeric, 50000 for story). */
   timerDurationMs: number;
 }

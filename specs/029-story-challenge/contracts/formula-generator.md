@@ -8,18 +8,40 @@
 
 ### Removed Exports
 - `buildRuleOfThreePool()` — absorbed into `buildComplexExtrapolationPool()`
-- `WORD_PROBLEM_KEYS` — replaced by per-sub-type key arrays
+- `WORD_PROBLEM_KEYS` — replaced by per-sub-type `StoryTemplate[]` arrays
+
+### New Types
+
+#### `StoryTemplate`
+```typescript
+interface StoryTemplate { key: string; unitKey: string }
+```
+Pairs an i18n template key with the unit label key for the answer (e.g., `{ key: 'story.multiItemRatio.backpack', unitKey: 'unit.g' }`).
 
 ### New Exports
 
-#### `buildMultiItemRatioPool(): StoryPoolEntry[]`
-Generates story problems where multiple item types have different values and the player finds the total of a specific subset.
+#### `MULTI_ITEM_RATIO_TEMPLATES: StoryTemplate[]`
+60 template pairs for multi-item ratio problems across 12+ unit types (g, kg, cal, $, cm, m, pages, ml, L, min, pts).
 
-#### `buildPercentageOfWholePool(): StoryPoolEntry[]`
-Generates story problems where a group has different item types and the player finds what percentage one type represents.
+#### `PERCENTAGE_OF_WHOLE_TEMPLATES: StoryTemplate[]`
+60 template pairs for percentage-of-whole problems. All use `unitKey: 'unit.percent'`.
 
-#### `buildComplexExtrapolationPool(): StoryPoolEntry[]`
-Generates story problems with proportional scaling (subsumes old ruleOfThree). Includes "noise" context.
+#### `COMPLEX_EXTRAPOLATION_TEMPLATES: StoryTemplate[]`
+60 template pairs for complex extrapolation problems with object-specific units (eggs, tanks, seeds, etc.).
+
+#### Derived key arrays
+- `MULTI_ITEM_RATIO_KEYS: string[]` — extracted from `MULTI_ITEM_RATIO_TEMPLATES`
+- `PERCENTAGE_OF_WHOLE_KEYS: string[]` — extracted from `PERCENTAGE_OF_WHOLE_TEMPLATES`
+- `COMPLEX_EXTRAPOLATION_KEYS: string[]` — extracted from `COMPLEX_EXTRAPOLATION_TEMPLATES`
+
+#### `buildMultiItemRatioPool(): Quad[]`
+Generates story problems where multiple item types have different friendly values ({2, 3, 4, 5, 10, 15, 20, 25, 50}) and the player finds the total of a specific subset. Answer ≤ 999.
+
+#### `buildPercentageOfWholePool(): Triple[]`
+Generates story problems where a group has different item types and the player finds what percentage one type represents. Answers restricted to {10, 20, 25, 50, 75}. Pool stores `{ a: targetCount, b: otherCount, c: total }` — the percentage is computed at formula generation time.
+
+#### `buildComplexExtrapolationPool(): Quad[]`
+Generates story problems with proportional scaling (subsumes old ruleOfThree). Includes "noise" context. Answer ≤ 999.
 
 ### Modified: `generateFormulas(randomFn?): Formula[]`
 
@@ -29,14 +51,18 @@ Generates story problems with proportional scaling (subsumes old ruleOfThree). I
 1. Generate 5 Pure Numeric: balanced across percentage, ratio, fraction (2+2+1 or similar shuffle).
 2. Generate 5 Story Challenges: 1 of each sub-type guaranteed + 2 random.
 3. Set `timerDurationMs = 20000` on Pure Numeric, `50000` on Story Challenges.
-4. Concatenate and Fisher-Yates shuffle all 10.
+4. Set `answerUnitKey` from the selected `StoryTemplate.unitKey` on each Story Challenge formula.
+5. Concatenate and Fisher-Yates shuffle all 10.
 
 **Postconditions**:
 - Result has exactly 10 elements.
 - Exactly 5 have `type ∈ PURE_NUMERIC_TYPES`, 5 have `type ∈ STORY_CHALLENGE_TYPES`.
 - All 3 story sub-types represented.
 - All `correctAnswer` values are positive integers ≤ 999.
+- `percentageOfWhole` answers are restricted to {10, 20, 25, 50, 75}.
+- `multiItemRatio` per-item values are restricted to {2, 3, 4, 5, 10, 15, 20, 25, 50}.
 - All Story Challenge formulas have `wordProblemKey` set.
+- All Story Challenge formulas have `answerUnitKey` set.
 - All formulas have `timerDurationMs` set.
 
 ### Modified: `generateImproveFormulas(challengingItems, randomFn?): Formula[]`
@@ -64,4 +90,7 @@ story.forEach(f => expect(f.timerDurationMs).toBe(50000));
 
 // All story formulas have word problem keys
 story.forEach(f => expect(f.wordProblemKey).toBeTruthy());
+
+// All story formulas have answer unit keys
+story.forEach(f => expect(f.answerUnitKey).toBeTruthy());
 ```

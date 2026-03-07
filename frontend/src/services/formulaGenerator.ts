@@ -2,6 +2,10 @@ import type { Formula, QuestionType, HiddenPosition, ChallengingItem } from '../
 import { PURE_NUMERIC_TYPES, STORY_CHALLENGE_TYPES } from '../types/game';
 import { NUMERIC_TIMER_MS, STORY_TIMER_MS } from '../constants/scoring';
 
+// ── Types ─────────────────────────────────────────────────────────
+
+interface StoryTemplate { key: string; unitKey: string }
+
 // ── Helpers ──────────────────────────────────────────────────────
 
 /** Fisher-Yates (Knuth) shuffle — mutates the array in place. */
@@ -106,21 +110,89 @@ function generateFractionFormula(pool: Quad[], randomFn: () => number): Formula 
 // ── Multi-Item Ratio pool (Story Challenge) ──────────────────────
 // "X items of type A at V₁ each, Y items of type B at V₂ each. Total of just type A?"
 
-export const MULTI_ITEM_RATIO_KEYS: string[] = [
-  'story.multiItemRatio.backpack',
-  'story.multiItemRatio.lunchbox',
-  'story.multiItemRatio.toybox',
-  'story.multiItemRatio.garden',
-  'story.multiItemRatio.shelf',
-  'story.multiItemRatio.art',
+export const MULTI_ITEM_RATIO_TEMPLATES: StoryTemplate[] = [
+  // g (grams)
+  { key: 'story.multiItemRatio.backpack', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.kitchen', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.mail', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.toolbox', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.jewelry', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.geology', unitKey: 'unit.g' },
+  { key: 'story.multiItemRatio.party', unitKey: 'unit.g' },
+  // kg
+  { key: 'story.multiItemRatio.grocery', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.camping', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.gym', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.warehouse', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.fishing', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.pet', unitKey: 'unit.kg' },
+  // cal
+  { key: 'story.multiItemRatio.lunchbox', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.cafeteria', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.breakfast', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.snack', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.smoothie', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.picnic', unitKey: 'unit.cal' },
+  { key: 'story.multiItemRatio.dinner', unitKey: 'unit.cal' },
+  // $
+  { key: 'story.multiItemRatio.toybox', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.shop', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.bookstore', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.arcade', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.stationery', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.bakery', unitKey: 'unit.dollars' },
+  { key: 'story.multiItemRatio.craft', unitKey: 'unit.dollars' },
+  // cm
+  { key: 'story.multiItemRatio.garden', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.aquarium2', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.model', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.sewing', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.paper', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.terrarium', unitKey: 'unit.cm' },
+  { key: 'story.multiItemRatio.music', unitKey: 'unit.cm' },
+  // pages
+  { key: 'story.multiItemRatio.shelf', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.library', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.homework', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.reading', unitKey: 'unit.pages' },
+  { key: 'story.multiItemRatio.magazine', unitKey: 'unit.pages' },
+  // ml
+  { key: 'story.multiItemRatio.art', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.lab', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.drink', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.cleaning', unitKey: 'unit.ml' },
+  { key: 'story.multiItemRatio.cooking', unitKey: 'unit.ml' },
+  // L
+  { key: 'story.multiItemRatio.pool', unitKey: 'unit.L' },
+  { key: 'story.multiItemRatio.gardening', unitKey: 'unit.L' },
+  // min
+  { key: 'story.multiItemRatio.playlist', unitKey: 'unit.min' },
+  { key: 'story.multiItemRatio.workout', unitKey: 'unit.min' },
+  { key: 'story.multiItemRatio.gaming', unitKey: 'unit.min' },
+  { key: 'story.multiItemRatio.cooking2', unitKey: 'unit.min' },
+  // pts
+  { key: 'story.multiItemRatio.quiz', unitKey: 'unit.pts' },
+  { key: 'story.multiItemRatio.videogame', unitKey: 'unit.pts' },
+  { key: 'story.multiItemRatio.contest', unitKey: 'unit.pts' },
+  // m
+  { key: 'story.multiItemRatio.fence', unitKey: 'unit.m' },
+  { key: 'story.multiItemRatio.track', unitKey: 'unit.m' },
+  { key: 'story.multiItemRatio.rope', unitKey: 'unit.m' },
+  // extra kg/$
+  { key: 'story.multiItemRatio.market2', unitKey: 'unit.kg' },
+  { key: 'story.multiItemRatio.electronics', unitKey: 'unit.dollars' },
 ];
+
+export const MULTI_ITEM_RATIO_KEYS: string[] = MULTI_ITEM_RATIO_TEMPLATES.map(t => t.key);
+
+const FRIENDLY_VALUES = [2, 3, 4, 5, 10, 15, 20, 25, 50] as const;
 
 export function buildMultiItemRatioPool(): Quad[] {
   const pool: Quad[] = [];
   for (let x = 2; x <= 8; x++) {
-    for (let v1 = 2; v1 <= 50; v1++) {
+    for (const v1 of FRIENDLY_VALUES) {
       for (let y = 2; y <= 8; y++) {
-        for (let v2 = 2; v2 <= 50; v2++) {
+        for (const v2 of FRIENDLY_VALUES) {
           if (v1 === v2) continue; // need different values for noise
           const answer = x * v1;
           if (answer >= 1 && answer <= 999) {
@@ -130,8 +202,7 @@ export function buildMultiItemRatioPool(): Quad[] {
       }
     }
   }
-  // Pool is huge; we only need a manageable subset for random picks
-  return pool.slice(0, 5000);
+  return pool;
 }
 
 function generateMultiItemRatioFormula(pool: Quad[], randomFn: () => number): Formula {
@@ -140,35 +211,93 @@ function generateMultiItemRatioFormula(pool: Quad[], randomFn: () => number): Fo
   // Answer: countA * valueA (total of subset A) — not in values array
   const values = [quad.a, quad.b, quad.c, quad.d];
   const correctAnswer = quad.a * quad.b;
-  const wordProblemKey = pickRandom(MULTI_ITEM_RATIO_KEYS, randomFn);
+  const template = pickRandom(MULTI_ITEM_RATIO_TEMPLATES, randomFn);
   // hiddenPosition 'D' is used for the answer preview display, but all template values stay visible
-  return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
+  return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
 }
 
 // ── Percentage of the Whole pool (Story Challenge) ───────────────
 // "Group has X of A, Y of B, Z of C. What % are the [target]?"
 
-export const PERCENTAGE_OF_WHOLE_KEYS: string[] = [
-  'story.percentageOfWhole.petshop',
-  'story.percentageOfWhole.classroom',
-  'story.percentageOfWhole.orchard',
-  'story.percentageOfWhole.aquarium',
-  'story.percentageOfWhole.market',
-  'story.percentageOfWhole.zoo',
+export const PERCENTAGE_OF_WHOLE_TEMPLATES: StoryTemplate[] = [
+  { key: 'story.percentageOfWhole.petshop', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.classroom', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.orchard', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.aquarium', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.market', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.zoo', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.school', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.parking', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.garden', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.library', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.farm', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.playlist', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.team', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.closet', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.bakery', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.pond', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.toolbox', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.camp', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.bus', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.fridge', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.beach', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.forest', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.jar', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.science', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.race', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.collection', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.basket', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.desk', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.band', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.cinema', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.shoes', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.park', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.chocolate', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.chess', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.aviary', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.toystore', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.lab', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.field', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.train', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.farmers', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.tank', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.museum', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.lunch', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.gym', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.veggie', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.scouts', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.traffic', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.spices', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.airport', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.reef', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.candy', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.theater', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.safari', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.garage', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.studio', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.shelter', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.carnival', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.island', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.arcade', unitKey: 'unit.percent' },
+  { key: 'story.percentageOfWhole.hospital', unitKey: 'unit.percent' },
 ];
+
+export const PERCENTAGE_OF_WHOLE_KEYS: string[] = PERCENTAGE_OF_WHOLE_TEMPLATES.map(t => t.key);
+
+const FRIENDLY_WHOLE_PERCENTAGES = new Set([10, 20, 25, 50, 75]);
 
 export function buildPercentageOfWholePool(): Triple[] {
   const pool: Triple[] = [];
-  // x = target count, y = other count 1, z = other count 2
-  // answer = (x / (x+y+z)) * 100, must be integer
+  // a = target count, b = other count, c = total (a + b + remaining)
+  // answer = (a / c) * 100, must be a friendly percentage
   for (let x = 1; x <= 20; x++) {
     for (let y = 1; y <= 20; y++) {
       for (let z = 1; z <= 20; z++) {
         const total = x + y + z;
         if (total < 10 || total > 50) continue;
         const pct = (x / total) * 100;
-        if (Number.isInteger(pct) && pct >= 1 && pct <= 100) {
-          pool.push({ a: x, b: y, c: pct });
+        if (FRIENDLY_WHOLE_PERCENTAGES.has(pct)) {
+          pool.push({ a: x, b: y, c: total });
         }
       }
     }
@@ -178,24 +307,80 @@ export function buildPercentageOfWholePool(): Triple[] {
 
 function generatePercentageOfWholeFormula(pool: Triple[], randomFn: () => number): Formula {
   const triple = pickRandom(pool, randomFn);
-  // values: [targetCount, otherCount, answerPercent]; noise = otherCount
+  // values: [targetCount, otherCount, total] — template uses {a}, {b}, {c}
   const values = [triple.a, triple.b, triple.c];
-  const correctAnswer = triple.c;
-  const wordProblemKey = pickRandom(PERCENTAGE_OF_WHOLE_KEYS, randomFn);
-  return { type: 'percentageOfWhole', values, hiddenPosition: 'C', correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
+  const correctAnswer = (triple.a / triple.c) * 100; // integer by pool construction
+  const template = pickRandom(PERCENTAGE_OF_WHOLE_TEMPLATES, randomFn);
+  return { type: 'percentageOfWhole', values, hiddenPosition: 'C', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
 }
 
 // ── Complex Extrapolation pool (Story Challenge) ─────────────────
 // "If A units need B resources, how many resources do C units need?"
 
-export const COMPLEX_EXTRAPOLATION_KEYS: string[] = [
-  'story.complexExtrapolation.space',
-  'story.complexExtrapolation.camping',
-  'story.complexExtrapolation.baking',
-  'story.complexExtrapolation.travel',
-  'story.complexExtrapolation.sports',
-  'story.complexExtrapolation.school',
+export const COMPLEX_EXTRAPOLATION_TEMPLATES: StoryTemplate[] = [
+  { key: 'story.complexExtrapolation.space', unitKey: 'unit.tanks' },
+  { key: 'story.complexExtrapolation.camping', unitKey: 'unit.pegs' },
+  { key: 'story.complexExtrapolation.baking', unitKey: 'unit.eggs' },
+  { key: 'story.complexExtrapolation.travel', unitKey: 'unit.litres' },
+  { key: 'story.complexExtrapolation.sports', unitKey: 'unit.balls' },
+  { key: 'story.complexExtrapolation.school', unitKey: 'unit.brushes' },
+  { key: 'story.complexExtrapolation.party', unitKey: 'unit.plates' },
+  { key: 'story.complexExtrapolation.garden', unitKey: 'unit.seeds' },
+  { key: 'story.complexExtrapolation.construction', unitKey: 'unit.bricks' },
+  { key: 'story.complexExtrapolation.reading', unitKey: 'unit.chapters' },
+  { key: 'story.complexExtrapolation.classroom', unitKey: 'unit.chairs' },
+  { key: 'story.complexExtrapolation.pizza', unitKey: 'unit.slices' },
+  { key: 'story.complexExtrapolation.sewing', unitKey: 'unit.buttons' },
+  { key: 'story.complexExtrapolation.painting', unitKey: 'unit.cans' },
+  { key: 'story.complexExtrapolation.racing', unitKey: 'unit.tyres' },
+  { key: 'story.complexExtrapolation.orchestra', unitKey: 'unit.strings' },
+  { key: 'story.complexExtrapolation.aquarium', unitKey: 'unit.fish' },
+  { key: 'story.complexExtrapolation.hiking', unitKey: 'unit.bottles' },
+  { key: 'story.complexExtrapolation.science', unitKey: 'unit.tubes' },
+  { key: 'story.complexExtrapolation.kennel', unitKey: 'unit.treats' },
+  { key: 'story.complexExtrapolation.bike', unitKey: 'unit.spokes' },
+  { key: 'story.complexExtrapolation.concert', unitKey: 'unit.seats' },
+  { key: 'story.complexExtrapolation.beading', unitKey: 'unit.beads' },
+  { key: 'story.complexExtrapolation.hotel', unitKey: 'unit.towels' },
+  { key: 'story.complexExtrapolation.woodwork', unitKey: 'unit.nails' },
+  { key: 'story.complexExtrapolation.yearbook', unitKey: 'unit.photos' },
+  { key: 'story.complexExtrapolation.delivery', unitKey: 'unit.packages' },
+  { key: 'story.complexExtrapolation.greenhouse', unitKey: 'unit.pots' },
+  { key: 'story.complexExtrapolation.diving', unitKey: 'unit.tanks' },
+  { key: 'story.complexExtrapolation.archery', unitKey: 'unit.arrows' },
+  { key: 'story.complexExtrapolation.cinema', unitKey: 'unit.buckets' },
+  { key: 'story.complexExtrapolation.flight', unitKey: 'unit.snacks' },
+  { key: 'story.complexExtrapolation.soccer', unitKey: 'unit.cones' },
+  { key: 'story.complexExtrapolation.train', unitKey: 'unit.windows' },
+  { key: 'story.complexExtrapolation.picnic', unitKey: 'unit.blankets' },
+  { key: 'story.complexExtrapolation.school2', unitKey: 'unit.desks' },
+  { key: 'story.complexExtrapolation.printing', unitKey: 'unit.sheets' },
+  { key: 'story.complexExtrapolation.magic', unitKey: 'unit.cards' },
+  { key: 'story.complexExtrapolation.robotics', unitKey: 'unit.batteries' },
+  { key: 'story.complexExtrapolation.theater', unitKey: 'unit.props' },
+  { key: 'story.complexExtrapolation.stables', unitKey: 'unit.carrots' },
+  { key: 'story.complexExtrapolation.monkeys', unitKey: 'unit.bananas' },
+  { key: 'story.complexExtrapolation.fair', unitKey: 'unit.prizes' },
+  { key: 'story.complexExtrapolation.scouts', unitKey: 'unit.stakes' },
+  { key: 'story.complexExtrapolation.lemonade', unitKey: 'unit.lemons' },
+  { key: 'story.complexExtrapolation.sandcastle', unitKey: 'unit.buckets' },
+  { key: 'story.complexExtrapolation.birthday', unitKey: 'unit.candles' },
+  { key: 'story.complexExtrapolation.festival', unitKey: 'unit.cups' },
+  { key: 'story.complexExtrapolation.garden2', unitKey: 'unit.bags' },
+  { key: 'story.complexExtrapolation.safari', unitKey: 'unit.bottles' },
+  { key: 'story.complexExtrapolation.skiing', unitKey: 'unit.helmets' },
+  { key: 'story.complexExtrapolation.origami', unitKey: 'unit.sheets' },
+  { key: 'story.complexExtrapolation.planting', unitKey: 'unit.saplings' },
+  { key: 'story.complexExtrapolation.farm', unitKey: 'unit.eggs' },
+  { key: 'story.complexExtrapolation.pool', unitKey: 'unit.litres' },
+  { key: 'story.complexExtrapolation.camping2', unitKey: 'unit.bottles' },
+  { key: 'story.complexExtrapolation.canteen', unitKey: 'unit.cups' },
+  { key: 'story.complexExtrapolation.beach', unitKey: 'unit.towels' },
+  { key: 'story.complexExtrapolation.relay', unitKey: 'unit.batons' },
+  { key: 'story.complexExtrapolation.cleaning', unitKey: 'unit.sponges' },
 ];
+
+export const COMPLEX_EXTRAPOLATION_KEYS: string[] = COMPLEX_EXTRAPOLATION_TEMPLATES.map(t => t.key);
 
 export function buildComplexExtrapolationPool(): Quad[] {
   const pool: Quad[] = [];
@@ -221,8 +406,8 @@ function generateComplexExtrapolationFormula(pool: Quad[], randomFn: () => numbe
   const hiddenPosition: HiddenPosition = 'D';
   const values = [quad.a, quad.b, quad.c, quad.d];
   const correctAnswer = quad.d;
-  const wordProblemKey = pickRandom(COMPLEX_EXTRAPOLATION_KEYS, randomFn);
-  return { type: 'complexExtrapolation', values, hiddenPosition, correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
+  const template = pickRandom(COMPLEX_EXTRAPOLATION_TEMPLATES, randomFn);
+  return { type: 'complexExtrapolation', values, hiddenPosition, correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
 }
 
 // ── Formula generators by type ───────────────────────────────────
