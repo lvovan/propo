@@ -59,6 +59,14 @@ describe('generateFormulas', () => {
     expect(formulas).toHaveLength(10);
   });
 
+  it('produces exactly 5 numeric and 5 word problem rounds', () => {
+    const formulas = generateFormulas(createSeededRandom(42));
+    const numeric = formulas.filter((f) => f.type !== 'ruleOfThree');
+    const wordProblems = formulas.filter((f) => f.type === 'ruleOfThree');
+    expect(numeric).toHaveLength(5);
+    expect(wordProblems).toHaveLength(5);
+  });
+
   it('includes all 4 question types', () => {
     const formulas = generateFormulas(createSeededRandom(42));
     const types = new Set(formulas.map((f) => f.type));
@@ -80,6 +88,15 @@ describe('generateFormulas', () => {
     const f1 = generateFormulas(createSeededRandom(42));
     const f2 = generateFormulas(createSeededRandom(42));
     expect(f1).toEqual(f2);
+  });
+
+  it('ruleOfThree formulas only hide position D (answer)', () => {
+    for (let g = 0; g < 20; g++) {
+      const formulas = generateFormulas();
+      formulas.filter((f) => f.type === 'ruleOfThree').forEach((f) => {
+        expect(f.hiddenPosition).toBe('D');
+      });
+    }
   });
 
   it('ruleOfThree formulas have a wordProblemKey', () => {
@@ -113,11 +130,15 @@ describe('generateImproveFormulas', () => {
     expect(formulas).toHaveLength(10);
   });
 
-  it('biases toward challenging types', () => {
+  it('biases toward challenging numeric types while keeping 5/5 split', () => {
     const items = [makeItem('percentage', 5)];
     const formulas = generateImproveFormulas(items, createSeededRandom(42));
+    const numeric = formulas.filter((f) => f.type !== 'ruleOfThree');
+    const wordProblems = formulas.filter((f) => f.type === 'ruleOfThree');
+    expect(numeric).toHaveLength(5);
+    expect(wordProblems).toHaveLength(5);
     const pctCount = formulas.filter((f) => f.type === 'percentage').length;
-    expect(pctCount).toBeGreaterThanOrEqual(5);
+    expect(pctCount).toBeGreaterThanOrEqual(2);
   });
 
   it('includes all 4 types even when only 1 is challenging', () => {

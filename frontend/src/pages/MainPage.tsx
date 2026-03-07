@@ -188,6 +188,7 @@ export default function MainPage() {
                 }
                 typedDigits={typedDigits}
                 isInputPhase={gameState.currentPhase === 'input'}
+                gameMode={gameMode}
               />
             </div>
 

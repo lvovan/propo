@@ -7,6 +7,7 @@ interface FormulaDisplayProps {
   playerAnswer?: number;
   typedDigits?: string;
   isInputPhase?: boolean;
+  gameMode?: 'play' | 'improve';
 }
 
 /**
@@ -17,7 +18,7 @@ interface FormulaDisplayProps {
  * Fraction:      2/5 = 4/?   (stacked fraction display)
  * Rule of Three: word problem + visual proportion
  */
-export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isInputPhase }: FormulaDisplayProps) {
+export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isInputPhase, gameMode }: FormulaDisplayProps) {
   const { t } = useTranslation();
   const { type, values, hiddenPosition } = formula;
 
@@ -99,25 +100,30 @@ export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isI
   return (
     <div className={styles.wordProblem} role="math" aria-label={ariaLabel}>
       <p className={styles.problemText}>{problemText}</p>
-      <div className={styles.formula}>
-        <span className={styles.value}>{values[0]}</span>
-        <span className={styles.operator}>→</span>
-        <span className={styles.value}>{values[1]}</span>
-        <span className={styles.separator}>,</span>
-        {hiddenPosition === 'C' ? (
-          <>
-            <span className={hiddenClassName}>{hiddenValue}</span>
-            <span className={styles.operator}>→</span>
-            <span className={styles.value}>{values[3]}</span>
-          </>
-        ) : (
-          <>
-            <span className={styles.value}>{values[2]}</span>
-            <span className={styles.operator}>→</span>
-            <span className={hiddenClassName}>{hiddenValue}</span>
-          </>
-        )}
+      <div className={styles.answerPreview}>
+        <span className={hiddenClassName}>{hiddenValue}</span>
       </div>
+      {gameMode === 'improve' && (
+        <div className={styles.formula}>
+          <span className={styles.value}>{values[0]}</span>
+          <span className={styles.operator}>→</span>
+          <span className={styles.value}>{values[1]}</span>
+          <span className={styles.separator}>,</span>
+          {hiddenPosition === 'C' ? (
+            <>
+              <span className={hiddenClassName}>{hiddenValue}</span>
+              <span className={styles.operator}>→</span>
+              <span className={styles.value}>{values[3]}</span>
+            </>
+          ) : (
+            <>
+              <span className={styles.value}>{values[2]}</span>
+              <span className={styles.operator}>→</span>
+              <span className={hiddenClassName}>{hiddenValue}</span>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

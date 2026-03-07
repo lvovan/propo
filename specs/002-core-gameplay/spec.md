@@ -119,8 +119,10 @@ Each game generates 10 proportional-reasoning questions drawn from four categori
 - **FR-018**: The system MUST show visual feedback for 1.2 seconds after each answer. Correct answers MUST use a green background/highlight with a checkmark icon and a text label (e.g., "Correct!"). Incorrect answers MUST use a red background/highlight with an X icon and a text label (e.g., "Not quite!"). Color MUST NOT be the sole indicator — icons and text MUST always accompany the color change (per constitution: Accessibility First).
 - **FR-019**: The system MUST display the current round number (e.g., "Round 3 of 10") and running score during gameplay.
 - **FR-020**: The score summary screen MUST display a "Play again" button that starts a new game immediately for the same player, and a secondary "Back to menu" option that returns to the main/welcome screen.
-- **FR-021**: The default question distribution per game MUST be 3 percentage, 2 ratio, 2 fraction, 3 rule-of-three questions, shuffled randomly.
+- **FR-021**: The default question distribution per game MUST be exactly 5 numeric questions (2 percentage, 2 ratio, 1 fraction) and 5 word-problem questions (rule-of-three), shuffled randomly.
 - **FR-022**: Rule-of-three questions MUST be presented as age-appropriate word problems (e.g., shopping, cooking, travel scenarios) with an i18n-translatable template.
+- **FR-023**: Rule-of-three questions MUST only hide the answer value (position D). The target quantity (position C) MUST always be visible so the problem is solvable from the given information.
+- **FR-024**: Word-problem rounds MUST display an answer preview field below the story text, showing the player's typed digits (or a "?" placeholder when empty). In Play mode, no numeric proportion (A→B, C→?) is shown. In Improve mode, the numeric proportion is additionally displayed below the answer preview as a visual hint.
 
 ### Key Entities
 

@@ -30,6 +30,11 @@ Represents a single proportional-reasoning question. Defined by its question typ
 - `correctAnswer` MUST equal `values[indexOf(hiddenPosition)]`.
 - For percentage: `values[0] * values[1] / 100 === values[2]`.
 - For ratio/fraction/ruleOfThree: `values[0] * values[3] === values[1] * values[2]`.
+- For ruleOfThree: `hiddenPosition` MUST always be `'D'` (the answer). Position C (target quantity) MUST be visible so the word problem is solvable.
+
+**Question Distribution**:
+- Each game MUST contain exactly 5 numeric rounds (percentage, ratio, fraction) and 5 word-problem rounds (ruleOfThree).
+- Improve mode MUST maintain this 5/5 split while biasing the numeric slots toward challenging numeric types.
 
 ### Round
 

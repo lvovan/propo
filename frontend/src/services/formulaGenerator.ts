@@ -137,28 +137,29 @@ export function buildRuleOfThreePool(): Quad[] {
 
 function generateRuleOfThreeFormula(pool: Quad[], randomFn: () => number): Formula {
   const quad = pickRandom(pool, randomFn);
-  // Hide either C (find target quantity) or D (find answer)
-  const hiddenPosition: HiddenPosition = randomFn() < 0.5 ? 'C' : 'D';
+  // Only hide D (the answer). Hiding C would make word problems unsolvable
+  // since the player wouldn't know the target quantity.
+  const hiddenPosition: HiddenPosition = 'D';
   const values = [quad.a, quad.b, quad.c, quad.d];
-  const correctAnswer = hiddenPosition === 'C' ? quad.c : quad.d;
+  const correctAnswer = quad.d;
   const wordProblemKey = pickRandom(WORD_PROBLEM_KEYS, randomFn);
   return { type: 'ruleOfThree', values, hiddenPosition, correctAnswer, wordProblemKey };
 }
 
 // ── Public API ───────────────────────────────────────────────────
 
-/** Default distribution: 3 percentage, 2 ratio, 2 fraction, 3 ruleOfThree. */
+/** Default distribution: 5 numeric (2 percentage, 2 ratio, 1 fraction) + 5 word problems (ruleOfThree). */
 const DEFAULT_DISTRIBUTION: QuestionType[] = [
-  'percentage', 'percentage', 'percentage',
+  'percentage', 'percentage',
   'ratio', 'ratio',
-  'fraction', 'fraction',
-  'ruleOfThree', 'ruleOfThree', 'ruleOfThree',
+  'fraction',
+  'ruleOfThree', 'ruleOfThree', 'ruleOfThree', 'ruleOfThree', 'ruleOfThree',
 ];
 
 /**
  * Generates 10 proportional-reasoning questions for a single game.
  *
- * Distribution: 3 percentage, 2 ratio, 2 fraction, 3 rule-of-three.
+ * Distribution: 5 numeric (2 percentage, 2 ratio, 1 fraction) + 5 word problems (ruleOfThree).
  * Order is shuffled.
  *
  * @param randomFn Optional RNG returning [0, 1). Defaults to Math.random.
@@ -183,50 +184,38 @@ export function generateFormulas(randomFn: () => number = Math.random): Formula[
 }
 
 /**
- * Generates 10 formulas for an Improve game, biased toward challenging categories.
+ * Generates 10 formulas for an Improve game, maintaining the 5/5 split.
  *
- * If a single type is challenging, 6 questions of that type + 2 random + 2 random.
- * Multiple challenging types get proportionally more slots.
- * Non-challenging slots filled with a balanced random distribution.
+ * 5 numeric rounds (percentage, ratio, fraction) biased toward challenging numeric types.
+ * 5 word problem rounds (ruleOfThree) always.
+ * Non-challenging numeric slots filled with balanced distribution.
  */
 export function generateImproveFormulas(
   challengingItems: ChallengingItem[],
   randomFn: () => number = Math.random,
 ): Formula[] {
-  const allTypes: QuestionType[] = ['percentage', 'ratio', 'fraction', 'ruleOfThree'];
+  const numericTypes: QuestionType[] = ['percentage', 'ratio', 'fraction'];
 
-  // Build a distribution: default 2 per type + extra for challenging ones
-  const typeCounts: Record<QuestionType, number> = {
-    percentage: 1, ratio: 1, fraction: 1, ruleOfThree: 1,
+  // Build numeric distribution: 1 per type baseline + 2 extra biased toward challenges
+  const numericCounts: Record<string, number> = {
+    percentage: 1, ratio: 1, fraction: 1,
   };
 
-  // Distribute 6 extra slots among challenging types (proportional to difficulty rank)
-  const challengeTypes = challengingItems.map((item) => item.type);
-  const uniqueChallengeTypes = [...new Set(challengeTypes)];
-  let extraSlots = 6;
+  const challengeNumeric = challengingItems
+    .filter((item) => numericTypes.includes(item.type))
+    .map((item) => item.type);
+  const uniqueNumericChallenges = [...new Set(challengeNumeric)];
 
-  if (uniqueChallengeTypes.length > 0) {
-    const perType = Math.floor(extraSlots / uniqueChallengeTypes.length);
-    let remainder = extraSlots - perType * uniqueChallengeTypes.length;
-    for (const t of uniqueChallengeTypes) {
-      typeCounts[t] += perType;
-      if (remainder > 0) {
-        typeCounts[t]++;
-        remainder--;
-      }
+  // Distribute 2 extra numeric slots
+  if (uniqueNumericChallenges.length > 0) {
+    for (let i = 0; i < 2; i++) {
+      const t = uniqueNumericChallenges[i % uniqueNumericChallenges.length];
+      numericCounts[t]++;
     }
   } else {
-    // No specific challenges: even distribution
-    for (const t of allTypes) {
-      typeCounts[t] += Math.floor(extraSlots / 4);
-    }
-    // Distribute remainder
-    let rem = extraSlots % 4;
-    for (const t of allTypes) {
-      if (rem <= 0) break;
-      typeCounts[t]++;
-      rem--;
-    }
+    // No numeric challenges — give extras to percentage and ratio
+    numericCounts['percentage']++;
+    numericCounts['ratio']++;
   }
 
   const percentagePool = buildPercentagePool();
@@ -235,15 +224,21 @@ export function generateImproveFormulas(
   const ruleOfThreePool = buildRuleOfThreePool();
 
   const formulas: Formula[] = [];
-  for (const t of allTypes) {
-    for (let i = 0; i < typeCounts[t]; i++) {
+
+  // Generate 5 numeric formulas
+  for (const t of numericTypes) {
+    for (let i = 0; i < numericCounts[t]; i++) {
       switch (t) {
         case 'percentage': formulas.push(generatePercentageFormula(percentagePool, randomFn)); break;
         case 'ratio':      formulas.push(generateRatioFormula(ratioPool, randomFn)); break;
         case 'fraction':   formulas.push(generateFractionFormula(fractionPool, randomFn)); break;
-        case 'ruleOfThree': formulas.push(generateRuleOfThreeFormula(ruleOfThreePool, randomFn)); break;
       }
     }
+  }
+
+  // Generate 5 word problem formulas
+  for (let i = 0; i < 5; i++) {
+    formulas.push(generateRuleOfThreeFormula(ruleOfThreePool, randomFn));
   }
 
   fisherYatesShuffle(formulas, randomFn);
