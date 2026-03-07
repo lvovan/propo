@@ -85,8 +85,8 @@ describe('generateFormulas', () => {
 
   it('produces exactly 5 numeric and 5 word problem rounds', () => {
     const formulas = generateFormulas(createSeededRandom(42));
-    const numeric = formulas.filter((f) => f.type !== 'ruleOfThree');
-    const wordProblems = formulas.filter((f) => f.type === 'ruleOfThree');
+    const numeric = formulas.filter((f) => PURE_NUMERIC_TYPES.includes(f.type));
+    const wordProblems = formulas.filter((f) => STORY_CHALLENGE_TYPES.includes(f.type));
     expect(numeric).toHaveLength(5);
     expect(wordProblems).toHaveLength(5);
   });
@@ -123,18 +123,19 @@ describe('generateFormulas', () => {
     expect(f1).toEqual(f2);
   });
 
-  it('ruleOfThree formulas only hide position D (answer)', () => {
+  it('story challenge formulas have valid correctAnswer', () => {
     for (let g = 0; g < 20; g++) {
       const formulas = generateFormulas();
-      formulas.filter((f) => f.type === 'ruleOfThree').forEach((f) => {
-        expect(f.hiddenPosition).toBe('D');
+      formulas.filter((f) => STORY_CHALLENGE_TYPES.includes(f.type)).forEach((f) => {
+        expect(f.correctAnswer).toBeGreaterThan(0);
+        expect(Number.isInteger(f.correctAnswer)).toBe(true);
       });
     }
   });
 
-  it('ruleOfThree formulas have a wordProblemKey', () => {
+  it('story challenge formulas have a wordProblemKey', () => {
     const formulas = generateFormulas(createSeededRandom(42));
-    formulas.filter((f) => f.type === 'ruleOfThree').forEach((f) => {
+    formulas.filter((f) => STORY_CHALLENGE_TYPES.includes(f.type)).forEach((f) => {
       expect(f.wordProblemKey).toBeTruthy();
     });
   });
@@ -166,8 +167,8 @@ describe('generateImproveFormulas', () => {
   it('biases toward challenging numeric types while keeping 5/5 split', () => {
     const items = [makeItem('percentage', 5)];
     const formulas = generateImproveFormulas(items, createSeededRandom(42));
-    const numeric = formulas.filter((f) => f.type !== 'ruleOfThree');
-    const wordProblems = formulas.filter((f) => f.type === 'ruleOfThree');
+    const numeric = formulas.filter((f) => PURE_NUMERIC_TYPES.includes(f.type));
+    const wordProblems = formulas.filter((f) => STORY_CHALLENGE_TYPES.includes(f.type));
     expect(numeric).toHaveLength(5);
     expect(wordProblems).toHaveLength(5);
     const pctCount = formulas.filter((f) => f.type === 'percentage').length;

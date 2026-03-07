@@ -25,12 +25,13 @@ describe('FormulaDisplay', () => {
     correctAnswer: 10, timerDurationMs: 20000,
   };
 
-  const ruleOfThreeFormula: Formula = {
-    type: 'ruleOfThree',
+  const storyFormula: Formula = {
+    type: 'complexExtrapolation',
     values: [3, 6, 9, 18],
     hiddenPosition: 'D',
     correctAnswer: 18,
-    wordProblemKey: 'ruleOfThree.shopping',
+    wordProblemKey: 'story.complexExtrapolation.baking',
+    timerDurationMs: 50000,
   };
 
   it('renders percentage formula with hidden result', () => {
@@ -55,24 +56,24 @@ describe('FormulaDisplay', () => {
     expect(screen.getByText('?')).toBeInTheDocument();
   });
 
-  it('renders rule-of-three word problem with answer preview in play mode', () => {
-    render(<FormulaDisplay formula={ruleOfThreeFormula} />);
-    expect(screen.getByText(/toys cost/)).toBeInTheDocument();
+  it('renders story challenge with answer preview in play mode', () => {
+    render(<FormulaDisplay formula={storyFormula} />);
+    expect(screen.getByText(/cakes/)).toBeInTheDocument();
     // Answer preview shows "?" placeholder
     expect(screen.getByText('?')).toBeInTheDocument();
-    // Numeric proportion (A→B, C→?) should NOT be shown in play mode
+    // Numeric proportion (→) should NOT be shown in play mode
     expect(screen.queryByText('→')).not.toBeInTheDocument();
   });
 
   it('renders rule-of-three word problem with answer preview showing typed digits', () => {
-    render(<FormulaDisplay formula={ruleOfThreeFormula} typedDigits="42" />);
+    render(<FormulaDisplay formula={storyFormula} typedDigits="42" />);
     expect(screen.getByText('42')).toBeInTheDocument();
     expect(screen.queryByText('?')).not.toBeInTheDocument();
   });
 
-  it('renders rule-of-three word problem with numeric proportion in improve mode', () => {
-    render(<FormulaDisplay formula={ruleOfThreeFormula} gameMode="improve" />);
-    expect(screen.getByText(/toys cost/)).toBeInTheDocument();
+  it('renders story challenge with numeric proportion in improve mode', () => {
+    render(<FormulaDisplay formula={storyFormula} gameMode="improve" />);
+    expect(screen.getByText(/cakes/)).toBeInTheDocument();
     // Numeric proportion SHOULD be shown in improve mode
     expect(screen.getByText('6')).toBeInTheDocument();
   });

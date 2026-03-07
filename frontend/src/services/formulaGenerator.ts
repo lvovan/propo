@@ -136,10 +136,12 @@ export function buildMultiItemRatioPool(): Quad[] {
 
 function generateMultiItemRatioFormula(pool: Quad[], randomFn: () => number): Formula {
   const quad = pickRandom(pool, randomFn);
-  // values: [countA, valueA, countB, valueB]; answer = countA * valueA
+  // values: [countA, valueA, countB, valueB] — all visible in template as noise + data
+  // Answer: countA * valueA (total of subset A) — not in values array
   const values = [quad.a, quad.b, quad.c, quad.d];
   const correctAnswer = quad.a * quad.b;
   const wordProblemKey = pickRandom(MULTI_ITEM_RATIO_KEYS, randomFn);
+  // hiddenPosition 'D' is used for the answer preview display, but all template values stay visible
   return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
 }
 
@@ -219,19 +221,44 @@ function generateComplexExtrapolationFormula(pool: Quad[], randomFn: () => numbe
   const hiddenPosition: HiddenPosition = 'D';
   const values = [quad.a, quad.b, quad.c, quad.d];
   const correctAnswer = quad.d;
-  const wordProblemKey = pickRandom(WORD_PROBLEM_KEYS, randomFn);
-  return { type: 'ruleOfThree', values, hiddenPosition, correctAnswer, wordProblemKey };
+  const wordProblemKey = pickRandom(COMPLEX_EXTRAPOLATION_KEYS, randomFn);
+  return { type: 'complexExtrapolation', values, hiddenPosition, correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
+}
+
+// ── Formula generators by type ───────────────────────────────────
+
+interface Pools {
+  percentage: Triple[];
+  ratio: Quad[];
+  fraction: Quad[];
+  multiItemRatio: Quad[];
+  percentageOfWhole: Triple[];
+  complexExtrapolation: Quad[];
+}
+
+function buildAllPools(): Pools {
+  return {
+    percentage: buildPercentagePool(),
+    ratio: buildRatioPool(),
+    fraction: buildFractionPool(),
+    multiItemRatio: buildMultiItemRatioPool(),
+    percentageOfWhole: buildPercentageOfWholePool(),
+    complexExtrapolation: buildComplexExtrapolationPool(),
+  };
+}
+
+function generateFormulaByType(type: QuestionType, pools: Pools, randomFn: () => number): Formula {
+  switch (type) {
+    case 'percentage': return generatePercentageFormula(pools.percentage, randomFn);
+    case 'ratio':      return generateRatioFormula(pools.ratio, randomFn);
+    case 'fraction':   return generateFractionFormula(pools.fraction, randomFn);
+    case 'multiItemRatio': return generateMultiItemRatioFormula(pools.multiItemRatio, randomFn);
+    case 'percentageOfWhole': return generatePercentageOfWholeFormula(pools.percentageOfWhole, randomFn);
+    case 'complexExtrapolation': return generateComplexExtrapolationFormula(pools.complexExtrapolation, randomFn);
+  }
 }
 
 // ── Public API ───────────────────────────────────────────────────
-
-/** Default distribution: 5 numeric (2 percentage, 2 ratio, 1 fraction) + 5 word problems (ruleOfThree). */
-const DEFAULT_DISTRIBUTION: QuestionType[] = [
-  'percentage', 'percentage',
-  'ratio', 'ratio',
-  'fraction',
-  'ruleOfThree', 'ruleOfThree', 'ruleOfThree', 'ruleOfThree', 'ruleOfThree',
-];
 
 /**
  * Generates 10 proportional-reasoning questions for a single game.
@@ -266,59 +293,48 @@ export function generateFormulas(randomFn: () => number = Math.random): Formula[
  * Generates 10 formulas for an Improve game, maintaining the 5/5 split.
  *
  * 5 numeric rounds (percentage, ratio, fraction) biased toward challenging numeric types.
- * 5 word problem rounds (ruleOfThree) always.
- * Non-challenging numeric slots filled with balanced distribution.
+ * 5 story challenge rounds biased toward challenging story types.
+ * Non-challenging slots filled with balanced distribution.
  */
 export function generateImproveFormulas(
   challengingItems: ChallengingItem[],
   randomFn: () => number = Math.random,
 ): Formula[] {
-  const numericTypes: QuestionType[] = ['percentage', 'ratio', 'fraction'];
+  const pools = buildAllPools();
 
-  // Build numeric distribution: 1 per type baseline + 2 extra biased toward challenges
-  const numericCounts: Record<string, number> = {
-    percentage: 1, ratio: 1, fraction: 1,
-  };
+  // Map legacy ruleOfThree to complexExtrapolation
+  const mappedItems = challengingItems.map((item) =>
+    item.type === ('ruleOfThree' as string) ? { ...item, type: 'complexExtrapolation' as QuestionType } : item,
+  );
 
-  const challengeNumeric = challengingItems
-    .filter((item) => numericTypes.includes(item.type))
-    .map((item) => item.type);
-  const uniqueNumericChallenges = [...new Set(challengeNumeric)];
+  // Split challenging items by category
+  const challengeNumeric = mappedItems.filter((i) => PURE_NUMERIC_TYPES.includes(i.type));
+  const challengeStory = mappedItems.filter((i) => STORY_CHALLENGE_TYPES.includes(i.type));
 
-  // Distribute 2 extra numeric slots
-  if (uniqueNumericChallenges.length > 0) {
-    for (let i = 0; i < 2; i++) {
-      const t = uniqueNumericChallenges[i % uniqueNumericChallenges.length];
-      numericCounts[t]++;
-    }
-  } else {
-    // No numeric challenges — give extras to percentage and ratio
-    numericCounts['percentage']++;
-    numericCounts['ratio']++;
-  }
-
-  const percentagePool = buildPercentagePool();
-  const ratioPool = buildRatioPool();
-  const fractionPool = buildFractionPool();
-  const ruleOfThreePool = buildRuleOfThreePool();
-
-  const formulas: Formula[] = [];
-
-  // Generate 5 numeric formulas
-  for (const t of numericTypes) {
-    for (let i = 0; i < numericCounts[t]; i++) {
-      switch (t) {
-        case 'percentage': formulas.push(generatePercentageFormula(percentagePool, randomFn)); break;
-        case 'ratio':      formulas.push(generateRatioFormula(ratioPool, randomFn)); break;
-        case 'fraction':   formulas.push(generateFractionFormula(fractionPool, randomFn)); break;
-      }
+  // Build 5 numeric slots: 1 per type baseline + 2 extra biased toward challenges
+  const numericSlots: QuestionType[] = [...PURE_NUMERIC_TYPES];
+  const uniqueNumericChallenges = [...new Set(challengeNumeric.map((i) => i.type))];
+  for (let i = 0; i < 2; i++) {
+    if (uniqueNumericChallenges.length > 0) {
+      numericSlots.push(pickRandom(uniqueNumericChallenges, randomFn));
+    } else {
+      numericSlots.push(pickRandom(PURE_NUMERIC_TYPES, randomFn));
     }
   }
 
-  // Generate 5 word problem formulas
-  for (let i = 0; i < 5; i++) {
-    formulas.push(generateRuleOfThreeFormula(ruleOfThreePool, randomFn));
+  // Build 5 story slots: 1 each guaranteed + 2 biased toward challenges
+  const storySlots: QuestionType[] = [...STORY_CHALLENGE_TYPES];
+  const uniqueStoryChallenges = [...new Set(challengeStory.map((i) => i.type))];
+  for (let i = 0; i < 2; i++) {
+    if (uniqueStoryChallenges.length > 0) {
+      storySlots.push(pickRandom(uniqueStoryChallenges, randomFn));
+    } else {
+      storySlots.push(pickRandom(STORY_CHALLENGE_TYPES, randomFn));
+    }
   }
+
+  const allTypes = [...numericSlots, ...storySlots];
+  const formulas = allTypes.map((type) => generateFormulaByType(type, pools, randomFn));
 
   fisherYatesShuffle(formulas, randomFn);
   return formulas;

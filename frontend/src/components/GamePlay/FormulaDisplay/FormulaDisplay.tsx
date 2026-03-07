@@ -87,15 +87,15 @@ export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isI
     );
   }
 
-  // Story Challenge types: word problem + visual proportion
-  // All 3 story sub-types (multiItemRatio, percentageOfWhole, complexExtrapolation)
-  // use the same rendering pattern: translated word problem text + formula display
+  // Story Challenge types: word problem + answer preview
+  // Template text shows all values (no '?' in the story — the question itself asks for the answer).
+  // The answer preview below shows typed digits or '?'.
   const problemText = formula.wordProblemKey
     ? t(formula.wordProblemKey as Parameters<typeof t>[0], {
         a: String(values[0]),
         b: String(values[1]),
-        c: hiddenPosition === 'C' ? '?' : String(values[2]),
-        d: hiddenPosition === 'D' ? '?' : String(values[3]),
+        c: values.length > 2 ? String(values[2]) : '',
+        d: values.length > 3 ? String(values[3]) : '',
       })
     : '';
 
