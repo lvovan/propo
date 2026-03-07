@@ -4,6 +4,7 @@ import { createSeededRandomFromString } from '../../src/services/seededRandom';
 import { calculateTotalTime, formatTotalTime } from '../../src/services/totalTime';
 import { encodeShareUrl, decodeShareUrl } from '../../src/services/shareUrl';
 import { gameReducer, initialGameState, getCorrectAnswer, getCurrentRound } from '../../src/services/gameEngine';
+import { calculateCompetitiveScore } from '../../src/constants/scoring';
 import type { Round } from '../../src/types/game';
 
 describe('Competitive Mode Integration', () => {
@@ -39,24 +40,27 @@ describe('Competitive Mode Integration', () => {
     // 4. Should be completed (no replay for competitive)
     expect(state.status).toBe('completed');
 
-    // 5. Calculate total time with penalties
-    const totalTime = calculateTotalTime(state.rounds);
-    // Base time: sum of 2000,2100,2200,...,2900 = 24500ms
-    // Penalties: 3 wrong × 60000 = 180000ms
-    // Total: 204500ms
-    expect(totalTime).toBe(24500 + 180000);
-    expect(formatTotalTime(totalTime)).toBe('3m 24.5s');
+    // 5. Verify competitive scoring (point-decay model)
+    // Each round uses point-decay: points = floor(10 - 9 * elapsed/timer)
+    // All rounds have timerDurationMs=20000, elapsedMs ranges from 2000-2900
+    // Correct rounds (0-6): positive points; Incorrect rounds (7-9): negative points
+    for (let i = 0; i < 10; i++) {
+      const round = state.rounds[i];
+      const elapsedMs = 2000 + i * 100;
+      const expectedPoints = calculateCompetitiveScore(i < 7, elapsedMs, round.formula.timerDurationMs);
+      expect(round.points).toBe(expectedPoints);
+    }
 
-    // 6. Generate share URL
+    // 6. Generate share URL (no time, only score)
     const shareResult = {
       seed,
       playerName: 'TestPlayer',
       score: state.score,
-      totalTimeMs: totalTime,
     };
     const url = encodeShareUrl(shareResult);
     expect(url).toContain('#/result');
     expect(url).toContain(`seed=${seed}`);
+    expect(url).not.toContain('time=');
 
     // 7. Decode share URL
     const hash = '#' + url.split('#')[1];
@@ -65,7 +69,6 @@ describe('Competitive Mode Integration', () => {
     expect(decoded!.seed).toBe(seed);
     expect(decoded!.playerName).toBe('TestPlayer');
     expect(decoded!.score).toBe(state.score);
-    expect(decoded!.totalTimeMs).toBe(totalTime);
   });
 
   it('determinism: same seed produces identical questions across runs', () => {

@@ -425,7 +425,7 @@ describe('ScoreSummary', () => {
   });
 
   describe('competitive mode display', () => {
-    it('displays total time for competitive mode', () => {
+    it('does NOT display total time for competitive mode (point-decay scoring)', () => {
       render(
         <ScoreSummary
           rounds={createMockRounds()}
@@ -436,7 +436,7 @@ describe('ScoreSummary', () => {
           seed="abc123"
         />,
       );
-      expect(screen.getByText(/total time/i)).toBeInTheDocument();
+      expect(screen.queryByText(/total time/i)).not.toBeInTheDocument();
     });
 
     it('displays seed for competitive mode', () => {

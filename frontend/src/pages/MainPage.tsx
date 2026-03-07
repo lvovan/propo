@@ -33,7 +33,7 @@ export default function MainPage() {
   const { gameState, currentRound, correctAnswer, startGame, startCompetitiveGame, submitAnswer, nextRound, resetGame, gameMode, seed } =
     useGame();
   const { t } = useTranslation();
-  const { displayRef, barRef, start, stop, reset, setDuration } = useRoundTimer();
+  const { displayRef, barRef, pointLabelRef, start, stop, reset, setDuration } = useRoundTimer(undefined, gameMode === 'competitive');
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scorePersistedRef = useRef(false);
   const prevStatusRef = useRef(gameState.status);
@@ -42,8 +42,8 @@ export default function MainPage() {
 
   // Check for seed from URL or pending seed from WelcomePage redirect
   useEffect(() => {
-    const urlSeed = getHashParam('seed');
-    const pendingSeed = consumePendingSeed();
+    const urlSeed = getHashParam('seed')?.toLowerCase();
+    const pendingSeed = consumePendingSeed()?.toLowerCase();
     const seed = urlSeed ?? pendingSeed;
     if (seed) {
       setInitialSeed(seed);
@@ -222,6 +222,7 @@ export default function MainPage() {
               score={gameState.score}
               timerRef={displayRef}
               barRef={barRef}
+              pointLabelRef={pointLabelRef}
               isReplay={gameState.status === 'replay'}
               currentPhase={gameState.currentPhase}
               isCorrect={currentRound.isCorrect ?? null}

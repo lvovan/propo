@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import type { ScoreSummaryProps } from './types';
 import type { Round } from '../../../types/game';
 import ProgressionGraph from '../ProgressionGraph/ProgressionGraph';
-import { calculateTotalTime, formatTotalTime } from '../../../services/totalTime';
 import { encodeShareUrl } from '../../../services/shareUrl';
 import { useTranslation } from '../../../i18n';
 import styles from './ScoreSummary.module.css';
@@ -71,12 +70,10 @@ const ScoreSummary: React.FC<ScoreSummaryProps> = ({
 
   const handleShare = async () => {
     if (!seed) return;
-    const totalTimeMs = calculateTotalTime(rounds);
     const url = encodeShareUrl({
       seed,
       playerName: playerName ?? '',
       score,
-      totalTimeMs,
     });
     try {
       await navigator.clipboard.writeText(url);
@@ -115,12 +112,6 @@ const ScoreSummary: React.FC<ScoreSummaryProps> = ({
 
       {isCompetitive && (
         <div className={styles.competitiveInfo}>
-          <div className={styles.totalTime}>
-            <span className={styles.totalLabel}>{t('competition.totalTime')}</span>
-            <span className={styles.totalValue}>
-              {formatTotalTime(calculateTotalTime(rounds))}
-            </span>
-          </div>
           {seed && (
             <p className={styles.seedDisplay}>
               <span className={styles.seedLabel}>{t('competition.seed')}:</span>{' '}

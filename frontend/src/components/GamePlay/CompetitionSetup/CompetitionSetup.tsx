@@ -50,7 +50,7 @@ export default function CompetitionSetup({ initialSeed, onStart, onBack }: Compe
         type="text"
         className={styles.seedInput}
         value={seed}
-        onChange={(e) => setSeed(e.target.value)}
+        onChange={(e) => setSeed(e.target.value.toLowerCase())}
         onKeyDown={handleKeyDown}
         placeholder={t('competition.seedPlaceholder')}
         aria-label={t('competition.seedInputLabel')}

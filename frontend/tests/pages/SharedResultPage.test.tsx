@@ -32,16 +32,15 @@ describe('SharedResultPage', () => {
     window.location.hash = '';
   });
 
-  it('displays player name, score, time, and seed from URL params', () => {
-    renderWithHash('#/result?seed=abc123&player=Alice&score=45&time=29600');
+  it('displays player name, score, and seed from URL params', () => {
+    renderWithHash('#/result?seed=abc123&player=Alice&score=45');
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('45')).toBeInTheDocument();
-    expect(screen.getByText('29.6s')).toBeInTheDocument();
     expect(screen.getByText(/abc123/)).toBeInTheDocument();
   });
 
   it('displays "Play this game" button', () => {
-    renderWithHash('#/result?seed=abc123&player=Alice&score=45&time=29600');
+    renderWithHash('#/result?seed=abc123&player=Alice&score=45');
     expect(screen.getByRole('button', { name: /play this game/i })).toBeInTheDocument();
   });
 
@@ -55,8 +54,8 @@ describe('SharedResultPage', () => {
     expect(screen.getByText(/invalid/i)).toBeInTheDocument();
   });
 
-  it('formats time over 60 seconds correctly', () => {
-    renderWithHash('#/result?seed=test&player=Bob&score=30&time=149600');
-    expect(screen.getByText('2m 29.6s')).toBeInTheDocument();
+  it('handles negative scores correctly', () => {
+    renderWithHash('#/result?seed=test&player=Bob&score=-30');
+    expect(screen.getByText('-30')).toBeInTheDocument();
   });
 });
