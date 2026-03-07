@@ -1,6 +1,6 @@
 import type { Formula, GameState, Round } from '../types/game';
 import type { GameMode, RoundResult } from '../types/player';
-import { calculateScore } from '../constants/scoring';
+import { calculateScore, calculateCompetitiveScore } from '../constants/scoring';
 
 /** Actions that can be dispatched to the game reducer. */
 export type GameAction =
@@ -113,7 +113,9 @@ function handleSubmitAnswer(state: GameState, answer: number, elapsedMs: number)
   let newScore = state.score;
 
   if (state.status === 'playing') {
-    points = calculateScore(isCorrect, elapsedMs, round.formula.timerDurationMs);
+    points = state.gameMode === 'competitive'
+      ? calculateCompetitiveScore(isCorrect, elapsedMs, round.formula.timerDurationMs)
+      : calculateScore(isCorrect, elapsedMs, round.formula.timerDurationMs);
     newScore = state.score + points;
   }
 

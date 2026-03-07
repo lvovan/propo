@@ -1110,4 +1110,70 @@ describe('playerStorage', () => {
       expect(getGameHistory(players[0])).toHaveLength(2);
     });
   });
+
+  describe('competitive-mode aggregate exclusion', () => {
+    function makeRounds(): RoundResult[] {
+      return Array.from({ length: 10 }, (_, i) => ({
+        factorA: 2, factorB: 3, isCorrect: true, elapsedMs: 1000,
+      }));
+    }
+
+    it('does NOT update totalScore/gamesPlayed for competitive mode', () => {
+      savePlayer({ name: 'B', avatarId: 'cat' });
+      saveGameRecord('B', 30, makeRounds(), 'play');
+      saveGameRecord('B', 80, makeRounds(), 'competitive');
+
+      const players = getPlayers();
+      expect(players[0].totalScore).toBe(30);
+      expect(players[0].gamesPlayed).toBe(1);
+      // But the competitive record IS saved
+      expect(players[0].gameHistory).toHaveLength(2);
+    });
+
+    it('getRecentAverage excludes competitive records', () => {
+      savePlayer({ name: 'B', avatarId: 'cat' });
+      saveGameRecord('B', 30, makeRounds(), 'play');
+      saveGameRecord('B', 80, makeRounds(), 'competitive');
+      saveGameRecord('B', 20, makeRounds(), 'play');
+
+      const players = getPlayers();
+      // Only play scores: 30 and 20 → mean = 25
+      expect(getRecentAverage(players[0])).toBe(25);
+    });
+
+    it('getRecentHighScores excludes competitive records', () => {
+      savePlayer({ name: 'B', avatarId: 'cat' });
+      saveGameRecord('B', 30, makeRounds(), 'play');
+      saveGameRecord('B', 99, makeRounds(), 'competitive');
+      saveGameRecord('B', 20, makeRounds(), 'play');
+
+      const players = getPlayers();
+      const scores = getRecentHighScores(players[0]);
+      expect(scores).toHaveLength(2);
+      expect(scores.map(s => s.score)).toEqual([30, 20]);
+    });
+
+    it('getGameHistory excludes competitive records', () => {
+      savePlayer({ name: 'B', avatarId: 'cat' });
+      saveGameRecord('B', 30, makeRounds(), 'play');
+      saveGameRecord('B', 80, makeRounds(), 'competitive');
+      saveGameRecord('B', 20, makeRounds(), 'play');
+
+      const players = getPlayers();
+      const history = getGameHistory(players[0]);
+      expect(history).toHaveLength(2);
+      expect(history[0].score).toBe(30);
+      expect(history[1].score).toBe(20);
+    });
+
+    it('handles negative competitive scores without affecting aggregates', () => {
+      savePlayer({ name: 'B', avatarId: 'cat' });
+      saveGameRecord('B', 30, makeRounds(), 'play');
+      saveGameRecord('B', -50, makeRounds(), 'competitive');
+
+      const players = getPlayers();
+      expect(players[0].totalScore).toBe(30);
+      expect(getRecentAverage(players[0])).toBe(30);
+    });
+  });
 });

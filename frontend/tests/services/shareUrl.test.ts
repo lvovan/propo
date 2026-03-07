@@ -6,7 +6,6 @@ describe('shareUrl', () => {
     seed: 'abc123',
     playerName: 'Alice',
     score: 45,
-    totalTimeMs: 29600,
   };
 
   describe('encodeShareUrl', () => {
@@ -16,13 +15,22 @@ describe('shareUrl', () => {
       expect(url).toContain('seed=abc123');
       expect(url).toContain('player=Alice');
       expect(url).toContain('score=45');
-      expect(url).toContain('time=29600');
+    });
+
+    it('does not include time parameter', () => {
+      const url = encodeShareUrl(result);
+      expect(url).not.toContain('time=');
+    });
+
+    it('encodes negative scores', () => {
+      const url = encodeShareUrl({ ...result, score: -15 });
+      expect(url).toContain('score=-15');
     });
   });
 
   describe('decodeShareUrl', () => {
     it('decodes valid hash params', () => {
-      const hash = '#/result?seed=abc123&player=Alice&score=45&time=29600';
+      const hash = '#/result?seed=abc123&player=Alice&score=45';
       const decoded = decodeShareUrl(hash);
       expect(decoded).toEqual(result);
     });
@@ -34,19 +42,22 @@ describe('shareUrl', () => {
     });
 
     it('returns null for invalid score', () => {
-      expect(decodeShareUrl('#/result?seed=abc&player=A&score=NaN&time=1000')).toBeNull();
-    });
-
-    it('returns null for invalid time', () => {
-      expect(decodeShareUrl('#/result?seed=abc&player=A&score=10&time=abc')).toBeNull();
+      expect(decodeShareUrl('#/result?seed=abc&player=A&score=NaN')).toBeNull();
     });
 
     it('handles special characters in seed and player name', () => {
-      const hash = '#/result?seed=caf%C3%A9&player=L%C3%A9a&score=50&time=10000';
+      const hash = '#/result?seed=caf%C3%A9&player=L%C3%A9a&score=50';
       const decoded = decodeShareUrl(hash);
       expect(decoded).not.toBeNull();
       expect(decoded!.seed).toBe('café');
       expect(decoded!.playerName).toBe('Léa');
+    });
+
+    it('decodes negative scores', () => {
+      const hash = '#/result?seed=abc&player=Bob&score=-30';
+      const decoded = decodeShareUrl(hash);
+      expect(decoded).not.toBeNull();
+      expect(decoded!.score).toBe(-30);
     });
   });
 
@@ -63,12 +74,23 @@ describe('shareUrl', () => {
         seed: 'hello world!',
         playerName: 'Léa',
         score: 30,
-        totalTimeMs: 50000,
       };
       const url = encodeShareUrl(special);
       const hash = '#' + url.split('#')[1];
       const decoded = decodeShareUrl(hash);
       expect(decoded).toEqual(special);
+    });
+
+    it('round-trips negative scores', () => {
+      const neg: SharedResult = {
+        seed: 'test',
+        playerName: 'Test',
+        score: -100,
+      };
+      const url = encodeShareUrl(neg);
+      const hash = '#' + url.split('#')[1];
+      const decoded = decodeShareUrl(hash);
+      expect(decoded).toEqual(neg);
     });
   });
 });

@@ -74,4 +74,32 @@ describe('CompetitionSetup', () => {
     const startButton = screen.getByRole('button', { name: /start game/i });
     expect(startButton).toBeDisabled();
   });
+
+  describe('lowercase enforcement', () => {
+    it('converts typed uppercase letters to lowercase', async () => {
+      const user = userEvent.setup();
+      render(<CompetitionSetup onStart={vi.fn()} onBack={vi.fn()} />);
+      const input = screen.getByLabelText(/game seed/i) as HTMLInputElement;
+      await user.type(input, 'ABC123');
+      expect(input.value).toBe('abc123');
+    });
+
+    it('converts mixed case to lowercase', async () => {
+      const user = userEvent.setup();
+      render(<CompetitionSetup onStart={vi.fn()} onBack={vi.fn()} />);
+      const input = screen.getByLabelText(/game seed/i) as HTMLInputElement;
+      await user.type(input, 'MyGameSeed');
+      expect(input.value).toBe('mygameseed');
+    });
+
+    it('passes lowercased seed to onStart', async () => {
+      const user = userEvent.setup();
+      const onStart = vi.fn();
+      render(<CompetitionSetup onStart={onStart} onBack={vi.fn()} />);
+      const input = screen.getByLabelText(/game seed/i);
+      await user.type(input, 'TEST');
+      await user.click(screen.getByRole('button', { name: /start game/i }));
+      expect(onStart).toHaveBeenCalledWith('test');
+    });
+  });
 });

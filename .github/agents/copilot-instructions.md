@@ -1,4 +1,4 @@
-﻿# Propo Development Guidelines
+# Propo Development Guidelines
 
 Auto-generated from all feature plans. Last updated: 2026-02-14
 
@@ -52,6 +52,7 @@ Auto-generated from all feature plans. Last updated: 2026-02-14
 - TypeScript ~5.9.3 + React ^19.2.0, React Router DOM ^7.13.0 (HashRouter), Vite ^7.3.1 (030-competitive-mode)
 - Browser localStorage (player data) + sessionStorage (session, seed persistence) (030-competitive-mode)
 - TypeScript ~5.9.3 + React ^19.2.0, Vite ^7.3.1 (031-word-problem-variations)
+- Browser localStorage (player data under `propo_players` schema v5) (032-competitive-scoring-ui)
 
 - TypeScript 5.x (frontend), Python 3.11+ (backend — serves static files only for this feature) + React 18+, Vite (bundler), React Router (navigation), FastAPI (backend — static file serving only) (main)
 
@@ -72,9 +73,9 @@ cd src; pytest; ruff check .
 TypeScript 5.x (frontend): Follow standard conventions
 
 ## Recent Changes
+- 032-competitive-scoring-ui: Added TypeScript ~5.9.3 + React ^19.2.0, React Router DOM ^7.13.0 (HashRouter), Vite ^7.3.1
 - 031-word-problem-variations: Added TypeScript ~5.9.3 + React ^19.2.0, Vite ^7.3.1
 - 030-competitive-mode: Added TypeScript ~5.9.3 + React ^19.2.0, React Router DOM ^7.13.0 (HashRouter), Vite ^7.3.1
-- 029-story-challenge: Added TypeScript ~5.9.3, React 19.2 + Vite 7.3, React Router DOM 7.13, CSS Modules
 
 
 <!-- MANUAL ADDITIONS START -->

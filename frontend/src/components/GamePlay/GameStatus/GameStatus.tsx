@@ -10,6 +10,7 @@ interface GameStatusProps {
   score: number;
   timerRef: RefObject<HTMLElement | null>;
   barRef: RefObject<HTMLDivElement | null>;
+  pointLabelRef?: RefObject<HTMLElement | null>;
   isReplay: boolean;
   currentPhase: 'input' | 'feedback';
   isCorrect: boolean | null;
@@ -31,6 +32,7 @@ export default function GameStatus({
   score,
   timerRef,
   barRef,
+  pointLabelRef,
   isReplay,
   currentPhase,
   isCorrect,
@@ -93,16 +95,22 @@ export default function GameStatus({
           </div>
           {gameMode !== 'improve' && (
             <>
-              <div className={styles.timer}>
-                <span
-                  ref={timerRef as RefObject<HTMLSpanElement>}
-                  className="timer"
-                  data-testid="timer"
-                >
-                  20.0s
-                </span>
-              </div>
-              <CountdownBar barRef={barRef} />
+              {gameMode !== 'competitive' && (
+                <div className={styles.timer}>
+                  <span
+                    ref={timerRef as RefObject<HTMLSpanElement>}
+                    className="timer"
+                    data-testid="timer"
+                  >
+                    20.0s
+                  </span>
+                </div>
+              )}
+              <CountdownBar
+                barRef={barRef}
+                pointLabelRef={gameMode === 'competitive' ? pointLabelRef : undefined}
+                competitive={gameMode === 'competitive'}
+              />
             </>
           )}
         </>

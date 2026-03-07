@@ -7,7 +7,6 @@ export interface SharedResult {
   seed: string;
   playerName: string;
   score: number;
-  totalTimeMs: number;
 }
 
 /**
@@ -19,7 +18,6 @@ export function encodeShareUrl(result: SharedResult): string {
   params.set('seed', result.seed);
   params.set('player', result.playerName);
   params.set('score', String(result.score));
-  params.set('time', String(result.totalTimeMs));
   return `${window.location.origin}${window.location.pathname}#/result?${params.toString()}`;
 }
 
@@ -36,14 +34,12 @@ export function decodeShareUrl(hash: string): SharedResult | null {
   const seed = params.get('seed');
   const playerName = params.get('player');
   const scoreStr = params.get('score');
-  const timeStr = params.get('time');
 
-  if (!seed || !playerName || scoreStr == null || timeStr == null) return null;
+  if (!seed || !playerName || scoreStr == null) return null;
 
   const score = parseInt(scoreStr, 10);
-  const totalTimeMs = parseInt(timeStr, 10);
 
-  if (isNaN(score) || isNaN(totalTimeMs)) return null;
+  if (isNaN(score)) return null;
 
-  return { seed, playerName, score, totalTimeMs };
+  return { seed, playerName, score };
 }

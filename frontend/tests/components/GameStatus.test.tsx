@@ -594,4 +594,39 @@ describe('GameStatus', () => {
       expect(feedbackRoot.className).toContain('status');
     });
   });
+
+  describe('Competitive mode', () => {
+    it('hides timer text when gameMode is competitive', () => {
+      render(<GameStatus {...defaultProps({ gameMode: 'competitive' })} />);
+      expect(screen.queryByTestId('timer')).not.toBeInTheDocument();
+    });
+
+    it('still renders countdown bar when gameMode is competitive', () => {
+      const { container } = render(
+        <GameStatus {...defaultProps({ gameMode: 'competitive' })} />,
+      );
+      const progressbar = container.querySelector('[role="progressbar"]');
+      expect(progressbar).toBeInTheDocument();
+    });
+
+    it('shows timer text when gameMode is play', () => {
+      render(<GameStatus {...defaultProps({ gameMode: 'play' })} />);
+      expect(screen.getByTestId('timer')).toBeInTheDocument();
+    });
+
+    it('shows score when gameMode is competitive', () => {
+      render(
+        <GameStatus {...defaultProps({ gameMode: 'competitive', score: 42 })} />,
+      );
+      expect(screen.getByText('42')).toBeInTheDocument();
+    });
+
+    it('passes competitive props to CountdownBar', () => {
+      const { container } = render(
+        <GameStatus {...defaultProps({ gameMode: 'competitive' })} />,
+      );
+      const progressbar = container.querySelector('[role="progressbar"]');
+      expect(progressbar).toHaveAttribute('aria-label', 'Points available');
+    });
+  });
 });

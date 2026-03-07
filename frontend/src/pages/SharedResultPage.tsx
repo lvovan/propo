@@ -1,6 +1,5 @@
 
 import { decodeShareUrl } from '../services/shareUrl';
-import { formatTotalTime } from '../services/totalTime';
 import { useTranslation } from '../i18n';
 import Header from '../components/Header/Header';
 
@@ -41,9 +40,6 @@ export default function SharedResultPage() {
           </p>
           <p style={{ margin: '8px 0', fontSize: '1.5rem', fontWeight: 700 }}>
             <span>{t('sharedResult.score')}:</span> {result.score}
-          </p>
-          <p style={{ margin: '8px 0', fontSize: '1.2rem' }}>
-            <span>{t('sharedResult.time')}:</span> {formatTotalTime(result.totalTimeMs)}
           </p>
           <p style={{ margin: '8px 0', fontSize: '0.9rem', color: '#666' }}>
             <strong>{t('competition.seed')}:</strong> {result.seed}
