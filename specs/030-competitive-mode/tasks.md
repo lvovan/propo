@@ -39,8 +39,9 @@
 - [ ] T009 Add `startCompetitiveGame(seed: string)` function to `useGame` hook that creates seeded PRNG via `createSeededRandomFromString`, passes it to `generateFormulas`, and dispatches `START_GAME` with `mode: 'competitive'` and `seed`; also expose `seed` from `gameState` in `frontend/src/hooks/useGame.ts`
 - [ ] T010 Verify `playerStorage.ts` aggregate functions (`updatePlayerScore`, `getRecentHighScores`, `getGameHistory`) include `'competitive'` games alongside `'play'` — confirm filtering uses explicit `=== 'improve'` exclusion in `frontend/src/services/playerStorage.ts`
 - [ ] T011 Add `setPendingSeed(seed)` and `consumePendingSeed()` functions for sessionStorage key `propo_pending_seed` in `frontend/src/services/sessionManager.ts`
+- [ ] T011b [P] Add competition-related i18n strings (`mode.competition`, `mode.competitionDesc`, `competition.seedInputLabel`, `competition.seedPlaceholder`, `competition.generateSeed`, `competition.startGame`, `competition.totalTime`, `competition.seed`, `competition.share`, `competition.shareCopied`, `sharedResult.title`, `sharedResult.playThisGame`, `sharedResult.score`, `sharedResult.time`, `sharedResult.player`, `sharedResult.error`) to English locale in `frontend/src/i18n/locales/en.ts`
 
-**Checkpoint**: Type system, game engine, and core services ready — user story implementation can begin
+**Checkpoint**: Type system, game engine, core services, and English i18n ready — user story implementation can begin
 
 ---
 
@@ -123,7 +124,6 @@
 
 **Purpose**: i18n, integration testing, final validation
 
-- [ ] T033 [P] Add competition-related i18n strings (`mode.competition`, `mode.competitionDesc`, `competition.seedInputLabel`, `competition.seedPlaceholder`, `competition.generateSeed`, `competition.startGame`, `competition.totalTime`, `competition.seed`, `competition.share`, `competition.shareCopied`, `sharedResult.title`, `sharedResult.playThisGame`, `sharedResult.score`, `sharedResult.time`, `sharedResult.player`, `sharedResult.error`) to English locale in `frontend/src/i18n/locales/en.ts`
 - [ ] T034 [P] Add competition-related i18n strings to French locale in `frontend/src/i18n/locales/fr.ts`
 - [ ] T035 [P] Add competition-related i18n strings to Spanish locale in `frontend/src/i18n/locales/es.ts`
 - [ ] T036 [P] Add competition-related i18n strings to Japanese locale in `frontend/src/i18n/locales/ja.ts`

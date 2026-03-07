@@ -55,7 +55,7 @@ frontend/
 │   ├── types/
 │   │   └── player.ts              # Extend GameMode type
 │   ├── services/
-│   │   ├── formulaGenerator.ts    # Add generateCompetitiveFormulas(seed)
+│   │   ├── formulaGenerator.ts    # Use with seeded PRNG via generateFormulas(randomFn)
 │   │   ├── seededRandom.ts        # NEW: seeded PRNG utility
 │   │   ├── gameEngine.ts          # Extend GameAction, GameState for competitive
 │   │   ├── playerStorage.ts       # Handle competitive mode in aggregates

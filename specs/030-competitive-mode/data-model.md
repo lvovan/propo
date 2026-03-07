@@ -99,32 +99,15 @@ interface GameRecord {
 
 No structural changes needed. The `gameMode` field already uses the `GameMode` type which now includes `'competitive'`. The seed is not stored in the game record since it's only needed at generation time and on the results screen (available from `GameState.seed`).
 
+**Note on Total Time**: Total time is a **computed value**, not a stored field. It is derived at display time from the `rounds[]` array in `GameState`: `sum(round.elapsedMs) + (count of incorrect rounds × WRONG_ANSWER_PENALTY_MS)`. See `totalTime.ts` service contract in [contracts/components.md](contracts/components.md).
+
 ---
 
-### 5. Session (modified)
+### 5. Session (unchanged)
 
 **File**: `frontend/src/types/player.ts`
 
-**Before:**
-```typescript
-export interface Session {
-  playerName: string;
-  avatarId: string;
-  startedAt: number;
-}
-```
-
-**After:**
-```typescript
-export interface Session {
-  playerName: string;
-  avatarId: string;
-  startedAt: number;
-  pendingSeed?: string;  // Seed from URL, awaiting profile selection
-}
-```
-
-**New field**: `pendingSeed?: string` — temporarily stores the seed from a URL parameter when the user hasn't yet selected a profile. Consumed and cleared after the Competition game screen loads.
+No changes to the Session interface. The pending seed from a URL parameter is stored as a **separate sessionStorage key** (`propo_pending_seed`) rather than modifying the Session type. See Section 7 (Storage Schema) for details.
 
 ---
 
@@ -222,12 +205,8 @@ No schema version bump needed. The `GameMode` type is expanded but `gameMode` wa
 
 ### sessionStorage (key: `propo_session`)
 
-Extended to include optional `pendingSeed` field. Backward compatible — existing sessions without `pendingSeed` are unaffected.
+No changes. Session interface is unchanged.
 
 ### sessionStorage (key: `propo_pending_seed`)
 
-Alternative: Store the pending seed as a separate sessionStorage key rather than modifying the Session interface. This isolates the temporary seed from the session lifecycle.
-
-**Chosen approach**: Separate key `propo_pending_seed`. Simpler — set when URL seed detected, read and delete when Competition setup loads. No Session type modification needed.
-
-**Revised Session type**: No changes to Session interface. The `pendingSeed` is stored as a standalone sessionStorage entry.
+Separate sessionStorage key for the pending seed from a URL parameter. Set when URL seed detected, read and deleted when Competition setup loads. Isolates the temporary seed from the session lifecycle. No Session type modification needed.
