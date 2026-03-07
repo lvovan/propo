@@ -15,6 +15,7 @@ function createMockFormulas(): Formula[] {
     values: [10, (i + 1) * 10, i + 1],
     hiddenPosition: (['A', 'B', 'C'] as const)[i % 3],
     correctAnswer: [10, (i + 1) * 10, i + 1][i % 3],
+    timerDurationMs: 20000,
   }));
 }
 
@@ -47,15 +48,15 @@ describe('initialGameState', () => {
 
 describe('getCorrectAnswer', () => {
   it('returns the correctAnswer from the formula', () => {
-    const formula: Formula = { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 };
+    const formula: Formula = { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 };
     expect(getCorrectAnswer(formula)).toBe(20);
   });
 
   it('works for different hidden positions', () => {
-    const formulaA: Formula = { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'A', correctAnswer: 2 };
+    const formulaA: Formula = { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'A', correctAnswer: 2, timerDurationMs: 20000 };
     expect(getCorrectAnswer(formulaA)).toBe(2);
 
-    const formulaD: Formula = { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'D', correctAnswer: 9 };
+    const formulaD: Formula = { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'D', correctAnswer: 9, timerDurationMs: 20000 };
     expect(getCorrectAnswer(formulaD)).toBe(9);
   });
 });
@@ -173,7 +174,7 @@ describe('gameReducer', () => {
         elapsedMs: 1500,
       });
 
-      const expectedPoints = calculateScore(true, 1500);
+      const expectedPoints = calculateScore(true, 1500, 20000);
       expect(state.rounds[0].points).toBe(expectedPoints);
       expect(state.score).toBe(expectedPoints);
     });

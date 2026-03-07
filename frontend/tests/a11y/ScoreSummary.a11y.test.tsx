@@ -8,7 +8,7 @@ import { vi } from 'vitest';
 function createMockRounds(): Round[] {
   return [
     {
-      formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+      formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
       playerAnswer: 20,
       isCorrect: true,
       elapsedMs: 1500,
@@ -16,7 +16,7 @@ function createMockRounds(): Round[] {
       firstTryCorrect: true,
     },
     {
-      formula: { type: 'percentage', values: [20, 20, 4], hiddenPosition: 'A', correctAnswer: 20 },
+      formula: { type: 'percentage', values: [20, 20, 4], hiddenPosition: 'A', correctAnswer: 20, timerDurationMs: 20000 },
       playerAnswer: 20,
       isCorrect: true,
       elapsedMs: 2500,
@@ -24,7 +24,7 @@ function createMockRounds(): Round[] {
       firstTryCorrect: true,
     },
     {
-      formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3 },
+      formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3, timerDurationMs: 20000 },
       playerAnswer: 9,
       isCorrect: false,
       elapsedMs: 3000,
@@ -53,7 +53,7 @@ describe('ScoreSummary accessibility (Improve mode)', () => {
   it('passes axe check in improve mode with all correct', async () => {
     const rounds: Round[] = [
       {
-        formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+        formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
         playerAnswer: 20,
         isCorrect: true,
         elapsedMs: 1500,

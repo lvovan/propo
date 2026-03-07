@@ -30,10 +30,17 @@ export default function MainPage() {
   const { gameState, currentRound, correctAnswer, startGame, submitAnswer, nextRound, resetGame, gameMode } =
     useGame();
   const { t } = useTranslation();
-  const { displayRef, barRef, start, stop, reset } = useRoundTimer();
+  const { displayRef, barRef, start, stop, reset, setDuration } = useRoundTimer();
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scorePersistedRef = useRef(false);
   const prevStatusRef = useRef(gameState.status);
+
+  // Update timer duration when round changes
+  useEffect(() => {
+    if (currentRound) {
+      setDuration(currentRound.formula.timerDurationMs);
+    }
+  }, [currentRound, setDuration]);
 
   const handleSubmit = useCallback(
     (answer: number) => {

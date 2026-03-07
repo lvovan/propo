@@ -16,7 +16,7 @@ describe('Inline Answer Round Flow', () => {
     type: 'percentage',
     values: [25, 80, 20],
     hiddenPosition: 'C',
-    correctAnswer: 20,
+    correctAnswer: 20, timerDurationMs: 20000,
   };
 
   function RoundHarness({

@@ -112,7 +112,7 @@ function handleSubmitAnswer(state: GameState, answer: number, elapsedMs: number)
   let newScore = state.score;
 
   if (state.status === 'playing') {
-    points = calculateScore(isCorrect, elapsedMs);
+    points = calculateScore(isCorrect, elapsedMs, round.formula.timerDurationMs);
     newScore = state.score + points;
   }
 

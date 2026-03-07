@@ -86,7 +86,9 @@ export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isI
     );
   }
 
-  // ruleOfThree: word problem + visual proportion
+  // Story Challenge types: word problem + visual proportion
+  // All 3 story sub-types (multiItemRatio, percentageOfWhole, complexExtrapolation)
+  // use the same rendering pattern: translated word problem text + formula display
   const problemText = formula.wordProblemKey
     ? t(formula.wordProblemKey as Parameters<typeof t>[0], {
         a: String(values[0]),
@@ -148,7 +150,9 @@ function formatForAria(type: string, d: string[]): string {
     case 'percentage': return `${d[0]} percent of ${d[1]} equals ${d[2]}`;
     case 'ratio':      return `${d[0]} to ${d[1]} equals ${d[2]} to ${d[3]}`;
     case 'fraction':   return `${d[0]} over ${d[1]} equals ${d[2]} over ${d[3]}`;
-    case 'ruleOfThree': return `${d[0]} maps to ${d[1]}, ${d[2]} maps to ${d[3]}`;
+    case 'multiItemRatio': return `story problem: ${d[0]} maps to ${d[1]}, find the answer`;
+    case 'percentageOfWhole': return `story problem: find the percentage of ${d[0]} out of the whole`;
+    case 'complexExtrapolation': return `${d[0]} maps to ${d[1]}, ${d[2]} maps to ${d[3]}`;
     default:           return d.join(' ');
   }
 }

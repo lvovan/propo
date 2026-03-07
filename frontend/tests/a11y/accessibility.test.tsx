@@ -92,7 +92,7 @@ describe('Accessibility (axe)', () => {
 
 describe('Accessibility — Gameplay (axe)', () => {
   it('FormulaDisplay has no a11y violations', async () => {
-    const formula = { type: 'percentage' as const, values: [25, 80, 20], hiddenPosition: 'C' as const, correctAnswer: 20 };
+    const formula = { type: 'percentage' as const, values: [25, 80, 20], hiddenPosition: 'C' as const, correctAnswer: 20, timerDurationMs: 20000 };
     const { container } = render(<FormulaDisplay formula={formula} />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
@@ -124,7 +124,7 @@ describe('Accessibility — Gameplay (axe)', () => {
   it('ScoreSummary has no a11y violations', async () => {
     const rounds: Round[] = [
       {
-        formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+        formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
         playerAnswer: 20,
         isCorrect: true,
         elapsedMs: 1500,
@@ -132,7 +132,7 @@ describe('Accessibility — Gameplay (axe)', () => {
         firstTryCorrect: true,
       },
       {
-        formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3 },
+        formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3, timerDurationMs: 20000 },
         playerAnswer: 10,
         isCorrect: false,
         elapsedMs: 3000,

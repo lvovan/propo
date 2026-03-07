@@ -91,3 +91,17 @@
     font-size: 1rem;
   }
 }
+
+/* ── Dark mode high-contrast for story text ──────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .wordProblem {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .problemText {
+    color: #E0F0E0;
+  }
+}
