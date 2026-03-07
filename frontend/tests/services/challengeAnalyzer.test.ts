@@ -7,7 +7,7 @@ import {
 import type { RoundResult } from '../../src/types/player';
 import { STORAGE_KEY } from '../../src/services/playerStorage';
 
-function makeRound(type: 'percentage' | 'ratio' | 'fraction' | 'ruleOfThree', isCorrect: boolean, elapsedMs: number): RoundResult {
+function makeRound(type: 'percentage' | 'ratio' | 'fraction' | 'multiItemRatio' | 'percentageOfWhole' | 'complexExtrapolation', isCorrect: boolean, elapsedMs: number): RoundResult {
   return { type, values: [1, 2, 3], isCorrect, elapsedMs };
 }
 
@@ -55,7 +55,7 @@ describe('extractTrickyCategories', () => {
       { type: 'percentage' as const, mistakeCount: 5, avgMs: 5000 },
       { type: 'ratio' as const, mistakeCount: 3, avgMs: 4000 },
       { type: 'fraction' as const, mistakeCount: 2, avgMs: 3000 },
-      { type: 'ruleOfThree' as const, mistakeCount: 1, avgMs: 2000 },
+      { type: 'complexExtrapolation' as const, mistakeCount: 1, avgMs: 2000 },
     ];
     const result = extractTrickyCategories(items);
     expect(result).toEqual(['percentage', 'ratio', 'fraction']);

@@ -8,21 +8,21 @@ describe('FormulaDisplay', () => {
     type: 'percentage',
     values: [25, 80, 20],
     hiddenPosition: 'C',
-    correctAnswer: 20,
+    correctAnswer: 20, timerDurationMs: 20000,
   };
 
   const ratioFormula: Formula = {
     type: 'ratio',
     values: [2, 3, 6, 9],
     hiddenPosition: 'D',
-    correctAnswer: 9,
+    correctAnswer: 9, timerDurationMs: 20000,
   };
 
   const fractionFormula: Formula = {
     type: 'fraction',
     values: [2, 5, 4, 10],
     hiddenPosition: 'D',
-    correctAnswer: 10,
+    correctAnswer: 10, timerDurationMs: 20000,
   };
 
   const ruleOfThreeFormula: Formula = {

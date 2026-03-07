@@ -8,7 +8,7 @@ import type { GameRecord } from '../../src/types/player';
 function createMockRounds(): Round[] {
   return [
     {
-      formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+      formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
       playerAnswer: 20,
       isCorrect: true,
       elapsedMs: 1500,
@@ -16,7 +16,7 @@ function createMockRounds(): Round[] {
       firstTryCorrect: true,
     },
     {
-      formula: { type: 'percentage', values: [20, 20, 4], hiddenPosition: 'A', correctAnswer: 20 },
+      formula: { type: 'percentage', values: [20, 20, 4], hiddenPosition: 'A', correctAnswer: 20, timerDurationMs: 20000 },
       playerAnswer: 20,
       isCorrect: true,
       elapsedMs: 2500,
@@ -24,7 +24,7 @@ function createMockRounds(): Round[] {
       firstTryCorrect: true,
     },
     {
-      formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3 },
+      formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3, timerDurationMs: 20000 },
       playerAnswer: 9,
       isCorrect: false,
       elapsedMs: 3000,
@@ -100,7 +100,7 @@ describe('ScoreSummary', () => {
   it('handles negative scores', () => {
     const rounds: Round[] = [
       {
-        formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+        formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
         playerAnswer: 10,
         isCorrect: false,
         elapsedMs: 1500,
@@ -176,7 +176,7 @@ describe('ScoreSummary', () => {
     it('does not show "Keep practising" when all answers are correct', () => {
       const allCorrectRounds: Round[] = [
         {
-          formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+          formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
           playerAnswer: 20,
           isCorrect: true,
           elapsedMs: 1500,
@@ -184,7 +184,7 @@ describe('ScoreSummary', () => {
           firstTryCorrect: true,
         },
         {
-          formula: { type: 'percentage', values: [20, 20, 4], hiddenPosition: 'A', correctAnswer: 20 },
+          formula: { type: 'percentage', values: [20, 20, 4], hiddenPosition: 'A', correctAnswer: 20, timerDurationMs: 20000 },
           playerAnswer: 20,
           isCorrect: true,
           elapsedMs: 2500,
@@ -364,7 +364,7 @@ describe('ScoreSummary', () => {
     it('renders ✅ emoji with correct aria-label for first-try correct rounds', () => {
       const rounds: Round[] = [
         {
-          formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20 },
+          formula: { type: 'percentage', values: [25, 80, 20], hiddenPosition: 'C', correctAnswer: 20, timerDurationMs: 20000 },
           playerAnswer: 20,
           isCorrect: true,
           elapsedMs: 1500,
@@ -384,7 +384,7 @@ describe('ScoreSummary', () => {
     it('renders ❌ emoji with correct aria-label for first-try incorrect rounds', () => {
       const rounds: Round[] = [
         {
-          formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3 },
+          formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3, timerDurationMs: 20000 },
           playerAnswer: 9,
           isCorrect: false,
           elapsedMs: 3000,
@@ -404,7 +404,7 @@ describe('ScoreSummary', () => {
     it('renders ❌ for a round with firstTryCorrect: false even when isCorrect: true (replayed-then-correct)', () => {
       const rounds: Round[] = [
         {
-          formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3 },
+          formula: { type: 'ratio', values: [2, 3, 6, 9], hiddenPosition: 'B', correctAnswer: 3, timerDurationMs: 20000 },
           playerAnswer: 3,
           isCorrect: true, // overwritten by replay
           elapsedMs: 2000,

@@ -1,25 +1,26 @@
-import type { ScoringTier } from '../types/game';
+/** Percentage-based scoring thresholds. Checked in order (first match wins). */
+export const SCORING_THRESHOLDS = [
+  { minPercent: 0.60, points: 5 },
+  { minPercent: 0.40, points: 3 },
+  { minPercent: 0.20, points: 2 },
+  { minPercent: 0.0001, points: 1 },  // >0%
+] as const;
 
-/** Time-based scoring tiers for correct answers. Checked in order (first match wins). */
-export const SCORING_TIERS: ScoringTier[] = [
-  { maxMs: 20000, points: 5 },
-  { maxMs: 30000, points: 3 },
-  { maxMs: 40000, points: 2 },
-  { maxMs: 50000, points: 1 },
-];
-
-/** Points awarded for a correct answer slower than all tiers (>50s). */
+/** Points awarded for a correct answer with 0% time remaining. */
 export const DEFAULT_POINTS = 0;
 
-/** Duration (ms) of the countdown bar — matches the last scoring tier boundary. */
-export const COUNTDOWN_DURATION_MS = 50000;
+/** Timer duration (ms) for Pure Numeric rounds. */
+export const NUMERIC_TIMER_MS = 20_000;
 
-/** CVD-safe colors for each countdown bar stage, keyed by scoring tier. */
+/** Timer duration (ms) for Story Challenge rounds. */
+export const STORY_TIMER_MS = 50_000;
+
+/** CVD-safe colors for each countdown bar stage. */
 export const COUNTDOWN_COLORS = {
-  green: '#0e8a1e',      // 0–20s elapsed, 5 pts tier
-  lightGreen: '#5ba829',  // 20–30s elapsed, 3 pts tier
-  orange: '#d47604',      // 30–40s elapsed, 2 pts tier
-  red: '#c5221f',         // 40–50s elapsed, 1 pt / 0 pts tier
+  green: '#0e8a1e',
+  lightGreen: '#5ba829',
+  orange: '#d47604',
+  red: '#c5221f',
 } as const;
 
 export type CountdownColor = typeof COUNTDOWN_COLORS[keyof typeof COUNTDOWN_COLORS];
@@ -35,18 +36,22 @@ export const ROUNDS_PER_GAME = 10;
 
 /**
  * Calculate points for a single round answer.
+ * Scoring is based on percentage of time remaining, normalized across timer durations.
  * @param isCorrect Whether the answer was correct.
  * @param elapsedMs Response time in milliseconds.
+ * @param timerDurationMs Total timer duration for this round type.
  * @returns Points awarded (positive for correct, negative for incorrect).
  */
-export function calculateScore(isCorrect: boolean, elapsedMs: number): number {
+export function calculateScore(isCorrect: boolean, elapsedMs: number, timerDurationMs: number): number {
   if (!isCorrect) {
     return INCORRECT_PENALTY;
   }
 
-  for (const tier of SCORING_TIERS) {
-    if (elapsedMs <= tier.maxMs) {
-      return tier.points;
+  const remainingPercent = Math.max(0, (timerDurationMs - elapsedMs) / timerDurationMs);
+
+  for (const threshold of SCORING_THRESHOLDS) {
+    if (remainingPercent >= threshold.minPercent) {
+      return threshold.points;
     }
   }
 

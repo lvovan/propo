@@ -135,14 +135,30 @@ const es: Dictionary = {
   'questionType.percentage': 'Porcentajes',
   'questionType.ratio': 'Razones',
   'questionType.fraction': 'Fracciones',
-  'questionType.ruleOfThree': 'Problemas',
+  'questionType.multiItemRatio': 'Desafíos de clasificación',
+  'questionType.percentageOfWhole': 'Historias de porcentaje',
+  'questionType.complexExtrapolation': 'Problemas de escala',
 
-  'ruleOfThree.shopping': 'Si {a} juguetes cuestan ${b}, ¿cuánto cuestan {c} juguetes?',
-  'ruleOfThree.reading': 'Si lees {a} páginas en {b} min, ¿cuánto para {c} páginas?',
-  'ruleOfThree.cooking': 'Una receta para {a} personas necesita {b} huevos. ¿Cuántos para {c} personas?',
-  'ruleOfThree.travel': 'Un auto usa {b} litros para {a} km. ¿Cuántos litros para {c} km?',
-  'ruleOfThree.art': 'Si {a} dibujos necesitan {b} lápices, ¿cuántos para {c} dibujos?',
-  'ruleOfThree.sports': 'Si metes {b} goles en {a} partidos, ¿cuántos en {c} partidos?',
+  'story.multiItemRatio.backpack': 'Una mochila tiene {a} carpetas azules ({b}g cada una) y {c} cuadernos rojos ({d}g cada uno). ¿Cuál es el peso total de las carpetas azules?',
+  'story.multiItemRatio.lunchbox': 'Una lonchera tiene {a} manzanas ({b} cal cada una) y {c} galletas ({d} cal cada una). ¿Cuántas calorías hay en las manzanas?',
+  'story.multiItemRatio.toybox': 'Una caja de juguetes tiene {a} coches (${b} cada uno) y {c} muñecas (${d} cada una). ¿Cuál es el costo total de los coches?',
+  'story.multiItemRatio.garden': 'Un jardín tiene {a} rosas ({b}cm cada una) y {c} girasoles ({d}cm cada uno). ¿Cuál es la altura total de las rosas?',
+  'story.multiItemRatio.shelf': 'Un estante tiene {a} libros de ciencias ({b} páginas cada uno) y {c} cómics ({d} páginas cada uno). ¿Cuántas páginas hay en los libros de ciencias?',
+  'story.multiItemRatio.art': 'Un kit de arte tiene {a} tubos de pintura ({b}ml cada uno) y {c} barras de pegamento ({d}ml cada una). ¿Cuántos ml de pintura hay en total?',
+
+  'story.percentageOfWhole.petshop': 'Una tienda de mascotas tiene {a} gatitos, {b} cachorros y otros animales — {c} en total. ¿Qué porcentaje son los gatitos?',
+  'story.percentageOfWhole.classroom': 'Un aula tiene {a} niños, {b} niñas y profesores. Hay {c} personas en total. ¿Qué porcentaje son los niños?',
+  'story.percentageOfWhole.orchard': 'Un huerto tiene {a} manzanos, {b} perales y cerezos — {c} árboles en total. ¿Qué porcentaje son manzanos?',
+  'story.percentageOfWhole.aquarium': 'Un acuario tiene {a} peces dorados, {b} peces ángel y peces payaso — {c} peces en total. ¿Qué porcentaje son peces dorados?',
+  'story.percentageOfWhole.market': 'Un puesto tiene {a} naranjas, {b} plátanos y mangos — {c} frutas en total. ¿Qué porcentaje son naranjas?',
+  'story.percentageOfWhole.zoo': 'Una sección del zoo tiene {a} leones, {b} tigres y osos — {c} animales en total. ¿Qué porcentaje son leones?',
+
+  'story.complexExtrapolation.space': 'En un día soleado en el espacio, si {a} exploradores necesitan {b} tanques de oxígeno, ¿cuántos necesitan {c} exploradores?',
+  'story.complexExtrapolation.camping': 'Cerca de un lago, si {a} campistas necesitan {b} estacas, ¿cuántas necesitan {c} campistas?',
+  'story.complexExtrapolation.baking': 'En una cocina ocupada, si {a} pasteles necesitan {b} huevos, ¿cuántos necesitan {c} pasteles?',
+  'story.complexExtrapolation.travel': 'En una carretera de montaña, si {a} coches usan {b} litros, ¿cuántos usan {c} coches?',
+  'story.complexExtrapolation.sports': 'Una tarde lluviosa, si {a} equipos necesitan {b} balones, ¿cuántos necesitan {c} equipos?',
+  'story.complexExtrapolation.school': 'En clase de arte, si {a} estudiantes necesitan {b} pinceles, ¿cuántos necesitan {c} estudiantes?',
 };
 
 export default es;

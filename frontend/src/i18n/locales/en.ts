@@ -273,23 +273,39 @@ const en = {
   'questionType.ratio': 'Ratios',
   /** Label for fraction questions. */
   'questionType.fraction': 'Fractions',
-  /** Label for rule-of-three questions. */
-  'questionType.ruleOfThree': 'Word problems',
+  /** Label for multi-item ratio story challenges. */
+  'questionType.multiItemRatio': 'Sorting challenges',
+  /** Label for percentage-of-whole story challenges. */
+  'questionType.percentageOfWhole': 'Percentage stories',
+  /** Label for complex extrapolation story challenges. */
+  'questionType.complexExtrapolation': 'Scaling problems',
 
-  // ── Rule of Three Word Problem Templates ───────────────────────
+  // ── Story Challenge: Multi-Item Ratio Templates ────────────────
 
-  /** Word problem: shopping scenario. Placeholders: {a}, {b}, {c} */
-  'ruleOfThree.shopping': 'If {a} toys cost ${b}, how much do {c} toys cost?',
-  /** Word problem: reading scenario. Placeholders: {a}, {b}, {c} */
-  'ruleOfThree.reading': 'If you read {a} pages in {b} min, how long for {c} pages?',
-  /** Word problem: cooking scenario. Placeholders: {a}, {b}, {c} */
-  'ruleOfThree.cooking': 'A recipe for {a} people needs {b} eggs. How many for {c} people?',
-  /** Word problem: travel scenario. Placeholders: {a}, {b}, {c} */
-  'ruleOfThree.travel': 'A car uses {b} litres for {a} km. How many litres for {c} km?',
-  /** Word problem: art scenario. Placeholders: {a}, {b}, {c} */
-  'ruleOfThree.art': 'If {a} drawings need {b} pencils, how many for {c} drawings?',
-  /** Word problem: sports scenario. Placeholders: {a}, {b}, {c} */
-  'ruleOfThree.sports': 'If you score {b} goals in {a} games, how many in {c} games?',
+  'story.multiItemRatio.backpack': 'A backpack has {a} blue folders ({b}g each) and {c} red notebooks ({d}g each). What is the total weight of just the blue folders?',
+  'story.multiItemRatio.lunchbox': 'A lunchbox has {a} apples ({b} calories each) and {c} cookies ({d} calories each). How many calories are in just the apples?',
+  'story.multiItemRatio.toybox': 'A toy box has {a} cars (${b} each) and {c} dolls (${d} each). What is the total cost of just the cars?',
+  'story.multiItemRatio.garden': 'A garden has {a} roses ({b}cm tall) and {c} sunflowers ({d}cm tall). What is the total height of all the roses together?',
+  'story.multiItemRatio.shelf': 'A shelf has {a} science books ({b} pages each) and {c} comic books ({d} pages each). How many pages are in all the science books?',
+  'story.multiItemRatio.art': 'An art kit has {a} paint tubes ({b}ml each) and {c} glue sticks ({d}ml each). How many ml of paint are there in total?',
+
+  // ── Story Challenge: Percentage of the Whole Templates ─────────
+
+  'story.percentageOfWhole.petshop': 'A pet shop has {a} kittens, {b} puppies, and some hamsters — {c} animals in total. What percentage of all the animals are the kittens?',
+  'story.percentageOfWhole.classroom': 'A classroom has {a} boys, {b} girls, and some teachers. There are {c} people in total. What percentage are the boys?',
+  'story.percentageOfWhole.orchard': 'An orchard has {a} apple trees, {b} pear trees, and some cherry trees — {c} trees total. What percentage are apple trees?',
+  'story.percentageOfWhole.aquarium': 'An aquarium has {a} goldfish, {b} angelfish, and some clownfish — {c} fish in total. What percentage are the goldfish?',
+  'story.percentageOfWhole.market': 'A market stall has {a} oranges, {b} bananas, and some mangoes — {c} fruits total. What percentage are the oranges?',
+  'story.percentageOfWhole.zoo': 'A zoo section has {a} lions, {b} tigers, and some bears — {c} animals total. What percentage are the lions?',
+
+  // ── Story Challenge: Complex Extrapolation Templates ───────────
+
+  'story.complexExtrapolation.space': 'On a sunny day in space, if {a} Space Scouts need {b} oxygen tanks for a trip, how many tanks do {c} Space Scouts need?',
+  'story.complexExtrapolation.camping': 'At a campsite near a lake, if {a} campers need {b} tent pegs, how many tent pegs do {c} campers need?',
+  'story.complexExtrapolation.baking': 'In a busy kitchen, if {a} cakes need {b} eggs, how many eggs do {c} cakes need?',
+  'story.complexExtrapolation.travel': 'On a highway through the mountains, if {a} cars use {b} litres of fuel, how many litres do {c} cars use?',
+  'story.complexExtrapolation.sports': 'On a rainy afternoon, if {a} teams need {b} footballs, how many footballs do {c} teams need?',
+  'story.complexExtrapolation.school': 'In a colourful art class, if {a} students need {b} paintbrushes, how many paintbrushes do {c} students need?',
 } as const;
 
 export default en;

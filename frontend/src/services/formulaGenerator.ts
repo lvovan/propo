@@ -1,4 +1,6 @@
 import type { Formula, QuestionType, HiddenPosition, ChallengingItem } from '../types/game';
+import { PURE_NUMERIC_TYPES, STORY_CHALLENGE_TYPES } from '../types/game';
+import { NUMERIC_TIMER_MS, STORY_TIMER_MS } from '../constants/scoring';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -17,7 +19,6 @@ function pickRandom<T>(arr: T[], randomFn: () => number): T {
 }
 
 // ── Percentage pool ──────────────────────────────────────────────
-// A% of B = C, where C = A*B/100, all integers, 1 ≤ C ≤ 200, 4 ≤ B ≤ 200.
 
 const FRIENDLY_PERCENTAGES = [5, 10, 20, 25, 50, 75] as const;
 
@@ -42,11 +43,10 @@ function generatePercentageFormula(pool: Triple[], randomFn: () => number): Form
   const hiddenPosition = pickRandom(positions, randomFn);
   const values = [triple.a, triple.b, triple.c];
   const correctAnswer = values[positions.indexOf(hiddenPosition)];
-  return { type: 'percentage', values, hiddenPosition, correctAnswer };
+  return { type: 'percentage', values, hiddenPosition, correctAnswer, timerDurationMs: NUMERIC_TIMER_MS };
 }
 
 // ── Ratio pool ───────────────────────────────────────────────────
-// A : B = C : D, where C = A*m, D = B*m, m ∈ [2, 8].
 
 export interface Quad { a: number; b: number; c: number; d: number }
 
@@ -73,11 +73,10 @@ function generateRatioFormula(pool: Quad[], randomFn: () => number): Formula {
   const hiddenPosition = pickRandom(positions, randomFn);
   const values = [quad.a, quad.b, quad.c, quad.d];
   const correctAnswer = values[positions.indexOf(hiddenPosition)];
-  return { type: 'ratio', values, hiddenPosition, correctAnswer };
+  return { type: 'ratio', values, hiddenPosition, correctAnswer, timerDurationMs: NUMERIC_TIMER_MS };
 }
 
 // ── Fraction pool ────────────────────────────────────────────────
-// A/B = C/D (proper fractions: A < B), C = A*m, D = B*m.
 
 export function buildFractionPool(): Quad[] {
   const pool: Quad[] = [];
@@ -101,26 +100,104 @@ function generateFractionFormula(pool: Quad[], randomFn: () => number): Formula 
   const hiddenPosition = pickRandom(positions, randomFn);
   const values = [quad.a, quad.b, quad.c, quad.d];
   const correctAnswer = values[positions.indexOf(hiddenPosition)];
-  return { type: 'fraction', values, hiddenPosition, correctAnswer };
+  return { type: 'fraction', values, hiddenPosition, correctAnswer, timerDurationMs: NUMERIC_TIMER_MS };
 }
 
-// ── Rule of Three pool ───────────────────────────────────────────
-// Word problems: if A units → B total, then C units → D total.
-// rate ∈ [1, 10], baseQty ∈ [2, 8], targetQty ∈ [2, 12] (≠ baseQty).
+// ── Multi-Item Ratio pool (Story Challenge) ──────────────────────
+// "X items of type A at V₁ each, Y items of type B at V₂ each. Total of just type A?"
 
-/** Available word-problem i18n template keys. */
-export const WORD_PROBLEM_KEYS: string[] = [
-  'ruleOfThree.shopping',
-  'ruleOfThree.reading',
-  'ruleOfThree.cooking',
-  'ruleOfThree.travel',
-  'ruleOfThree.art',
-  'ruleOfThree.sports',
+export const MULTI_ITEM_RATIO_KEYS: string[] = [
+  'story.multiItemRatio.backpack',
+  'story.multiItemRatio.lunchbox',
+  'story.multiItemRatio.toybox',
+  'story.multiItemRatio.garden',
+  'story.multiItemRatio.shelf',
+  'story.multiItemRatio.art',
 ];
 
-export function buildRuleOfThreePool(): Quad[] {
+export function buildMultiItemRatioPool(): Quad[] {
   const pool: Quad[] = [];
-  for (let rate = 1; rate <= 10; rate++) {
+  for (let x = 2; x <= 8; x++) {
+    for (let v1 = 2; v1 <= 50; v1++) {
+      for (let y = 2; y <= 8; y++) {
+        for (let v2 = 2; v2 <= 50; v2++) {
+          if (v1 === v2) continue; // need different values for noise
+          const answer = x * v1;
+          if (answer >= 1 && answer <= 999) {
+            pool.push({ a: x, b: v1, c: y, d: v2 });
+          }
+        }
+      }
+    }
+  }
+  // Pool is huge; we only need a manageable subset for random picks
+  return pool.slice(0, 5000);
+}
+
+function generateMultiItemRatioFormula(pool: Quad[], randomFn: () => number): Formula {
+  const quad = pickRandom(pool, randomFn);
+  // values: [countA, valueA, countB, valueB]; answer = countA * valueA
+  const values = [quad.a, quad.b, quad.c, quad.d];
+  const correctAnswer = quad.a * quad.b;
+  const wordProblemKey = pickRandom(MULTI_ITEM_RATIO_KEYS, randomFn);
+  return { type: 'multiItemRatio', values, hiddenPosition: 'D', correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
+}
+
+// ── Percentage of the Whole pool (Story Challenge) ───────────────
+// "Group has X of A, Y of B, Z of C. What % are the [target]?"
+
+export const PERCENTAGE_OF_WHOLE_KEYS: string[] = [
+  'story.percentageOfWhole.petshop',
+  'story.percentageOfWhole.classroom',
+  'story.percentageOfWhole.orchard',
+  'story.percentageOfWhole.aquarium',
+  'story.percentageOfWhole.market',
+  'story.percentageOfWhole.zoo',
+];
+
+export function buildPercentageOfWholePool(): Triple[] {
+  const pool: Triple[] = [];
+  // x = target count, y = other count 1, z = other count 2
+  // answer = (x / (x+y+z)) * 100, must be integer
+  for (let x = 1; x <= 20; x++) {
+    for (let y = 1; y <= 20; y++) {
+      for (let z = 1; z <= 20; z++) {
+        const total = x + y + z;
+        if (total < 10 || total > 50) continue;
+        const pct = (x / total) * 100;
+        if (Number.isInteger(pct) && pct >= 1 && pct <= 100) {
+          pool.push({ a: x, b: y, c: pct });
+        }
+      }
+    }
+  }
+  return pool;
+}
+
+function generatePercentageOfWholeFormula(pool: Triple[], randomFn: () => number): Formula {
+  const triple = pickRandom(pool, randomFn);
+  // values: [targetCount, otherCount, answerPercent]; noise = otherCount
+  const values = [triple.a, triple.b, triple.c];
+  const correctAnswer = triple.c;
+  const wordProblemKey = pickRandom(PERCENTAGE_OF_WHOLE_KEYS, randomFn);
+  return { type: 'percentageOfWhole', values, hiddenPosition: 'C', correctAnswer, wordProblemKey, timerDurationMs: STORY_TIMER_MS };
+}
+
+// ── Complex Extrapolation pool (Story Challenge) ─────────────────
+// "If A units need B resources, how many resources do C units need?"
+
+export const COMPLEX_EXTRAPOLATION_KEYS: string[] = [
+  'story.complexExtrapolation.space',
+  'story.complexExtrapolation.camping',
+  'story.complexExtrapolation.baking',
+  'story.complexExtrapolation.travel',
+  'story.complexExtrapolation.sports',
+  'story.complexExtrapolation.school',
+];
+
+export function buildComplexExtrapolationPool(): Quad[] {
+  const pool: Quad[] = [];
+  for (let rate = 2; rate <= 10; rate++) {
     for (let baseQty = 2; baseQty <= 8; baseQty++) {
       for (let targetQty = 2; targetQty <= 12; targetQty++) {
         if (targetQty === baseQty) continue;
@@ -135,7 +212,7 @@ export function buildRuleOfThreePool(): Quad[] {
   return pool;
 }
 
-function generateRuleOfThreeFormula(pool: Quad[], randomFn: () => number): Formula {
+function generateComplexExtrapolationFormula(pool: Quad[], randomFn: () => number): Formula {
   const quad = pickRandom(pool, randomFn);
   // Only hide D (the answer). Hiding C would make word problems unsolvable
   // since the player wouldn't know the target quantity.
@@ -161,23 +238,25 @@ const DEFAULT_DISTRIBUTION: QuestionType[] = [
  *
  * Distribution: 5 numeric (2 percentage, 2 ratio, 1 fraction) + 5 word problems (ruleOfThree).
  * Order is shuffled.
- *
- * @param randomFn Optional RNG returning [0, 1). Defaults to Math.random.
  */
 export function generateFormulas(randomFn: () => number = Math.random): Formula[] {
-  const percentagePool = buildPercentagePool();
-  const ratioPool = buildRatioPool();
-  const fractionPool = buildFractionPool();
-  const ruleOfThreePool = buildRuleOfThreePool();
+  const pools = buildAllPools();
 
-  const formulas: Formula[] = DEFAULT_DISTRIBUTION.map((type) => {
-    switch (type) {
-      case 'percentage': return generatePercentageFormula(percentagePool, randomFn);
-      case 'ratio':      return generateRatioFormula(ratioPool, randomFn);
-      case 'fraction':   return generateFractionFormula(fractionPool, randomFn);
-      case 'ruleOfThree': return generateRuleOfThreeFormula(ruleOfThreePool, randomFn);
-    }
-  });
+  // 5 Pure Numeric: 2+2+1, shuffled to pick which gets 1
+  const numericTypes: QuestionType[] = ['percentage', 'percentage', 'ratio', 'ratio', 'fraction'];
+  fisherYatesShuffle(numericTypes, randomFn);
+  // Randomly give the 5th slot to one of the 3 types
+  numericTypes[4] = pickRandom(PURE_NUMERIC_TYPES, randomFn);
+
+  // 5 Story Challenge: 1 each guaranteed + 2 random
+  const storyTypes: QuestionType[] = [
+    'multiItemRatio', 'percentageOfWhole', 'complexExtrapolation',
+    pickRandom(STORY_CHALLENGE_TYPES, randomFn),
+    pickRandom(STORY_CHALLENGE_TYPES, randomFn),
+  ];
+
+  const allTypes = [...numericTypes, ...storyTypes];
+  const formulas = allTypes.map((type) => generateFormulaByType(type, pools, randomFn));
 
   fisherYatesShuffle(formulas, randomFn);
   return formulas;

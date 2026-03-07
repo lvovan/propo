@@ -23,7 +23,9 @@ function formatFormula(round: Round): string {
       return `${display[0]} : ${display[1]} = ${display[2]} : ${display[3]}`;
     case 'fraction':
       return `${display[0]}/${display[1]} = ${display[2]}/${display[3]}`;
-    case 'ruleOfThree':
+    case 'multiItemRatio':
+    case 'percentageOfWhole':
+    case 'complexExtrapolation':
       return `${display[0]} → ${display[1]}, ${display[2]} → ${display[3]}`;
     default:
       return display.join(' ');

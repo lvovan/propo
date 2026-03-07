@@ -70,10 +70,10 @@ describe('GameStatus', () => {
 
   // --- New tests for countdown bar ---
 
-  it('timer initial text is "50.0s"', () => {
+  it('timer initial text is "20.0s"', () => {
     render(<GameStatus {...defaultProps()} />);
     const timer = screen.getByTestId('timer');
-    expect(timer.textContent).toBe('50.0s');
+    expect(timer.textContent).toBe('20.0s');
   });
 
   it('renders CountdownBar component', () => {

@@ -135,14 +135,30 @@ const ja: Dictionary = {
   'questionType.percentage': 'パーセント',
   'questionType.ratio': '比',
   'questionType.fraction': '分数',
-  'questionType.ruleOfThree': '文章題',
+  'questionType.multiItemRatio': '仕分けチャレンジ',
+  'questionType.percentageOfWhole': '割合の物語',
+  'questionType.complexExtrapolation': 'スケール問題',
 
-  'ruleOfThree.shopping': '{a} 個のおもちゃが {b} 円なら、{c} 個はいくら？',
-  'ruleOfThree.reading': '{a} ページを {b} 分で読むなら、{c} ページは何分？',
-  'ruleOfThree.cooking': '{a} 人分のレシピに卵が {b} 個必要です。{c} 人分なら？',
-  'ruleOfThree.travel': '{a} km に {b} リットル使う車。{c} km なら何リットル？',
-  'ruleOfThree.art': '{a} 枚の絵に鉛筆が {b} 本必要。{c} 枚なら何本？',
-  'ruleOfThree.sports': '{a} 試合で {b} ゴール決めた。{c} 試合なら何ゴール？',
+  'story.multiItemRatio.backpack': 'リュックに青いフォルダが{a}個（各{b}g）と赤いノートが{c}冊（各{d}g）入っています。青いフォルダの総重量は？',
+  'story.multiItemRatio.lunchbox': 'お弁当にりんごが{a}個（各{b}カロリー）とクッキーが{c}個（各{d}カロリー）入っています。りんごのカロリーは？',
+  'story.multiItemRatio.toybox': 'おもちゃ箱に車が{a}台（各{b}円）と人形が{c}体（各{d}円）入っています。車の総額は？',
+  'story.multiItemRatio.garden': '庭にバラが{a}本（各{b}cm）とひまわりが{c}本（各{d}cm）あります。バラの総高さは？',
+  'story.multiItemRatio.shelf': '棚に科学の本が{a}冊（各{b}ページ）と漫画が{c}冊（各{d}ページ）あります。科学の本の総ページ数は？',
+  'story.multiItemRatio.art': 'アートセットに絵の具が{a}本（各{b}ml）とのりが{c}本（各{d}ml）入っています。絵の具の総mlは？',
+
+  'story.percentageOfWhole.petshop': 'ペットショップに子猫が{a}匹、子犬が{b}匹、その他の動物—合計{c}匹。子猫は何パーセント？',
+  'story.percentageOfWhole.classroom': '教室に男の子が{a}人、女の子が{b}人、先生もいます。合計{c}人。男の子は何パーセント？',
+  'story.percentageOfWhole.orchard': '果樹園にりんごの木が{a}本、梨の木が{b}本、さくらんぼの木—合計{c}本。りんごの木は何パーセント？',
+  'story.percentageOfWhole.aquarium': '水族館に金魚が{a}匹、エンゼルフィッシュが{b}匹、クマノミ—合計{c}匹。金魚は何パーセント？',
+  'story.percentageOfWhole.market': 'お店にオレンジが{a}個、バナナが{b}本、マンゴー—合計{c}個。オレンジは何パーセント？',
+  'story.percentageOfWhole.zoo': '動物園にライオンが{a}頭、トラが{b}頭、クマ—合計{c}頭。ライオンは何パーセント？',
+
+  'story.complexExtrapolation.space': '宇宙の晴れた日、{a}人の宇宙飛行士に酸素タンクが{b}個必要です。{c}人なら何個？',
+  'story.complexExtrapolation.camping': '湖の近く、{a}人のキャンパーにペグが{b}本必要です。{c}人なら何本？',
+  'story.complexExtrapolation.baking': '賀やかな台所で、{a}個のケーキに卵が{b}個必要です。{c}個なら何個？',
+  'story.complexExtrapolation.travel': '山道で、{a}台の車に燃料が{b}リットル必要です。{c}台なら何リットル？',
+  'story.complexExtrapolation.sports': '雨の午後、{a}チームにボールが{b}個必要です。{c}チームなら何個？',
+  'story.complexExtrapolation.school': '美術の授業で、{a}人の生徒に筆が{b}本必要です。{c}人なら何本？',
 };
 
 export default ja;

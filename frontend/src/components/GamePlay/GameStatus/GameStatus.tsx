@@ -99,7 +99,7 @@ export default function GameStatus({
                   className="timer"
                   data-testid="timer"
                 >
-                  50.0s
+                  20.0s
                 </span>
               </div>
               <CountdownBar barRef={barRef} />
