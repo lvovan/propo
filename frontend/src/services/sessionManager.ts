@@ -49,3 +49,27 @@ export function getActiveSession(): Session | null {
 export function hasActiveSession(): boolean {
   return getActiveSession() !== null;
 }
+
+// ── Pending Seed (for competitive mode URL flow) ──────────────────
+
+/** sessionStorage key for pending competition seed. */
+const PENDING_SEED_KEY = 'propo_pending_seed';
+
+/**
+ * Store a seed temporarily for retrieval after profile selection.
+ */
+export function setPendingSeed(seed: string): void {
+  sessionStorage.setItem(PENDING_SEED_KEY, seed);
+}
+
+/**
+ * Retrieve and consume (delete) the pending seed.
+ * Returns null if no pending seed exists.
+ */
+export function consumePendingSeed(): string | null {
+  const seed = sessionStorage.getItem(PENDING_SEED_KEY);
+  if (seed !== null) {
+    sessionStorage.removeItem(PENDING_SEED_KEY);
+  }
+  return seed;
+}

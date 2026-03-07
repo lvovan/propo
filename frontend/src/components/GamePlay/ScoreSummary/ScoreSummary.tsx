@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ScoreSummaryProps } from './types';
 import type { Round } from '../../../types/game';
 import ProgressionGraph from '../ProgressionGraph/ProgressionGraph';
+import { calculateTotalTime, formatTotalTime } from '../../../services/totalTime';
+import { encodeShareUrl } from '../../../services/shareUrl';
+import { useTranslation } from '../../../i18n';
 import styles from './ScoreSummary.module.css';
 
 /** Format elapsed milliseconds as seconds to one decimal place, e.g. "1.5s". */
@@ -53,13 +56,36 @@ const ScoreSummary: React.FC<ScoreSummaryProps> = ({
   onBackToMenu,
   gameMode,
   history,
+  seed,
+  playerName,
 }) => {
+  const { t } = useTranslation();
+  const [shareCopied, setShareCopied] = useState(false);
   const hasRounds = Array.isArray(rounds) && rounds.length > 0;
   const isImprove = gameMode === 'improve';
+  const isCompetitive = gameMode === 'competitive';
   const correctCount = rounds.filter((r) => r.isCorrect).length;
   const incorrectRounds = rounds.filter((r) => !r.isCorrect);
   const showSparkline =
-    !isImprove && Array.isArray(history) && history.length >= 2;
+    !isImprove && !isCompetitive && Array.isArray(history) && history.length >= 2;
+
+  const handleShare = async () => {
+    if (!seed) return;
+    const totalTimeMs = calculateTotalTime(rounds);
+    const url = encodeShareUrl({
+      seed,
+      playerName: playerName ?? '',
+      score,
+      totalTimeMs,
+    });
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      // Fallback: just ignore if clipboard fails
+    }
+  };
 
   return (
     <div className={styles.summary}>
@@ -87,6 +113,23 @@ const ScoreSummary: React.FC<ScoreSummaryProps> = ({
         </div>
       )}
 
+      {isCompetitive && (
+        <div className={styles.competitiveInfo}>
+          <div className={styles.totalTime}>
+            <span className={styles.totalLabel}>{t('competition.totalTime')}</span>
+            <span className={styles.totalValue}>
+              {formatTotalTime(calculateTotalTime(rounds))}
+            </span>
+          </div>
+          {seed && (
+            <p className={styles.seedDisplay}>
+              <span className={styles.seedLabel}>{t('competition.seed')}:</span>{' '}
+              <span>{seed}</span>
+            </p>
+          )}
+        </div>
+      )}
+
       <div className={styles.actions}>
         <button
           className={styles.playAgainButton}
@@ -102,6 +145,15 @@ const ScoreSummary: React.FC<ScoreSummaryProps> = ({
         >
           Back to Menu
         </button>
+        {isCompetitive && seed && (
+          <button
+            className={styles.shareButton}
+            onClick={handleShare}
+            aria-label={t('competition.share')}
+          >
+            {shareCopied ? t('competition.shareCopied') : t('competition.share')}
+          </button>
+        )}
       </div>
 
       {showSparkline && history && (

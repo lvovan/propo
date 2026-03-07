@@ -282,8 +282,8 @@ export function saveGameRecord(
     if (player.gameHistory.length > 100) {
       player.gameHistory = player.gameHistory.slice(-100);
     }
-    // Only update aggregate scores for Play mode
-    if (gameMode === 'play') {
+    // Only update aggregate scores for Play and Competitive modes
+      if (gameMode !== 'improve') {
       player.totalScore = (player.totalScore ?? 0) + score;
       player.gamesPlayed = (player.gamesPlayed ?? 0) + 1;
     }
@@ -326,7 +326,7 @@ export function updatePlayerScore(name: string, gameScore: number): void {
  */
 export function getRecentAverage(player: Player, count: number = 10): number | null {
   const history = (player.gameHistory ?? []).filter(
-    (r) => (r.gameMode ?? 'play') === 'play',
+    (r) => (r.gameMode ?? 'play') !== 'improve',
   );
   if (history.length === 0) return null;
   const slice = history.slice(-count);
@@ -345,7 +345,7 @@ export function getRecentAverage(player: Player, count: number = 10): number | n
  */
 export function getRecentHighScores(player: Player, windowSize: number = 10, topN: number = 3): GameRecord[] {
   const history = (player.gameHistory ?? []).filter(
-    (r) => (r.gameMode ?? 'play') === 'play',
+    (r) => (r.gameMode ?? 'play') !== 'improve',
   );
   if (history.length === 0) return [];
   const recent = history.slice(-windowSize);
@@ -364,6 +364,6 @@ export function getRecentHighScores(player: Player, windowSize: number = 10, top
  */
 export function getGameHistory(player: Player): GameRecord[] {
   return (player.gameHistory ?? []).filter(
-    (r) => (r.gameMode ?? 'play') === 'play',
+    (r) => (r.gameMode ?? 'play') !== 'improve',
   );
 }

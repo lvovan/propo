@@ -116,7 +116,7 @@ A player on the home screen wants to start a competitive game. They see a "Compe
 - **FR-017**: When a seeded URL is opened without an active session, the system MUST persist the seed value temporarily (e.g., in session storage) across the profile-selection flow and automatically apply it to the Competition game screen once the player selects or creates a profile.
 - **FR-018**: The Competition results screen MUST display the game seed so players can confirm or share it.
 - **FR-019**: The Competition results screen MUST provide a "Share" button that generates a shareable URL encoding the player's profile name, score, total time, and the game seed.
-- **FR-020**: When a shared Competition result URL is opened, the system MUST display a page showing the sharer's player name, score, and total time.
+- **FR-020**: When a shared Competition result URL is opened, the system MUST display a page showing the sharer's player name, score, total time, and the game seed.
 - **FR-021**: The shared Competition result page MUST include a "Play this game" button that navigates to the seeded URL flow (triggering profile selection if needed, then loading the Competition game screen with the seed pre-filled).
 - **FR-022**: The total time displayed on the Competition results screen MUST be calculated as the sum of elapsed time across the 10 primary rounds plus a 1-minute (60-second) penalty for each incorrect answer.
 - **FR-023**: In Competition mode, each incorrect answer MUST add a 1-minute (60-second) time penalty to the player's total time. The penalty is cumulative (e.g., 3 wrong answers = 3-minute penalty).
@@ -156,3 +156,5 @@ A player on the home screen wants to start a competitive game. They see a "Compe
 - **SC-004**: The total time displayed on the Competition results screen is accurate to within 100 milliseconds of the actual cumulative round time.
 - **SC-005**: 100% of Competition games produce a results screen showing both the score (0–50) and the total time.
 - **SC-006**: Existing Play and Improve mode functionality remains completely unaffected — no regressions in scoring, question generation, or results display.
+- **SC-007**: For "percentage of whole" story problems, the target element (the one the player must calculate the percentage for) MUST NOT always appear in the first position — element order must be shuffled.
+- **SC-008**: For "multi-item ratio" story problems, the item the player must calculate the total for MUST NOT always be the first item — the target item must vary between the first and second item types.

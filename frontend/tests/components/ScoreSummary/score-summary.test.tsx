@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '../../test-utils';
 import { vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import ScoreSummary from '../../../src/components/GamePlay/ScoreSummary/ScoreSummary';

@@ -4,12 +4,14 @@ import { LanguageProvider } from './i18n';
 import { SessionProvider } from './hooks/useSession.tsx';
 import WelcomePage from './pages/WelcomePage';
 import MainPage from './pages/MainPage';
+import SharedResultPage from './pages/SharedResultPage';
 import { trackPageView } from './services/clarityService';
 
 /** Map route paths to human-readable page names for Clarity tracking. */
 const PAGE_NAMES: Record<string, string> = {
   '/': 'welcome',
   '/play': 'play',
+  '/result': 'result',
 };
 
 /** Tracks virtual page views on route changes. Must be rendered inside a Router. */
@@ -34,6 +36,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<WelcomePage />} />
             <Route path="/play" element={<MainPage />} />
+            <Route path="/result" element={<SharedResultPage />} />
           </Routes>
         </SessionProvider>
       </HashRouter>
