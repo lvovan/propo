@@ -1,5 +1,16 @@
-/** The four question categories in the proportional reasoning game. */
-export type QuestionType = 'percentage' | 'ratio' | 'fraction' | 'ruleOfThree';
+/** The six question categories in the proportional reasoning game. */
+export type QuestionType = 'percentage' | 'ratio' | 'fraction' | 'multiItemRatio' | 'percentageOfWhole' | 'complexExtrapolation';
+
+/** Pure numeric question types (short timer). */
+export const PURE_NUMERIC_TYPES: QuestionType[] = ['percentage', 'ratio', 'fraction'];
+
+/** Story challenge question types (long timer). */
+export const STORY_CHALLENGE_TYPES: QuestionType[] = ['multiItemRatio', 'percentageOfWhole', 'complexExtrapolation'];
+
+/** Returns true if the question type is a Story Challenge. */
+export function isStoryChallenge(type: QuestionType): boolean {
+  return STORY_CHALLENGE_TYPES.includes(type);
+}
 
 /** Which value in the formula is hidden from the player. */
 export type HiddenPosition = 'A' | 'B' | 'C' | 'D';
@@ -7,22 +18,26 @@ export type HiddenPosition = 'A' | 'B' | 'C' | 'D';
 /**
  * A proportional-reasoning question with one value hidden.
  *
- * Percentage  – values [A, B, C]:  A% of B = C
- * Ratio       – values [A, B, C, D]:  A : B = C : D
- * Fraction    – values [A, B, C, D]:  A/B = C/D
- * Rule of Three – values [A, B, C, D]:  word problem (A→B, C→D)
+ * Percentage           – values [A, B, C]:     A% of B = C
+ * Ratio                – values [A, B, C, D]:  A : B = C : D
+ * Fraction             – values [A, B, C, D]:  A/B = C/D
+ * MultiItemRatio       – word problem with subset total
+ * PercentageOfWhole    – word problem with percentage calculation
+ * ComplexExtrapolation – word problem with proportional scaling (absorbs old ruleOfThree)
  */
 export interface Formula {
   /** Which category this question belongs to. */
   type: QuestionType;
-  /** All values in display order. Length 3 (percentage) or 4 (ratio/fraction/ruleOfThree). */
+  /** All values in display order. */
   values: number[];
   /** Which slot is hidden. */
   hiddenPosition: HiddenPosition;
   /** The numeric answer the player must provide. */
   correctAnswer: number;
-  /** i18n key for the word-problem template (ruleOfThree only). */
+  /** i18n key for the word-problem template (story challenge types). */
   wordProblemKey?: string;
+  /** Timer duration in ms for this round (20000 for numeric, 50000 for story). */
+  timerDurationMs: number;
 }
 
 /** Current phase of the game. */
@@ -70,12 +85,4 @@ export interface GameState {
   score: number;
   /** Which mode this game is being played in. */
   gameMode: 'play' | 'improve';
-}
-
-/** A scoring tier threshold. */
-export interface ScoringTier {
-  /** Maximum elapsed time in ms (inclusive) for this tier. */
-  maxMs: number;
-  /** Points awarded if answered correctly within this time. */
-  points: number;
 }

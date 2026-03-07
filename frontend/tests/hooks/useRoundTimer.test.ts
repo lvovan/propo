@@ -3,7 +3,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useRoundTimer } from '../../src/hooks/useRoundTimer';
 import { COUNTDOWN_COLORS } from '../../src/constants/scoring';
 
-/** Convert hex color to the rgb() string that jsdom produces */
 function hexToRgb(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -18,7 +17,6 @@ describe('useRoundTimer', () => {
   let pendingCallbacks: Map<number, FrameRequestCallback>;
   let nextRafId: number;
 
-  /** Flush one pending rAF callback (the most recent one). */
   function flushRAF() {
     const entries = Array.from(pendingCallbacks.entries());
     if (entries.length === 0) return;
@@ -33,8 +31,6 @@ describe('useRoundTimer', () => {
     originalCAF = globalThis.cancelAnimationFrame;
     nextRafId = 0;
     pendingCallbacks = new Map();
-
-    // rAF mock that stores callbacks without auto-executing
     globalThis.requestAnimationFrame = (cb: FrameRequestCallback) => {
       const id = ++nextRafId;
       pendingCallbacks.set(id, cb);
@@ -54,54 +50,38 @@ describe('useRoundTimer', () => {
   it('start records performance.now as start time', () => {
     mockNow.mockReturnValue(1000);
     const { result } = renderHook(() => useRoundTimer());
-
     act(() => result.current.start());
-
     mockNow.mockReturnValue(1000);
-    let elapsed: number = 0;
-    act(() => {
-      elapsed = result.current.stop();
-    });
+    let elapsed = 0;
+    act(() => { elapsed = result.current.stop(); });
     expect(elapsed).toBe(0);
   });
 
   it('stop returns elapsed ms since start', () => {
     mockNow.mockReturnValue(1000);
     const { result } = renderHook(() => useRoundTimer());
-
     act(() => result.current.start());
-
     mockNow.mockReturnValue(2500);
-    let elapsed: number = 0;
-    act(() => {
-      elapsed = result.current.stop();
-    });
+    let elapsed = 0;
+    act(() => { elapsed = result.current.stop(); });
     expect(elapsed).toBe(1500);
   });
 
   it('reset clears timer state', () => {
     mockNow.mockReturnValue(1000);
     const { result } = renderHook(() => useRoundTimer());
-
     act(() => result.current.start());
     mockNow.mockReturnValue(2000);
     act(() => result.current.reset());
-
     mockNow.mockReturnValue(3000);
-    let elapsed: number = 0;
-    act(() => {
-      elapsed = result.current.stop();
-    });
+    let elapsed = 0;
+    act(() => { elapsed = result.current.stop(); });
     expect(elapsed).toBe(0);
   });
 
-  it('displayRef can be attached to an element', () => {
+  it('displayRef and barRef can be attached', () => {
     const { result } = renderHook(() => useRoundTimer());
     expect(result.current.displayRef).toBeDefined();
-  });
-
-  it('barRef can be attached to an element', () => {
-    const { result } = renderHook(() => useRoundTimer());
     expect(result.current.barRef).toBeDefined();
   });
 
@@ -109,37 +89,30 @@ describe('useRoundTimer', () => {
     mockNow.mockReturnValue(1000);
     const cancelSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
     const { result, unmount } = renderHook(() => useRoundTimer());
-
     act(() => result.current.start());
     unmount();
-
     expect(cancelSpy).toHaveBeenCalled();
     cancelSpy.mockRestore();
   });
 
-  describe('countdown display', () => {
-    it('reset sets display to "50.0s"', () => {
+  describe('countdown display with 20s numeric timer', () => {
+    it('reset sets display to "20.0s" for default duration', () => {
       const { result } = renderHook(() => useRoundTimer());
       const el = document.createElement('span');
       (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-
       act(() => result.current.reset());
-      expect(el.textContent).toBe('50.0s');
+      expect(el.textContent).toBe('20.0s');
     });
 
-    it('displays countdown from 50.0s toward 0.0s', () => {
+    it('displays countdown toward 0.0s', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const el = document.createElement('span');
       (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-
       act(() => result.current.start());
-
-      // Simulate 20 seconds elapsed
-      mockNow.mockReturnValue(21000);
+      mockNow.mockReturnValue(11000); // 10s elapsed, 10s remaining
       act(() => flushRAF());
-
-      expect(el.textContent).toBe('30.0s');
+      expect(el.textContent).toBe('10.0s');
     });
 
     it('countdown never goes below 0.0s', () => {
@@ -147,13 +120,33 @@ describe('useRoundTimer', () => {
       const { result } = renderHook(() => useRoundTimer());
       const el = document.createElement('span');
       (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(80000);
+      mockNow.mockReturnValue(30000);
       act(() => flushRAF());
-
       expect(el.textContent).toBe('0.0s');
+    });
+  });
+
+  describe('dynamic duration with setDuration', () => {
+    it('reset shows 50.0s when duration is set to 50000', () => {
+      const { result } = renderHook(() => useRoundTimer());
+      const el = document.createElement('span');
+      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
+      act(() => result.current.setDuration(50000));
+      act(() => result.current.reset());
+      expect(el.textContent).toBe('50.0s');
+    });
+
+    it('50s timer shows 25.0s at 25s elapsed', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const el = document.createElement('span');
+      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
+      act(() => result.current.setDuration(50000));
+      act(() => result.current.start());
+      mockNow.mockReturnValue(26000); // 25s elapsed
+      act(() => flushRAF());
+      expect(el.textContent).toBe('25.0s');
     });
   });
 
@@ -162,109 +155,87 @@ describe('useRoundTimer', () => {
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.reset());
       expect(barEl.style.width).toBe('100%');
       expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.green));
     });
 
-    it('bar width decreases as time elapses', () => {
+    it('bar width decreases proportionally (50% at midpoint)', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(26000); // 25s elapsed, 50% remaining
+      mockNow.mockReturnValue(11000); // 10s elapsed = 50% of 20s
       act(() => flushRAF());
-
       expect(barEl.style.width).toBe('50%');
     });
 
-    it('bar width is 0% after 50+ seconds', () => {
+    it('bar is 0% after timer expires', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(70000);
+      mockNow.mockReturnValue(30000);
       act(() => flushRAF());
-
       expect(barEl.style.width).toBe('0%');
     });
 
-    it('bar color is green in 0-20s range', () => {
+    it('bar color green at <40% elapsed', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(16000); // 15s elapsed
+      mockNow.mockReturnValue(5000); // 4s elapsed = 20% of 20s = green
       act(() => flushRAF());
-
       expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.green));
     });
 
-    it('bar color is lightGreen in 20-30s range', () => {
+    it('bar color lightGreen at 40-60% elapsed', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(26000); // 25s elapsed
+      mockNow.mockReturnValue(11000); // 10s elapsed = 50% of 20s = lightGreen
       act(() => flushRAF());
-
       expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.lightGreen));
     });
 
-    it('bar color is orange in 30-40s range', () => {
+    it('bar color orange at 60-80% elapsed', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(36000); // 35s elapsed
+      mockNow.mockReturnValue(15000); // 14s elapsed = 70% of 20s = orange
       act(() => flushRAF());
-
       expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.orange));
     });
 
-    it('bar color is red in 40-50s range', () => {
+    it('bar color red at >=80% elapsed', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(46000); // 45s elapsed
+      mockNow.mockReturnValue(18000); // 17s elapsed = 85% of 20s = red
       act(() => flushRAF());
-
       expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.red));
     });
 
-    it('bar ARIA attributes are updated with remaining time', () => {
+    it('bar ARIA attributes updated with remaining time', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(21000); // 20s elapsed, 30.0s remaining
+      mockNow.mockReturnValue(11000); // 10s elapsed, 10s remaining
       act(() => flushRAF());
-
-      expect(barEl.getAttribute('aria-valuenow')).toBe('30.0');
-      expect(barEl.getAttribute('aria-valuetext')).toBe('30.0 seconds remaining');
+      expect(barEl.getAttribute('aria-valuenow')).toBe('10.0');
+      expect(barEl.getAttribute('aria-valuetext')).toBe('10.0 seconds remaining');
     });
   });
 
@@ -276,21 +247,14 @@ describe('useRoundTimer', () => {
       const barEl = document.createElement('div');
       (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = displayEl;
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      mockNow.mockReturnValue(2000); // 1s elapsed
+      mockNow.mockReturnValue(2000);
       act(() => flushRAF());
-
       const frozenDisplay = displayEl.textContent;
       const frozenWidth = barEl.style.width;
-
       act(() => result.current.stop());
-
-      // After stop, rAF is cancelled, so flush does nothing
-      mockNow.mockReturnValue(5000);
+      mockNow.mockReturnValue(15000);
       act(() => flushRAF());
-
       expect(displayEl.textContent).toBe(frozenDisplay);
       expect(barEl.style.width).toBe(frozenWidth);
     });
@@ -302,18 +266,13 @@ describe('useRoundTimer', () => {
       const { result } = renderHook(() => useRoundTimer(true));
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
-
       act(() => result.current.start());
-
-      // 250ms elapsed - should snap to 0ms boundary (100%)
       mockNow.mockReturnValue(1250);
       act(() => flushRAF());
-      expect(barEl.style.width).toBe('100%');
-
-      // 500ms elapsed - should snap to 500ms boundary (99%)
+      expect(barEl.style.width).toBe('100%'); // snaps to 0ms = 100%
       mockNow.mockReturnValue(1500);
       act(() => flushRAF());
-      expect(barEl.style.width).toBe('99%');
+      expect(barEl.style.width).toBe('97.5%'); // 500ms of 20000ms = 2.5% elapsed
     });
   });
 });

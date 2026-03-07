@@ -135,14 +135,30 @@ const fr: Dictionary = {
   'questionType.percentage': 'Pourcentages',
   'questionType.ratio': 'Rapports',
   'questionType.fraction': 'Fractions',
-  'questionType.ruleOfThree': 'Problèmes',
+  'questionType.multiItemRatio': 'Défis de tri',
+  'questionType.percentageOfWhole': 'Histoires de pourcentage',
+  'questionType.complexExtrapolation': 'Problèmes d’échelle',
 
-  'ruleOfThree.shopping': 'Si {a} jouets coûtent {b} €, combien coûtent {c} jouets ?',
-  'ruleOfThree.reading': 'Si tu lis {a} pages en {b} min, combien de temps pour {c} pages ?',
-  'ruleOfThree.cooking': 'Une recette pour {a} personnes demande {b} œufs. Combien pour {c} personnes ?',
-  'ruleOfThree.travel': 'Une voiture utilise {b} litres pour {a} km. Combien pour {c} km ?',
-  'ruleOfThree.art': 'Si {a} dessins demandent {b} crayons, combien pour {c} dessins ?',
-  'ruleOfThree.sports': 'Si tu marques {b} buts en {a} matchs, combien en {c} matchs ?',
+  'story.multiItemRatio.backpack': 'Un sac a {a} classeurs bleus ({b}g chacun) et {c} cahiers rouges ({d}g chacun). Quel est le poids total des classeurs bleus ?',
+  'story.multiItemRatio.lunchbox': 'Une boîte à lunch a {a} pommes ({b} cal chacune) et {c} biscuits ({d} cal chacun). Combien de calories dans les pommes ?',
+  'story.multiItemRatio.toybox': 'Un coffre à jouets a {a} voitures ({b} € chacune) et {c} poupées ({d} € chacune). Quel est le coût total des voitures ?',
+  'story.multiItemRatio.garden': 'Un jardin a {a} roses ({b}cm chacune) et {c} tournesols ({d}cm chacun). Quelle est la hauteur totale des roses ?',
+  'story.multiItemRatio.shelf': 'Une étagère a {a} livres de sciences ({b} pages chacun) et {c} BD ({d} pages chacune). Combien de pages dans les livres de sciences ?',
+  'story.multiItemRatio.art': 'Un kit d’art a {a} tubes de peinture ({b}ml chacun) et {c} bâtons de colle ({d}ml chacun). Combien de ml de peinture au total ?',
+
+  'story.percentageOfWhole.petshop': 'Une animalerie a {a} chatons, {b} chiots et d’autres animaux — {c} au total. Quel pourcentage sont les chatons ?',
+  'story.percentageOfWhole.classroom': 'Une classe a {a} garçons, {b} filles et des professeurs. Il y a {c} personnes au total. Quel pourcentage sont les garçons ?',
+  'story.percentageOfWhole.orchard': 'Un verger a {a} pommiers, {b} poiriers et des cerisiers — {c} arbres au total. Quel pourcentage sont les pommiers ?',
+  'story.percentageOfWhole.aquarium': 'Un aquarium a {a} poissons rouges, {b} scalaires et des poissons-clowns — {c} poissons au total. Quel pourcentage sont les poissons rouges ?',
+  'story.percentageOfWhole.market': 'Un étal a {a} oranges, {b} bananes et des mangues — {c} fruits au total. Quel pourcentage sont les oranges ?',
+  'story.percentageOfWhole.zoo': 'Un enclos a {a} lions, {b} tigres et des ours — {c} animaux au total. Quel pourcentage sont les lions ?',
+
+  'story.complexExtrapolation.space': 'Par un beau jour dans l’espace, si {a} éclaireurs ont besoin de {b} réservoirs d’oxygène, combien en faut-il pour {c} éclaireurs ?',
+  'story.complexExtrapolation.camping': 'Près d’un lac, si {a} campeurs ont besoin de {b} piquets, combien en faut-il pour {c} campeurs ?',
+  'story.complexExtrapolation.baking': 'Dans une cuisine animée, si {a} gâteaux nécessitent {b} œufs, combien en faut-il pour {c} gâteaux ?',
+  'story.complexExtrapolation.travel': 'Sur une route de montagne, si {a} voitures utilisent {b} litres, combien en faut-il pour {c} voitures ?',
+  'story.complexExtrapolation.sports': 'Un après-midi pluvieux, si {a} équipes ont besoin de {b} ballons, combien en faut-il pour {c} équipes ?',
+  'story.complexExtrapolation.school': 'En cours d’art, si {a} élèves ont besoin de {b} pinceaux, combien en faut-il pour {c} élèves ?',
 };
 
 export default fr;

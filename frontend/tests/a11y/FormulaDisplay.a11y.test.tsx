@@ -9,7 +9,7 @@ describe('FormulaDisplay accessibility', () => {
     type: 'percentage',
     values: [25, 80, 20],
     hiddenPosition: 'C',
-    correctAnswer: 20,
+    correctAnswer: 20, timerDurationMs: 20000,
   };
 
   it('passes axe checks during input phase with pulsing', async () => {

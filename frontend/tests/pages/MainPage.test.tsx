@@ -25,16 +25,16 @@ vi.mock('react-router-dom', async () => {
 /** Deterministic formulas for testing — all hiddenPosition 'C' for easy answers. */
 function createTestFormulas(): Formula[] {
   return [
-    { type: 'percentage', values: [10, 10, 1], hiddenPosition: 'C', correctAnswer: 1 },
-    { type: 'percentage', values: [10, 20, 2], hiddenPosition: 'C', correctAnswer: 2 },
-    { type: 'percentage', values: [10, 30, 3], hiddenPosition: 'C', correctAnswer: 3 },
-    { type: 'percentage', values: [10, 40, 4], hiddenPosition: 'C', correctAnswer: 4 },
-    { type: 'percentage', values: [10, 50, 5], hiddenPosition: 'C', correctAnswer: 5 },
-    { type: 'percentage', values: [10, 60, 6], hiddenPosition: 'C', correctAnswer: 6 },
-    { type: 'percentage', values: [10, 70, 7], hiddenPosition: 'C', correctAnswer: 7 },
-    { type: 'percentage', values: [10, 80, 8], hiddenPosition: 'C', correctAnswer: 8 },
-    { type: 'percentage', values: [10, 90, 9], hiddenPosition: 'C', correctAnswer: 9 },
-    { type: 'percentage', values: [10, 100, 10], hiddenPosition: 'C', correctAnswer: 10 },
+    { type: 'percentage', values: [10, 10, 1], hiddenPosition: 'C', correctAnswer: 1, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 20, 2], hiddenPosition: 'C', correctAnswer: 2, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 30, 3], hiddenPosition: 'C', correctAnswer: 3, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 40, 4], hiddenPosition: 'C', correctAnswer: 4, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 50, 5], hiddenPosition: 'C', correctAnswer: 5, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 60, 6], hiddenPosition: 'C', correctAnswer: 6, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 70, 7], hiddenPosition: 'C', correctAnswer: 7, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 80, 8], hiddenPosition: 'C', correctAnswer: 8, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 90, 9], hiddenPosition: 'C', correctAnswer: 9, timerDurationMs: 20000 },
+    { type: 'percentage', values: [10, 100, 10], hiddenPosition: 'C', correctAnswer: 10, timerDurationMs: 20000 },
   ];
 }
 

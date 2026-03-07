@@ -15,7 +15,9 @@ const CATEGORY_LABEL_KEYS: Record<QuestionType, string> = {
   percentage: 'questionType.percentage',
   ratio: 'questionType.ratio',
   fraction: 'questionType.fraction',
-  ruleOfThree: 'questionType.ruleOfThree',
+  multiItemRatio: 'questionType.multiItemRatio',
+  percentageOfWhole: 'questionType.percentageOfWhole',
+  complexExtrapolation: 'questionType.complexExtrapolation',
 };
 
 /**

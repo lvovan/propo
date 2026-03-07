@@ -20,14 +20,15 @@ export function identifyChallengingItems(allRounds: RoundResult[]): ChallengingI
   const validRounds = allRounds.filter((r) => r.type != null);
   if (validRounds.length === 0) return [];
 
-  // Group by question type
+  // Group by question type (map legacy ruleOfThree → complexExtrapolation)
   const typeMap = new Map<QuestionType, { mistakeCount: number; totalMs: number; occurrences: number }>();
 
   for (const round of validRounds) {
-    let stats = typeMap.get(round.type);
+    const type: QuestionType = (round.type as string) === 'ruleOfThree' ? 'complexExtrapolation' : round.type;
+    let stats = typeMap.get(type);
     if (!stats) {
       stats = { mistakeCount: 0, totalMs: 0, occurrences: 0 };
-      typeMap.set(round.type, stats);
+      typeMap.set(type, stats);
     }
 
     if (!round.isCorrect) {
