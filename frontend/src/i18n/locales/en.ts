@@ -77,10 +77,6 @@ const en = {
 
   // ── Gameplay ───────────────────────────────────────────────────
 
-  /** Pre-game heading on the main page. */
-  'game.readyToPlay': 'Ready to play?',
-  /** Pre-game instructions on the main page. */
-  'game.instructions': 'Answer 10 proportion questions as fast as you can!',
   /** Feedback text when the player answers correctly. */
   'game.correct': 'Correct!',
   /** Feedback text when the player answers incorrectly. */
@@ -311,8 +307,6 @@ const en = {
 
   /** Label for percentage questions. */
   'questionType.percentage': 'Percentages',
-  /** Label for ratio questions. */
-  'questionType.ratio': 'Ratios',
   /** Label for fraction questions. */
   'questionType.fraction': 'Fractions',
   /** Label for multi-item ratio story challenges. */
@@ -531,6 +525,68 @@ const en = {
   'story.percentageOfWhole.island': 'An island has {a} palm trees, {b} coconut trees, and some banana plants — {c} trees total. What percentage are palms?',
   'story.percentageOfWhole.arcade': 'An arcade has {a} racing games, {b} shooting games, and some puzzle games — {c} machines total. What percentage are racing?',
   'story.percentageOfWhole.hospital': 'A hospital floor has {a} doctors, {b} nurses, and some technicians — {c} staff total. What percentage are doctors?',
+
+  // ── percentageOfWhole combined-target variants ──
+  'story.percentageOfWhole.petshop.combined': 'A pet shop has {a} kittens, {b} puppies, and some hamsters — {c} animals in total. What percentage of all the animals are the kittens or puppies?',
+  'story.percentageOfWhole.classroom.combined': 'A classroom has {a} boys, {b} girls, and some teachers. There are {c} people in total. What percentage are the boys or girls?',
+  'story.percentageOfWhole.orchard.combined': 'An orchard has {a} apple trees, {b} pear trees, and some cherry trees — {c} trees total. What percentage are apple trees or pear trees?',
+  'story.percentageOfWhole.aquarium.combined': 'An aquarium has {a} goldfish, {b} angelfish, and some clownfish — {c} fish in total. What percentage are the goldfish or angelfish?',
+  'story.percentageOfWhole.market.combined': 'A market stall has {a} oranges, {b} bananas, and some mangoes — {c} fruits total. What percentage are the oranges or bananas?',
+  'story.percentageOfWhole.zoo.combined': 'A zoo section has {a} lions, {b} tigers, and some bears — {c} animals total. What percentage are the lions or tigers?',
+  'story.percentageOfWhole.school.combined': 'A school has {a} science teachers, {b} math teachers, and other staff — {c} staff total. What percentage are science teachers or math teachers?',
+  'story.percentageOfWhole.parking.combined': 'A parking lot has {a} red cars, {b} blue cars, and other colors — {c} cars total. What percentage are red or blue cars?',
+  'story.percentageOfWhole.garden.combined': 'A garden has {a} tulips, {b} daisies, and some roses — {c} flowers total. What percentage are tulips or daisies?',
+  'story.percentageOfWhole.library.combined': 'A library shelf has {a} fiction books, {b} non-fiction, and some reference books — {c} books total. What percentage are fiction or non-fiction?',
+  'story.percentageOfWhole.farm.combined': 'A farm has {a} cows, {b} sheep, and some goats — {c} animals total. What percentage are cows or sheep?',
+  'story.percentageOfWhole.playlist.combined': 'A playlist has {a} rock songs, {b} pop songs, and some jazz tracks — {c} songs total. What percentage are rock or pop songs?',
+  'story.percentageOfWhole.team.combined': 'A sports club has {a} swimmers, {b} runners, and some cyclists — {c} athletes total. What percentage are swimmers or runners?',
+  'story.percentageOfWhole.closet.combined': 'A wardrobe has {a} shirts, {b} pants, and some jackets — {c} items total. What percentage are shirts or pants?',
+  'story.percentageOfWhole.bakery.combined': 'A bakery has {a} croissants, {b} muffins, and some cookies — {c} pastries total. What percentage are croissants or muffins?',
+  'story.percentageOfWhole.pond.combined': 'A pond has {a} ducks, {b} swans, and some geese — {c} birds total. What percentage are ducks or swans?',
+  'story.percentageOfWhole.toolbox.combined': 'A toolbox has {a} screwdrivers, {b} hammers, and some wrenches — {c} tools total. What percentage are screwdrivers or hammers?',
+  'story.percentageOfWhole.camp.combined': 'A summer camp has {a} campers from town, {b} from the city, and some from abroad — {c} campers total. What percentage are from town or from the city?',
+  'story.percentageOfWhole.bus.combined': 'A bus has {a} students, {b} adults, and some seniors — {c} passengers total. What percentage are students or adults?',
+  'story.percentageOfWhole.fridge.combined': 'A fridge has {a} yogurts, {b} juices, and some cheeses — {c} items total. What percentage are yogurts or juices?',
+  'story.percentageOfWhole.beach.combined': 'A beach has {a} surfers, {b} swimmers, and some sunbathers — {c} people total. What percentage are surfers or swimmers?',
+  'story.percentageOfWhole.forest.combined': 'A forest has {a} oak trees, {b} pine trees, and some birch — {c} trees total. What percentage are oaks or pine trees?',
+  'story.percentageOfWhole.jar.combined': 'A jar has {a} red marbles, {b} blue marbles, and some green ones — {c} marbles total. What percentage are red or blue marbles?',
+  'story.percentageOfWhole.science.combined': 'A science class has {a} biology students, {b} chemistry students, and some physics students — {c} students total. What percentage study biology or chemistry students?',
+  'story.percentageOfWhole.race.combined': 'A race has {a} cyclists, {b} runners, and some skaters — {c} participants total. What percentage are cyclists or runners?',
+  'story.percentageOfWhole.collection.combined': 'A stamp collection has {a} European stamps, {b} Asian stamps, and some American — {c} stamps total. What percentage are European or Asian stamps?',
+  'story.percentageOfWhole.basket.combined': 'A fruit basket has {a} apples, {b} pears, and some plums — {c} fruits total. What percentage are apples or pears?',
+  'story.percentageOfWhole.desk.combined': 'A pencil case has {a} pens, {b} pencils, and some markers — {c} items total. What percentage are pens or pencils?',
+  'story.percentageOfWhole.band.combined': 'A band has {a} guitarists, {b} drummers, and some vocalists — {c} members total. What percentage are guitarists or drummers?',
+  'story.percentageOfWhole.cinema.combined': 'A cinema has {a} action movies, {b} comedies, and some dramas — {c} movies total. What percentage are action or comedies?',
+  'story.percentageOfWhole.shoes.combined': 'A shoe store has {a} sneakers, {b} sandals, and some boots — {c} pairs total. What percentage are sneakers or sandals?',
+  'story.percentageOfWhole.park.combined': 'A park has {a} maple trees, {b} elm trees, and some willows — {c} trees total. What percentage are maples or elm trees?',
+  'story.percentageOfWhole.chocolate.combined': 'A box has {a} milk chocolates, {b} dark chocolates, and some white — {c} chocolates total. What percentage are milk or dark chocolates?',
+  'story.percentageOfWhole.chess.combined': 'A chess club has {a} beginners, {b} intermediate players, and some advanced — {c} members total. What percentage are beginners or intermediate players?',
+  'story.percentageOfWhole.aviary.combined': 'An aviary has {a} parrots, {b} canaries, and some finches — {c} birds total. What percentage are parrots or canaries?',
+  'story.percentageOfWhole.toystore.combined': 'A toy store has {a} board games, {b} puzzles, and some card games — {c} games total. What percentage are board games or puzzles?',
+  'story.percentageOfWhole.lab.combined': 'A lab has {a} microscopes, {b} test tubes, and some beakers — {c} items total. What percentage are microscopes or test tubes?',
+  'story.percentageOfWhole.field.combined': 'A field has {a} soccer players, {b} rugby players, and some hockey players — {c} players total. What percentage play soccer or rugby players?',
+  'story.percentageOfWhole.train.combined': 'A train has {a} first-class seats, {b} second-class, and some standing spots — {c} spots total. What percentage are first-class or second-class?',
+  'story.percentageOfWhole.farmers.combined': 'A market has {a} vegetable stalls, {b} fruit stalls, and some bakery stalls — {c} stalls total. What percentage sell vegetables or fruit stalls?',
+  'story.percentageOfWhole.tank.combined': 'A tank has {a} neon tetras, {b} guppies, and some mollies — {c} fish total. What percentage are neon tetras or guppies?',
+  'story.percentageOfWhole.museum.combined': 'A museum wing has {a} paintings, {b} sculptures, and some photographs — {c} artworks total. What percentage are paintings or sculptures?',
+  'story.percentageOfWhole.lunch.combined': 'A lunch line has {a} students choosing pizza, {b} choosing pasta, and some choosing salad — {c} students total. What percentage chose pizza or choosing pasta?',
+  'story.percentageOfWhole.gym.combined': 'A gym class has {a} basketball fans, {b} volleyball fans, and some tennis fans — {c} students total. What percentage prefer basketball or volleyball fans?',
+  'story.percentageOfWhole.veggie.combined': 'A vegetable garden has {a} tomato plants, {b} carrot plants, and some lettuce — {c} plants total. What percentage are tomatoes or carrot plants?',
+  'story.percentageOfWhole.scouts.combined': 'A scout troop has {a} girls, {b} boys, and some leaders — {c} people total. What percentage are girls or boys?',
+  'story.percentageOfWhole.traffic.combined': 'A street has {a} bikes, {b} scooters, and some skateboards — {c} vehicles total. What percentage are bikes or scooters?',
+  'story.percentageOfWhole.spices.combined': 'A spice rack has {a} herbs, {b} spices, and some seasonings — {c} jars total. What percentage are herbs or spices?',
+  'story.percentageOfWhole.airport.combined': 'An airport gate has {a} families, {b} business travelers, and some solo travelers — {c} groups total. What percentage are families or business travelers?',
+  'story.percentageOfWhole.reef.combined': 'A reef has {a} starfish, {b} sea urchins, and some crabs — {c} creatures total. What percentage are starfish or sea urchins?',
+  'story.percentageOfWhole.candy.combined': 'A candy shop has {a} lollipops, {b} gummy bears, and some chocolate bars — {c} sweets total. What percentage are lollipops or gummy bears?',
+  'story.percentageOfWhole.theater.combined': 'A theater has {a} front-row seats, {b} middle seats, and some balcony seats — {c} seats total. What percentage are front-row or middle seats?',
+  'story.percentageOfWhole.safari.combined': 'A safari has {a} zebras, {b} giraffes, and some elephants — {c} animals total. What percentage are zebras or giraffes?',
+  'story.percentageOfWhole.garage.combined': 'A garage has {a} sedans, {b} SUVs, and some trucks — {c} vehicles total. What percentage are sedans or SUVs?',
+  'story.percentageOfWhole.studio.combined': 'An art studio has {a} watercolor paintings, {b} oil paintings, and some sketches — {c} works total. What percentage are watercolors or oil paintings?',
+  'story.percentageOfWhole.shelter.combined': 'An animal shelter has {a} cats, {b} dogs, and some rabbits — {c} animals total. What percentage are cats or dogs?',
+  'story.percentageOfWhole.carnival.combined': 'A carnival has {a} food stands, {b} game booths, and some ride stations — {c} attractions total. What percentage are food stands or game booths?',
+  'story.percentageOfWhole.island.combined': 'An island has {a} palm trees, {b} coconut trees, and some banana plants — {c} trees total. What percentage are palms or coconut trees?',
+  'story.percentageOfWhole.arcade.combined': 'An arcade has {a} racing games, {b} shooting games, and some puzzle games — {c} machines total. What percentage are racing or shooting games?',
+  'story.percentageOfWhole.hospital.combined': 'A hospital floor has {a} doctors, {b} nurses, and some technicians — {c} staff total. What percentage are doctors or nurses?',
 
   // ── Story Challenge: Complex Extrapolation Templates ───────────
 

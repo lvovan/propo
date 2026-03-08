@@ -50,37 +50,9 @@ function generatePercentageFormula(pool: Triple[], randomFn: () => number): Form
   return { type: 'percentage', values, hiddenPosition, correctAnswer, timerDurationMs: NUMERIC_TIMER_MS };
 }
 
-// ── Ratio pool ───────────────────────────────────────────────────
+// ── Fraction pool ────────────────────────────────────────────────
 
 export interface Quad { a: number; b: number; c: number; d: number }
-
-export function buildRatioPool(): Quad[] {
-  const pool: Quad[] = [];
-  for (let a = 1; a <= 10; a++) {
-    for (let b = 1; b <= 10; b++) {
-      if (a === b) continue;
-      for (let m = 2; m <= 8; m++) {
-        const c = a * m;
-        const d = b * m;
-        if (c <= 100 && d <= 100) {
-          pool.push({ a, b, c, d });
-        }
-      }
-    }
-  }
-  return pool;
-}
-
-function generateRatioFormula(pool: Quad[], randomFn: () => number): Formula {
-  const quad = pickRandom(pool, randomFn);
-  const positions: HiddenPosition[] = ['A', 'B', 'C', 'D'];
-  const hiddenPosition = pickRandom(positions, randomFn);
-  const values = [quad.a, quad.b, quad.c, quad.d];
-  const correctAnswer = values[positions.indexOf(hiddenPosition)];
-  return { type: 'ratio', values, hiddenPosition, correctAnswer, timerDurationMs: NUMERIC_TIMER_MS };
-}
-
-// ── Fraction pool ────────────────────────────────────────────────
 
 export function buildFractionPool(): Quad[] {
   const pool: Quad[] = [];
@@ -404,18 +376,45 @@ export function buildPercentageOfWholePool(): Triple[] {
 
 function generatePercentageOfWholeFormula(pool: Triple[], randomFn: () => number): Formula {
   const triple = pickRandom(pool, randomFn);
-  // values: [targetCount, otherCount, total] — template uses {a}, {b}, {c}
-  // Randomly swap a and b so the target isn't always the first element mentioned.
-  // Only swap when b/c also yields a friendly percentage; otherwise keep original order.
-  const bPct = (triple.b / triple.c) * 100;
-  const canSwap = FRIENDLY_WHOLE_PERCENTAGES.has(bPct);
-  const shouldSwap = canSwap && randomFn() < 0.5;
-  const targetCount = shouldSwap ? triple.b : triple.a;
-  const otherCount = shouldSwap ? triple.a : triple.b;
-  const values = [targetCount, otherCount, triple.c];
-  const correctAnswer = (targetCount / triple.c) * 100;
   const template = pickRandom(PERCENTAGE_OF_WHOLE_TEMPLATES, randomFn);
-  return { type: 'percentageOfWhole', values, hiddenPosition: 'C', correctAnswer, wordProblemKey: template.key, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
+
+  // Compute percentages for all three target options
+  const aPct = (triple.a / triple.c) * 100;  // always valid (pool invariant)
+  const bPct = (triple.b / triple.c) * 100;
+  const combinedPct = ((triple.a + triple.b) / triple.c) * 100;
+
+  // Build list of valid targets
+  type Target = 'first' | 'second' | 'combined';
+  const validTargets: Target[] = ['first'];  // 'first' always valid
+  if (FRIENDLY_WHOLE_PERCENTAGES.has(bPct)) validTargets.push('second');
+  if (FRIENDLY_WHOLE_PERCENTAGES.has(combinedPct)) validTargets.push('combined');
+
+  // Deterministic random selection from valid targets
+  const target = validTargets[Math.floor(randomFn() * validTargets.length)];
+
+  let values: number[];
+  let correctAnswer: number;
+  let wordProblemKey: string;
+
+  switch (target) {
+    case 'first':
+      values = [triple.a, triple.b, triple.c];
+      correctAnswer = aPct;
+      wordProblemKey = template.key;
+      break;
+    case 'second':
+      values = [triple.b, triple.a, triple.c];
+      correctAnswer = bPct;
+      wordProblemKey = template.key;
+      break;
+    case 'combined':
+      values = [triple.a, triple.b, triple.c];
+      correctAnswer = combinedPct;
+      wordProblemKey = template.key + '.combined';
+      break;
+  }
+
+  return { type: 'percentageOfWhole', values, hiddenPosition: 'C', correctAnswer, wordProblemKey, answerUnitKey: template.unitKey, timerDurationMs: STORY_TIMER_MS };
 }
 
 // ── Complex Extrapolation pool (Story Challenge) ─────────────────
@@ -518,7 +517,6 @@ function generateComplexExtrapolationFormula(pool: Quad[], randomFn: () => numbe
 
 interface Pools {
   percentage: Triple[];
-  ratio: Quad[];
   fraction: Quad[];
   multiItemRatio: Quad[];
   percentageOfWhole: Triple[];
@@ -528,7 +526,6 @@ interface Pools {
 function buildAllPools(): Pools {
   return {
     percentage: buildPercentagePool(),
-    ratio: buildRatioPool(),
     fraction: buildFractionPool(),
     multiItemRatio: buildMultiItemRatioPool(),
     percentageOfWhole: buildPercentageOfWholePool(),
@@ -539,7 +536,6 @@ function buildAllPools(): Pools {
 function generateFormulaByType(type: QuestionType, pools: Pools, randomFn: () => number): Formula {
   switch (type) {
     case 'percentage': return generatePercentageFormula(pools.percentage, randomFn);
-    case 'ratio':      return generateRatioFormula(pools.ratio, randomFn);
     case 'fraction':   return generateFractionFormula(pools.fraction, randomFn);
     case 'multiItemRatio': return generateMultiItemRatioFormula(pools.multiItemRatio, randomFn);
     case 'percentageOfWhole': return generatePercentageOfWholeFormula(pools.percentageOfWhole, randomFn);
@@ -552,17 +548,16 @@ function generateFormulaByType(type: QuestionType, pools: Pools, randomFn: () =>
 /**
  * Generates 10 proportional-reasoning questions for a single game.
  *
- * Distribution: 5 numeric (2 percentage, 2 ratio, 1 fraction) + 5 word problems (ruleOfThree).
+ * Distribution: 5 numeric (2 percentage, 2 fraction, 1 random) + 5 word problems.
  * Order is shuffled.
  */
 export function generateFormulas(randomFn: () => number = Math.random): Formula[] {
   const pools = buildAllPools();
 
-  // 5 Pure Numeric: 2+2+1, shuffled to pick which gets 1
-  const numericTypes: QuestionType[] = ['percentage', 'percentage', 'ratio', 'ratio', 'fraction'];
+  // 5 Pure Numeric: 2 percentage + 2 fraction + 1 random (from percentage or fraction)
+  const numericTypes: QuestionType[] = ['percentage', 'percentage', 'fraction', 'fraction'];
+  numericTypes.push(pickRandom(PURE_NUMERIC_TYPES, randomFn));
   fisherYatesShuffle(numericTypes, randomFn);
-  // Randomly give the 5th slot to one of the 3 types
-  numericTypes[4] = pickRandom(PURE_NUMERIC_TYPES, randomFn);
 
   // 5 Story Challenge: 1 each guaranteed + 2 random
   const storyTypes: QuestionType[] = [
@@ -581,7 +576,7 @@ export function generateFormulas(randomFn: () => number = Math.random): Formula[
 /**
  * Generates 10 formulas for an Improve game, maintaining the 5/5 split.
  *
- * 5 numeric rounds (percentage, ratio, fraction) biased toward challenging numeric types.
+ * 5 numeric rounds (percentage, fraction) biased toward challenging numeric types.
  * 5 story challenge rounds biased toward challenging story types.
  * Non-challenging slots filled with balanced distribution.
  */
@@ -600,10 +595,10 @@ export function generateImproveFormulas(
   const challengeNumeric = mappedItems.filter((i) => PURE_NUMERIC_TYPES.includes(i.type));
   const challengeStory = mappedItems.filter((i) => STORY_CHALLENGE_TYPES.includes(i.type));
 
-  // Build 5 numeric slots: 1 per type baseline + 2 extra biased toward challenges
+  // Build 5 numeric slots: 1 per type baseline (2) + 3 extra biased toward challenges
   const numericSlots: QuestionType[] = [...PURE_NUMERIC_TYPES];
   const uniqueNumericChallenges = [...new Set(challengeNumeric.map((i) => i.type))];
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 3; i++) {
     if (uniqueNumericChallenges.length > 0) {
       numericSlots.push(pickRandom(uniqueNumericChallenges, randomFn));
     } else {

@@ -57,22 +57,7 @@ export default function FormulaDisplay({ formula, playerAnswer, typedDigits, isI
     );
   }
 
-  if (type === 'ratio') {
-    // A : B = C : D
-    return (
-      <div className={styles.formula} role="math" aria-label={ariaLabel}>
-        {slot('A', 0)}
-        <span className={styles.operator}>:</span>
-        {slot('B', 1)}
-        <span className={styles.operator}>=</span>
-        {slot('C', 2)}
-        <span className={styles.operator}>:</span>
-        {slot('D', 3)}
-      </div>
-    );
-  }
-
-  if (type === 'fraction') {
+  if ((type as string) === 'ratio' || type === 'fraction') {
     // A/B = C/D rendered inline with "/" operator
     return (
       <div className={styles.formula} role="math" aria-label={ariaLabel}>
@@ -157,7 +142,7 @@ function buildAriaLabel(
 function formatForAria(type: string, d: string[]): string {
   switch (type) {
     case 'percentage': return `${d[0]} percent of ${d[1]} equals ${d[2]}`;
-    case 'ratio':      return `${d[0]} to ${d[1]} equals ${d[2]} to ${d[3]}`;
+    case 'ratio':      // legacy records: display as fraction
     case 'fraction':   return `${d[0]} over ${d[1]} equals ${d[2]} over ${d[3]}`;
     case 'multiItemRatio': return `story problem: ${d[0]} maps to ${d[1]}, find the answer`;
     case 'percentageOfWhole': return `story problem: find the percentage of ${d[0]} out of the whole`;

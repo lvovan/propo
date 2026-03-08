@@ -14,7 +14,6 @@ interface ModeSelectorProps {
 /** Map question types to their i18n label keys. */
 const CATEGORY_LABEL_KEYS: Record<QuestionType, string> = {
   percentage: 'questionType.percentage',
-  ratio: 'questionType.ratio',
   fraction: 'questionType.fraction',
   multiItemRatio: 'questionType.multiItemRatio',
   percentageOfWhole: 'questionType.percentageOfWhole',

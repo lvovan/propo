@@ -170,7 +170,7 @@ describe('ScoreSummary', () => {
       expect(screen.getByText(/keep practising/i)).toBeInTheDocument();
       // The "Keep practising:" line should contain the incorrect pair
       const hint = screen.getByText(/keep practising/i);
-      expect(hint.textContent).toContain('2 : ? = 6 : 9');
+      expect(hint.textContent).toContain('2/? = 6/9');
     });
 
     it('does not show "Keep practising" when all answers are correct', () => {

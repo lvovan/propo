@@ -184,8 +184,7 @@ export default function MainPage() {
       <main style={{ padding: '24px 16px', textAlign: 'center' }}>
         {gameState.status === 'not-started' && !showCompetitionSetup && (
           <div>
-            <h1 className={styles.readyHeading}>{t('game.readyToPlay')}</h1>
-            <p className={styles.instructions}>{t('game.instructions')}</p>
+            <h1 className="sr-only">Propo!</h1>
             <RecentHighScores scores={recentScores} isEmpty={hasNoGames} />
             {gameHistory.length >= 2 && <ProgressionGraph history={gameHistory} />}
             <ModeSelector

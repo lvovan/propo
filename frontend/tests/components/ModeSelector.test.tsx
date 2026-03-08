@@ -34,7 +34,7 @@ describe('ModeSelector', () => {
   it('shows Improve button when showImprove is true', () => {
     render(
       <ModeSelector
-        {...defaultProps({ showImprove: true, trickyCategories: ['percentage', 'ratio'] })}
+        {...defaultProps({ showImprove: true, trickyCategories: ['percentage', 'fraction'] })}
       />,
     );
     expect(screen.getByRole('button', { name: /improve/i })).toBeInTheDocument();
@@ -64,11 +64,11 @@ describe('ModeSelector', () => {
   it('renders tricky categories in Improve descriptor', () => {
     render(
       <ModeSelector
-        {...defaultProps({ showImprove: true, trickyCategories: ['percentage', 'ratio'] })}
+        {...defaultProps({ showImprove: true, trickyCategories: ['percentage', 'fraction'] })}
       />,
     );
     expect(screen.getByText(/Percentages/)).toBeInTheDocument();
-    expect(screen.getByText(/Ratios/)).toBeInTheDocument();
+    expect(screen.getByText(/Fractions/)).toBeInTheDocument();
   });
 
   it('shows encouraging message when showEncouragement is true and showImprove is false', () => {
@@ -110,7 +110,7 @@ describe('ModeSelector', () => {
   it('Improve button aria-label includes tricky categories', () => {
     render(
       <ModeSelector
-        {...defaultProps({ showImprove: true, trickyCategories: ['percentage', 'ratio'] })}
+        {...defaultProps({ showImprove: true, trickyCategories: ['percentage', 'fraction'] })}
       />,
     );
     const btn = screen.getByRole('button', { name: /improve/i });
