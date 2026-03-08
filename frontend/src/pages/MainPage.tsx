@@ -33,7 +33,7 @@ export default function MainPage() {
   const { gameState, currentRound, correctAnswer, startGame, startCompetitiveGame, submitAnswer, nextRound, resetGame, gameMode, seed } =
     useGame();
   const { t } = useTranslation();
-  const { displayRef, barRef, pointLabelRef, start, stop, reset, setDuration } = useRoundTimer(undefined, gameMode === 'competitive');
+  const { barRef, pointLabelRef, start, stop, reset, setDuration } = useRoundTimer();
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scorePersistedRef = useRef(false);
   const prevStatusRef = useRef(gameState.status);
@@ -219,7 +219,6 @@ export default function MainPage() {
                   : gameState.rounds.length
               }
               score={gameState.score}
-              timerRef={displayRef}
               barRef={barRef}
               pointLabelRef={pointLabelRef}
               isReplay={gameState.status === 'replay'}

@@ -55,8 +55,7 @@ export const COMPETITIVE_MIN_POINTS = 1;
 export function calculateCompetitiveScore(isCorrect: boolean, elapsedMs: number, timerDurationMs: number): number {
   const clamped = Math.min(elapsedMs, timerDurationMs);
   const fraction = clamped / timerDurationMs;
-  const raw = COMPETITIVE_MAX_POINTS - (COMPETITIVE_MAX_POINTS - COMPETITIVE_MIN_POINTS) * fraction;
-  const pointValue = Math.max(COMPETITIVE_MIN_POINTS, Math.floor(raw));
+  const pointValue = Math.max(COMPETITIVE_MIN_POINTS, COMPETITIVE_MAX_POINTS - Math.floor((COMPETITIVE_MAX_POINTS - COMPETITIVE_MIN_POINTS) * fraction));
   return isCorrect ? pointValue : -pointValue;
 }
 

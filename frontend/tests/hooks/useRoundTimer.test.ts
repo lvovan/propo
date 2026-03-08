@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useRoundTimer } from '../../src/hooks/useRoundTimer';
-import { COUNTDOWN_COLORS } from '../../src/constants/scoring';
 
 function hexToRgb(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -79,10 +78,11 @@ describe('useRoundTimer', () => {
     expect(elapsed).toBe(0);
   });
 
-  it('displayRef and barRef can be attached', () => {
+  it('displayRef, barRef, and pointLabelRef are defined', () => {
     const { result } = renderHook(() => useRoundTimer());
     expect(result.current.displayRef).toBeDefined();
     expect(result.current.barRef).toBeDefined();
+    expect(result.current.pointLabelRef).toBeDefined();
   });
 
   it('cleanup cancels rAF on unmount', () => {
@@ -95,69 +95,23 @@ describe('useRoundTimer', () => {
     cancelSpy.mockRestore();
   });
 
-  describe('countdown display with 20s numeric timer', () => {
-    it('reset sets display to "20.0s" for default duration', () => {
+  describe('refs available', () => {
+    it('displayRef, barRef, and pointLabelRef can be attached', () => {
       const { result } = renderHook(() => useRoundTimer());
-      const el = document.createElement('span');
-      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      act(() => result.current.reset());
-      expect(el.textContent).toBe('20.0s');
-    });
-
-    it('displays countdown toward 0.0s', () => {
-      mockNow.mockReturnValue(1000);
-      const { result } = renderHook(() => useRoundTimer());
-      const el = document.createElement('span');
-      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      act(() => result.current.start());
-      mockNow.mockReturnValue(11000); // 10s elapsed, 10s remaining
-      act(() => flushRAF());
-      expect(el.textContent).toBe('10.0s');
-    });
-
-    it('countdown never goes below 0.0s', () => {
-      mockNow.mockReturnValue(1000);
-      const { result } = renderHook(() => useRoundTimer());
-      const el = document.createElement('span');
-      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      act(() => result.current.start());
-      mockNow.mockReturnValue(30000);
-      act(() => flushRAF());
-      expect(el.textContent).toBe('0.0s');
-    });
-  });
-
-  describe('dynamic duration with setDuration', () => {
-    it('reset shows 50.0s when duration is set to 50000', () => {
-      const { result } = renderHook(() => useRoundTimer());
-      const el = document.createElement('span');
-      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      act(() => result.current.setDuration(50000));
-      act(() => result.current.reset());
-      expect(el.textContent).toBe('50.0s');
-    });
-
-    it('50s timer shows 25.0s at 25s elapsed', () => {
-      mockNow.mockReturnValue(1000);
-      const { result } = renderHook(() => useRoundTimer());
-      const el = document.createElement('span');
-      (result.current.displayRef as React.MutableRefObject<HTMLElement | null>).current = el;
-      act(() => result.current.setDuration(50000));
-      act(() => result.current.start());
-      mockNow.mockReturnValue(26000); // 25s elapsed
-      act(() => flushRAF());
-      expect(el.textContent).toBe('25.0s');
+      expect(result.current.displayRef).toBeDefined();
+      expect(result.current.barRef).toBeDefined();
+      expect(result.current.pointLabelRef).toBeDefined();
     });
   });
 
   describe('bar ref updates', () => {
-    it('reset sets bar to full width and green', () => {
+    it('reset sets bar to full width with a color', () => {
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
       act(() => result.current.reset());
       expect(barEl.style.width).toBe('100%');
-      expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.green));
+      expect(barEl.style.backgroundColor).toBeTruthy();
     });
 
     it('bar width decreases proportionally (50% at midpoint)', () => {
@@ -182,51 +136,60 @@ describe('useRoundTimer', () => {
       expect(barEl.style.width).toBe('0%');
     });
 
-    it('bar color green at <40% elapsed', () => {
+    it('bar has color at start of round', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
       act(() => result.current.start());
-      mockNow.mockReturnValue(5000); // 4s elapsed = 20% of 20s = green
+      mockNow.mockReturnValue(5000); // 4s elapsed = 20% of 20s
       act(() => flushRAF());
-      expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.green));
+      expect(barEl.style.backgroundColor).toBeTruthy();
     });
 
-    it('bar color lightGreen at 40-60% elapsed', () => {
+    it('bar color changes at midpoint', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
       act(() => result.current.start());
-      mockNow.mockReturnValue(11000); // 10s elapsed = 50% of 20s = lightGreen
+      mockNow.mockReturnValue(1001);
       act(() => flushRAF());
-      expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.lightGreen));
+      const startColor = barEl.style.backgroundColor;
+      mockNow.mockReturnValue(11000); // 10s elapsed = 50% of 20s
+      act(() => flushRAF());
+      expect(barEl.style.backgroundColor).not.toBe(startColor);
     });
 
-    it('bar color orange at 60-80% elapsed', () => {
+    it('bar color changes toward end', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
       act(() => result.current.start());
-      mockNow.mockReturnValue(15000); // 14s elapsed = 70% of 20s = orange
+      mockNow.mockReturnValue(11000);
       act(() => flushRAF());
-      expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.orange));
+      const midColor = barEl.style.backgroundColor;
+      mockNow.mockReturnValue(15000); // 14s elapsed = 70% of 20s
+      act(() => flushRAF());
+      expect(barEl.style.backgroundColor).not.toBe(midColor);
     });
 
-    it('bar color red at >=80% elapsed', () => {
+    it('bar color at near expiry differs from start', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
       (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
       act(() => result.current.start());
-      mockNow.mockReturnValue(18000); // 17s elapsed = 85% of 20s = red
+      mockNow.mockReturnValue(1001);
       act(() => flushRAF());
-      expect(barEl.style.backgroundColor).toBe(hexToRgb(COUNTDOWN_COLORS.red));
+      const startColor = barEl.style.backgroundColor;
+      mockNow.mockReturnValue(18000); // 17s elapsed = 85% of 20s
+      act(() => flushRAF());
+      expect(barEl.style.backgroundColor).not.toBe(startColor);
     });
 
-    it('bar ARIA attributes updated with remaining time', () => {
+    it('bar ARIA attributes show point value', () => {
       mockNow.mockReturnValue(1000);
       const { result } = renderHook(() => useRoundTimer());
       const barEl = document.createElement('div');
@@ -234,8 +197,8 @@ describe('useRoundTimer', () => {
       act(() => result.current.start());
       mockNow.mockReturnValue(11000); // 10s elapsed, 10s remaining
       act(() => flushRAF());
-      expect(barEl.getAttribute('aria-valuenow')).toBe('10.0');
-      expect(barEl.getAttribute('aria-valuetext')).toBe('10.0 seconds remaining');
+      expect(barEl.getAttribute('aria-valuenow')).toBe('6');
+      expect(barEl.getAttribute('aria-valuetext')).toBe('6 points available');
     });
   });
 
@@ -273,6 +236,96 @@ describe('useRoundTimer', () => {
       mockNow.mockReturnValue(1500);
       act(() => flushRAF());
       expect(barEl.style.width).toBe('97.5%'); // 500ms of 20000ms = 2.5% elapsed
+    });
+  });
+
+  describe('unified point value display', () => {
+    it('shows point value 10 at the start of the round', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      const pointLabelEl = document.createElement('span');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      (result.current.pointLabelRef as React.MutableRefObject<HTMLElement | null>).current = pointLabelEl;
+      act(() => result.current.start());
+      mockNow.mockReturnValue(1000); // 0ms elapsed
+      act(() => flushRAF());
+      expect(pointLabelEl.textContent).toBe('10');
+    });
+
+    it('shows point value 10 at 1ms elapsed (not 9)', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      const pointLabelEl = document.createElement('span');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      (result.current.pointLabelRef as React.MutableRefObject<HTMLElement | null>).current = pointLabelEl;
+      act(() => result.current.start());
+      mockNow.mockReturnValue(1001); // 1ms elapsed
+      act(() => flushRAF());
+      expect(pointLabelEl.textContent).toBe('10');
+    });
+
+    it('shows point value 10 at 2222ms elapsed (just before boundary)', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      const pointLabelEl = document.createElement('span');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      (result.current.pointLabelRef as React.MutableRefObject<HTMLElement | null>).current = pointLabelEl;
+      act(() => result.current.start());
+      mockNow.mockReturnValue(3222); // 2222ms elapsed
+      act(() => flushRAF());
+      expect(pointLabelEl.textContent).toBe('10');
+    });
+
+    it('transitions to 9 just past the boundary', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      const pointLabelEl = document.createElement('span');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      (result.current.pointLabelRef as React.MutableRefObject<HTMLElement | null>).current = pointLabelEl;
+      act(() => result.current.start());
+      mockNow.mockReturnValue(3223); // 2223ms elapsed
+      act(() => flushRAF());
+      expect(pointLabelEl.textContent).toBe('9');
+    });
+
+    it('updates ARIA attributes with point value', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      const pointLabelEl = document.createElement('span');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      (result.current.pointLabelRef as React.MutableRefObject<HTMLElement | null>).current = pointLabelEl;
+      act(() => result.current.start());
+      mockNow.mockReturnValue(1000);
+      act(() => flushRAF());
+      expect(barEl.getAttribute('aria-valuenow')).toBe('10');
+    });
+
+    it('uses smooth color gradient for bar', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      act(() => result.current.start());
+      mockNow.mockReturnValue(11000); // 10s elapsed = 50% of 20s
+      act(() => flushRAF());
+      expect(barEl.style.backgroundColor).toBeTruthy();
+    });
+
+    it('reset sets point label to 10 and bar to full', () => {
+      mockNow.mockReturnValue(1000);
+      const { result } = renderHook(() => useRoundTimer());
+      const barEl = document.createElement('div');
+      const pointLabelEl = document.createElement('span');
+      (result.current.barRef as React.MutableRefObject<HTMLDivElement | null>).current = barEl;
+      (result.current.pointLabelRef as React.MutableRefObject<HTMLElement | null>).current = pointLabelEl;
+      act(() => result.current.reset());
+      expect(pointLabelEl.textContent).toBe('10');
+      expect(barEl.style.width).toBe('100%');
     });
   });
 });

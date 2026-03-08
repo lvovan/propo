@@ -22,6 +22,7 @@ export default function RecentHighScores({ scores, isEmpty }: RecentHighScoresPr
       <h2 id={headingId} className={styles.heading}>
         {t('scores.title')}
       </h2>
+      <p className={styles.subtitle}>{t('scores.excludingCompetition')}</p>
 
       {isEmpty ? (
         <p className={styles.emptyState}>

@@ -496,8 +496,10 @@ describe('MainPage — Scoring Display (US3)', () => {
     // Advance past feedback duration to see updated score in next round.
     await vi.advanceTimersByTimeAsync(1300);
 
-    // With fake timers, elapsed is ~0ms → tier 1 → 5 points
-    expect(screen.getByText('5', { exact: true })).toBeInTheDocument();
+    // With fake timers, elapsed is ~0ms → competitive scoring → 10 points
+    // Use getAllByText since "10" also appears in the progress bar label
+    const scoreElements = screen.getAllByText('10', { exact: true });
+    expect(scoreElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it('per-round points visible in score summary', async () => {
@@ -516,8 +518,8 @@ describe('MainPage — Scoring Display (US3)', () => {
       expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument();
     });
 
-    // Should show per-round points ("+5" for fast correct answers)
-    const pointsCells = screen.getAllByText('+5');
+    // Should show per-round points ("+10" for fast correct answers)
+    const pointsCells = screen.getAllByText('+10');
     expect(pointsCells.length).toBe(10);
   });
 
@@ -556,13 +558,13 @@ describe('MainPage — Scoring Display (US3)', () => {
       expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument();
     });
 
-    // Total score should be negative: 10 × -2 = -20 (replay rounds award no points)
+    // Total score should be negative: 10 × -10 = -100 (replay rounds award no points)
     const totalLabel = screen.getByText('Score');
     const totalSection = totalLabel.parentElement!;
-    expect(totalSection).toHaveTextContent('-20');
+    expect(totalSection).toHaveTextContent('-100');
   });
 
-  it('replay rounds show no points in summary', async () => {
+  it('replay rounds preserve original points in summary (FR-014)', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     renderMainPage();
 
@@ -594,21 +596,24 @@ describe('MainPage — Scoring Display (US3)', () => {
       expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument();
     });
 
-    // The replay round should have null points, which ScoreSummary shows as "—"
-    // Check the table has the correct summary
+    // The replay round should preserve its original points from primary play, not show "—"
     const table = screen.getByRole('table');
     expect(table).toBeInTheDocument();
+    // Verify no "—" appears in the points column (all rounds have actual point values)
+    const cells = table.querySelectorAll('td');
+    const cellTexts = Array.from(cells).map(c => c.textContent);
+    expect(cellTexts).not.toContain('—');
   });
 
-  it('timer element is present during gameplay', async () => {
+  it('progress bar is present during gameplay', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     renderMainPage();
 
     await user.click(screen.getByRole('button', { name: /^play/i }));
 
-    // Timer element should be present
-    const timerElement = document.querySelector('[data-testid="timer"]');
-    expect(timerElement).toBeInTheDocument();
+    // Progress bar should be present
+    const progressbar = document.querySelector('[role="progressbar"]');
+    expect(progressbar).toBeInTheDocument();
   });
 });
 

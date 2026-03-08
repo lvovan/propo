@@ -48,6 +48,8 @@ const pt: Dictionary = {
   'game.scoreLabel': 'Pontos:',
   'game.practice': 'Treino',
   'game.timerDefault': '50,0s',
+  'game.pointSingular': 'ponto',
+  'game.pointPlural': 'pontos',
 
   // ── Entrada de Resposta ────────────────────────────────────────
 
@@ -106,6 +108,7 @@ const pt: Dictionary = {
   'scores.listLabel': 'Melhores pontuações recentes, da maior para a menor',
   'scores.scorePoints': '{score} pontos',
   'scores.placeScore': '{ordinal} lugar: {score} pontos',
+  'scores.excludingCompetition': 'excluindo jogos de competição',
 
   // ── Ordinais ───────────────────────────────────────────────────
 

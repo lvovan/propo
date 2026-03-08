@@ -45,6 +45,8 @@ const ja: Dictionary = {
   'game.scoreLabel': 'スコア:',
   'game.practice': '練習',
   'game.timerDefault': '50.0秒',
+  'game.pointSingular': 'ポイント',
+  'game.pointPlural': 'ポイント',
 
   // ── 回答入力 ──────────────────────────────────────────────────
   'game.answerPlaceholder': '?',
@@ -99,6 +101,7 @@ const ja: Dictionary = {
   'scores.listLabel': '最近のハイスコア、高い順',
   'scores.scorePoints': '{score} ポイント',
   'scores.placeScore': '{ordinal}: {score} ポイント',
+  'scores.excludingCompetition': '対戦ゲームを除く',
 
   // ── 序数 ──────────────────────────────────────────────────────
   'ordinal.1': '1位',
