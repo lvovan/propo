@@ -157,10 +157,10 @@ describe('Gameplay Flow Integration', () => {
     expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /back to menu/i })).toBeInTheDocument();
 
-    // Scoring: 8 correct fast (+5 each) + 2 incorrect (-2 each) = 40 - 4 = 36
+    // Scoring: 8 correct fast (+10 each) + 2 incorrect (-10 each) = 80 - 20 = 60
     const totalLabel = screen.getByText('Score');
     const totalSection = totalLabel.parentElement!;
-    expect(totalSection).toHaveTextContent('36');
+    expect(totalSection).toHaveTextContent('60');
 
     // === PLAY AGAIN ===
     await user.click(screen.getByRole('button', { name: /play again/i }));

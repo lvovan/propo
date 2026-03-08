@@ -44,6 +44,8 @@ const fr: Dictionary = {
   'game.scoreLabel': 'Score :',
   'game.practice': 'Entraînement',
   'game.timerDefault': '50,0s',
+  'game.pointSingular': 'point',
+  'game.pointPlural': 'points',
 
   // ── Saisie de la réponse ───────────────────────────────────────
   'game.answerPlaceholder': '?',
@@ -98,6 +100,7 @@ const fr: Dictionary = {
   'scores.listLabel': 'Meilleurs scores récents, du plus élevé au plus bas',
   'scores.scorePoints': '{score} points',
   'scores.placeScore': '{ordinal} place : {score} points',
+  'scores.excludingCompetition': 'hors jeux de compétition',
 
   // ── Ordinaux ───────────────────────────────────────────────────
   'ordinal.1': '1er',

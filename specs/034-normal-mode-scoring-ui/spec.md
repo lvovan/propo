@@ -21,7 +21,8 @@ A player starts a Normal Mode game. As each round begins, the progress bar shows
 2. **Given** a player answers correctly while the displayed value is N, **When** the answer is submitted, **Then** the player earns exactly N points for that round.
 3. **Given** a player answers incorrectly while the displayed value is N, **When** the wrong answer is submitted, **Then** the player loses N points for that round (negative scoring).
 4. **Given** the timer expires without an answer, **When** the round ends, **Then** the player receives -1 point for that round.
-5. **Given** the same question type and timer position in both Normal and Competition modes, **When** the player answers, **Then** the points awarded or deducted are identical.
+5. **Given** the timer has expired and the player submits an incorrect answer, **When** the answer is evaluated, **Then** the player receives exactly -1 point (not more).
+6. **Given** the same question type and timer position in both Normal and Competition modes, **When** the player answers, **Then** the points awarded or deducted are identical.
 
 ---
 
@@ -82,6 +83,7 @@ On the home screen, beneath the "Best recent score" heading, the player sees a s
 - How does the scoring behave with story challenge questions that have a longer timer (50 seconds)? The same 10→1 linear decay must apply over the full 50-second duration.
 - What if the player's language does not have distinct singular/plural forms? The localization must handle grammatical rules per language (the i18n system's pluralization must be used).
 - What happens to historical Normal Mode scores after this change? Existing scores remain as recorded; only new games use the updated scoring system.
+- What happens if the player submits an incorrect answer after the timer expires? The penalty must be exactly -1 (the minimum point value, negated), not a larger penalty.
 
 ## Requirements *(mandatory)*
 
@@ -92,7 +94,7 @@ On the home screen, beneath the "Best recent score" heading, the player sees a s
 - **FR-003**: The score value MUST start at exactly 10 when a round begins, and 10 MUST remain the active value for the first 1/10th of the timer duration.
 - **FR-004**: A correct answer MUST award the current displayed point value (positive scoring).
 - **FR-005**: An incorrect answer MUST deduct the current displayed point value (negative scoring).
-- **FR-006**: If the timer expires, the player MUST receive -1 point for that round.
+- **FR-006**: If the timer expires without an answer, or if the player submits an incorrect answer after the timer has expired, the player MUST receive exactly -1 point for that round. The score summary table MUST display this value (not "—").
 - **FR-007**: The progress bar MUST be visually thicker than the current design in both Normal and Competition modes.
 - **FR-008**: The text inside the progress bar MUST be larger than the current design.
 - **FR-009**: The progress bar text MUST display the current integer point value followed by a space and the localized word for "points" (plural) or "point" (singular), depending on the value.
@@ -100,6 +102,7 @@ On the home screen, beneath the "Best recent score" heading, the player sees a s
 - **FR-011**: The home screen MUST display "excluding competition games" in small font below the "Best recent score" heading.
 - **FR-012**: The "excluding competition games" label MUST be translated to the active application language.
 - **FR-013**: The Normal Mode final score range MUST be -100 to +100 (10 rounds × ±10 points maximum per round), consistent with Competition Mode.
+- **FR-014**: The score summary table MUST always display the points earned or lost during primary play for each round. Replay attempts MUST NOT overwrite the original points value.
 
 ### Key Entities
 

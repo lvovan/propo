@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { COUNTDOWN_COLORS, NUMERIC_TIMER_MS, COMPETITIVE_MAX_POINTS, COMPETITIVE_MIN_POINTS } from '../constants/scoring';
+import { NUMERIC_TIMER_MS, COMPETITIVE_MAX_POINTS, COMPETITIVE_MIN_POINTS } from '../constants/scoring';
 
 export interface UseRoundTimerReturn {
   /** Ref to attach to the display element. The timer writes countdown text directly to textContent. */
@@ -19,18 +19,7 @@ export interface UseRoundTimerReturn {
 }
 
 /**
- * Determine countdown bar color based on percentage of time elapsed.
- * Uses proportional thresholds: green (<40%), lightGreen (40-60%), orange (60-80%), red (≥80%).
- */
-function getBarColor(elapsedMs: number, timerDurationMs: number): string {
-  const elapsedPercent = elapsedMs / timerDurationMs;
-  if (elapsedPercent < 0.40) return COUNTDOWN_COLORS.green;
-  if (elapsedPercent < 0.60) return COUNTDOWN_COLORS.lightGreen;
-  if (elapsedPercent < 0.80) return COUNTDOWN_COLORS.orange;
-  return COUNTDOWN_COLORS.red;
-}
 
-/**
  * Determine competitive countdown bar color using smooth HSL hue interpolation.
  * Hue transitions from 120 (green) → 0 (red) as time elapses.
  */
@@ -48,19 +37,18 @@ function getCompetitiveBarColor(elapsedMs: number, timerDurationMs: number): str
 function getCompetitivePointValue(elapsedMs: number, timerDurationMs: number): number {
   const clamped = Math.min(elapsedMs, timerDurationMs);
   const fraction = clamped / timerDurationMs;
-  const raw = COMPETITIVE_MAX_POINTS - (COMPETITIVE_MAX_POINTS - COMPETITIVE_MIN_POINTS) * fraction;
-  return Math.max(COMPETITIVE_MIN_POINTS, Math.floor(raw));
+  return Math.max(COMPETITIVE_MIN_POINTS, COMPETITIVE_MAX_POINTS - Math.floor((COMPETITIVE_MAX_POINTS - COMPETITIVE_MIN_POINTS) * fraction));
 }
 
 /**
  * Tracks elapsed time for a single game round with countdown display.
  * Uses performance.now() for precise measurement and requestAnimationFrame
  * for smooth display updates without triggering React re-renders.
+ * All modes use linear point-decay display (10→1) with smooth HSL color gradient.
  *
  * @param reducedMotion When true, updates happen at 500ms discrete steps instead of every frame.
- * @param competitiveMode When true, uses smooth HSL color transition and writes point value label.
  */
-export function useRoundTimer(reducedMotion?: boolean, competitiveMode?: boolean): UseRoundTimerReturn {
+export function useRoundTimer(reducedMotion?: boolean): UseRoundTimerReturn {
   const displayRef = useRef<HTMLElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
   const pointLabelRef = useRef<HTMLElement | null>(null);
@@ -84,34 +72,21 @@ export function useRoundTimer(reducedMotion?: boolean, competitiveMode?: boolean
       // Clamp to countdown range
       const clampedElapsed = Math.min(elapsed, duration);
       const remaining = duration - clampedElapsed;
-      const remainingSeconds = (remaining / 1000).toFixed(1);
-
-      // Update countdown display (skip for competitive — timer text is hidden)
-      if (!competitiveMode && displayRef.current) {
-        displayRef.current.textContent = `${remainingSeconds}s`;
-      }
 
       // Update bar width and color
       if (barRef.current) {
         const widthPercent = ((remaining / duration) * 100).toFixed(1);
         barRef.current.style.width = `${widthPercent}%`;
-        barRef.current.style.backgroundColor = competitiveMode
-          ? getCompetitiveBarColor(clampedElapsed, duration)
-          : getBarColor(clampedElapsed, duration);
+        barRef.current.style.backgroundColor = getCompetitiveBarColor(clampedElapsed, duration);
 
         // Update ARIA attributes for accessibility
-        if (competitiveMode) {
-          const pointValue = getCompetitivePointValue(clampedElapsed, duration);
-          barRef.current.setAttribute('aria-valuenow', String(pointValue));
-          barRef.current.setAttribute('aria-valuetext', `${pointValue} points available`);
-        } else {
-          barRef.current.setAttribute('aria-valuenow', remainingSeconds);
-          barRef.current.setAttribute('aria-valuetext', `${remainingSeconds} seconds remaining`);
-        }
+        const pointValue = getCompetitivePointValue(clampedElapsed, duration);
+        barRef.current.setAttribute('aria-valuenow', String(pointValue));
+        barRef.current.setAttribute('aria-valuetext', `${pointValue} points available`);
       }
 
-      // Update point value label for competitive mode
-      if (competitiveMode && pointLabelRef.current) {
+      // Update point value label
+      if (pointLabelRef.current) {
         const pointValue = getCompetitivePointValue(clampedElapsed, duration);
         pointLabelRef.current.textContent = String(pointValue);
       }
@@ -148,29 +123,16 @@ export function useRoundTimer(reducedMotion?: boolean, competitiveMode?: boolean
     cancelRaf();
     startTimeRef.current = null;
     const duration = durationRef.current;
-    if (competitiveMode) {
-      if (barRef.current) {
-        barRef.current.style.width = '100%';
-        barRef.current.style.backgroundColor = getCompetitiveBarColor(0, duration);
-        barRef.current.setAttribute('aria-valuenow', String(COMPETITIVE_MAX_POINTS));
-        barRef.current.setAttribute('aria-valuetext', `${COMPETITIVE_MAX_POINTS} points available`);
-      }
-      if (pointLabelRef.current) {
-        pointLabelRef.current.textContent = String(COMPETITIVE_MAX_POINTS);
-      }
-    } else {
-      const initialSeconds = (duration / 1000).toFixed(1);
-      if (displayRef.current) {
-        displayRef.current.textContent = `${initialSeconds}s`;
-      }
-      if (barRef.current) {
-        barRef.current.style.width = '100%';
-        barRef.current.style.backgroundColor = COUNTDOWN_COLORS.green;
-        barRef.current.setAttribute('aria-valuenow', initialSeconds);
-        barRef.current.setAttribute('aria-valuetext', `${initialSeconds} seconds remaining`);
-      }
+    if (barRef.current) {
+      barRef.current.style.width = '100%';
+      barRef.current.style.backgroundColor = getCompetitiveBarColor(0, duration);
+      barRef.current.setAttribute('aria-valuenow', String(COMPETITIVE_MAX_POINTS));
+      barRef.current.setAttribute('aria-valuetext', `${COMPETITIVE_MAX_POINTS} points available`);
     }
-  }, [cancelRaf, competitiveMode]);
+    if (pointLabelRef.current) {
+      pointLabelRef.current.textContent = String(COMPETITIVE_MAX_POINTS);
+    }
+  }, [cancelRaf]);
 
   // Cleanup on unmount
   useEffect(() => {

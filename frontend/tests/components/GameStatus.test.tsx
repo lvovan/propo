@@ -10,7 +10,6 @@ function defaultProps(overrides?: Partial<Parameters<typeof GameStatus>[0]>) {
     roundNumber: 1,
     totalRounds: 10,
     score: 0,
-    timerRef: createRef<HTMLSpanElement>(),
     barRef: createRef<HTMLDivElement>(),
     isReplay: false,
     currentPhase: 'input' as const,
@@ -32,13 +31,11 @@ describe('GameStatus', () => {
     expect(screen.getByText(/22/)).toBeInTheDocument();
   });
 
-  it('renders timer display element', () => {
-    const timerRef = createRef<HTMLSpanElement>();
-    const { container } = render(<GameStatus {...defaultProps({ timerRef })} />);
+  it('renders progress bar element', () => {
+    const { container } = render(<GameStatus {...defaultProps()} />);
 
-    const timerElement = container.querySelector('[data-testid="timer"]') ||
-      container.querySelector('.timer');
-    expect(timerElement).toBeInTheDocument();
+    const progressbar = container.querySelector('[role="progressbar"]');
+    expect(progressbar).toBeInTheDocument();
   });
 
   it('shows replay indicator when isReplay is true', () => {
@@ -51,29 +48,16 @@ describe('GameStatus', () => {
     expect(screen.queryByText(/Replay/i)).not.toBeInTheDocument();
   });
 
-  it('timer element has data-testid for external access', () => {
-    render(<GameStatus {...defaultProps()} />);
-    const timer = screen.getByTestId('timer');
-    expect(timer).toBeInTheDocument();
+  it('progress bar has Points available aria-label', () => {
+    const { container } = render(<GameStatus {...defaultProps()} />);
+    const progressbar = container.querySelector('[role="progressbar"]');
+    expect(progressbar).toHaveAttribute('aria-label', 'Points available');
   });
 
-  it('timer shows elapsed seconds format', () => {
-    const timerRef = createRef<HTMLSpanElement>();
-    render(<GameStatus {...defaultProps({ timerRef })} />);
-
-    if (timerRef.current) {
-      timerRef.current.textContent = '3.5s';
-    }
-    const timer = screen.getByTestId('timer');
-    expect(timer.textContent).toBe('3.5s');
-  });
-
-  // --- New tests for countdown bar ---
-
-  it('timer initial text is "20.0s"', () => {
-    render(<GameStatus {...defaultProps()} />);
-    const timer = screen.getByTestId('timer');
-    expect(timer.textContent).toBe('20.0s');
+  it('progress bar has aria-valuemax of 10', () => {
+    const { container } = render(<GameStatus {...defaultProps()} />);
+    const progressbar = container.querySelector('[role="progressbar"]');
+    expect(progressbar).toHaveAttribute('aria-valuemax', '10');
   });
 
   it('renders CountdownBar component', () => {
@@ -435,17 +419,6 @@ describe('GameStatus', () => {
       expect(progressbar).not.toBeInTheDocument();
     });
 
-    it('shows timer in play mode', () => {
-      render(
-        <GameStatus
-          {...defaultProps({
-            gameMode: 'play',
-          })}
-        />,
-      );
-      expect(screen.getByTestId('timer')).toBeInTheDocument();
-    });
-
     it('shows countdown bar in play mode', () => {
       const { container } = render(
         <GameStatus
@@ -609,9 +582,9 @@ describe('GameStatus', () => {
       expect(progressbar).toBeInTheDocument();
     });
 
-    it('shows timer text when gameMode is play', () => {
+    it('hides timer text when gameMode is play (unified bar)', () => {
       render(<GameStatus {...defaultProps({ gameMode: 'play' })} />);
-      expect(screen.getByTestId('timer')).toBeInTheDocument();
+      expect(screen.queryByTestId('timer')).not.toBeInTheDocument();
     });
 
     it('shows score when gameMode is competitive', () => {
@@ -621,9 +594,9 @@ describe('GameStatus', () => {
       expect(screen.getByText('42')).toBeInTheDocument();
     });
 
-    it('passes competitive props to CountdownBar', () => {
+    it('all modes use unified progress bar with Points available', () => {
       const { container } = render(
-        <GameStatus {...defaultProps({ gameMode: 'competitive' })} />,
+        <GameStatus {...defaultProps({ gameMode: 'play' })} />,
       );
       const progressbar = container.querySelector('[role="progressbar"]');
       expect(progressbar).toHaveAttribute('aria-label', 'Points available');

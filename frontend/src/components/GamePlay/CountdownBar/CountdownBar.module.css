@@ -1,14 +1,5 @@
 .track {
   width: 100%;
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.trackCompetitive {
-  width: 100%;
   height: 16px;
   background: #e0e0e0;
   border-radius: 4px;
@@ -31,11 +22,22 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-weight: bold;
-  font-size: 12px;
+  font-size: 0.8125rem;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   z-index: 1;
+  white-space: nowrap;
+}
+
+.pointLabelHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

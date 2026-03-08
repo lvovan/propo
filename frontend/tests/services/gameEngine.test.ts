@@ -6,7 +6,7 @@ import {
   getCurrentRound,
 } from '../../src/services/gameEngine';
 import type { Formula, GameState } from '../../src/types/game';
-import { calculateScore } from '../../src/constants/scoring';
+import { calculateScore, calculateCompetitiveScore } from '../../src/constants/scoring';
 
 /** Helper: create a set of 10 mock formulas for testing. */
 function createMockFormulas(): Formula[] {
@@ -163,7 +163,7 @@ describe('gameReducer', () => {
       expect(state.rounds[0].elapsedMs).toBe(1500);
     });
 
-    it('calculates score for correct answer using calculateScore', () => {
+    it('calculates score for correct answer using competitive scoring', () => {
       const formulas = createMockFormulas();
       let state = gameReducer(initialGameState, { type: 'START_GAME', formulas });
 
@@ -174,12 +174,12 @@ describe('gameReducer', () => {
         elapsedMs: 1500,
       });
 
-      const expectedPoints = calculateScore(true, 1500, 20000);
+      const expectedPoints = calculateCompetitiveScore(true, 1500, 20000);
       expect(state.rounds[0].points).toBe(expectedPoints);
       expect(state.score).toBe(expectedPoints);
     });
 
-    it('evaluates incorrect answer with penalty', () => {
+    it('evaluates incorrect answer with negative point value', () => {
       const formulas = createMockFormulas();
       let state = gameReducer(initialGameState, { type: 'START_GAME', formulas });
 
@@ -189,9 +189,10 @@ describe('gameReducer', () => {
         elapsedMs: 800,
       });
 
+      const expectedPoints = calculateCompetitiveScore(false, 800, 20000);
       expect(state.rounds[0].isCorrect).toBe(false);
-      expect(state.rounds[0].points).toBe(-2);
-      expect(state.score).toBe(-2);
+      expect(state.rounds[0].points).toBe(expectedPoints);
+      expect(state.score).toBe(expectedPoints);
     });
 
     it('is a no-op during feedback phase', () => {
@@ -293,7 +294,7 @@ describe('gameReducer', () => {
       return state;
     }
 
-    it('does not award or deduct points during replay', () => {
+    it('does not change total score during replay', () => {
       let state = setupReplayState();
       const scoreBefore = state.score;
 
@@ -303,9 +304,24 @@ describe('gameReducer', () => {
       state = gameReducer(state, { type: 'SUBMIT_ANSWER', answer: correct, elapsedMs: 2000 });
 
       expect(state.score).toBe(scoreBefore);
-      // Points should be null for replay rounds
+    });
+
+    it('preserves original points from primary play during replay (FR-014)', () => {
+      let state = setupReplayState();
+
+      // The replay round (index 0) was answered wrong during primary play at 1000ms
+      // That should have given it a points value from calculateCompetitiveScore
       const replayRoundIndex = state.replayQueue[0];
-      expect(state.rounds[replayRoundIndex].points).toBeNull();
+      const originalPoints = state.rounds[replayRoundIndex].points;
+      expect(originalPoints).not.toBeNull();
+
+      // Answer replay round correctly
+      const round = getCurrentRound(state);
+      const correct = getCorrectAnswer(round!.formula);
+      state = gameReducer(state, { type: 'SUBMIT_ANSWER', answer: correct, elapsedMs: 2000 });
+
+      // Points from primary play should be preserved, not overwritten to null
+      expect(state.rounds[replayRoundIndex].points).toBe(originalPoints);
     });
 
     it('re-queues incorrect replay round', () => {
@@ -523,6 +539,66 @@ describe('gameReducer', () => {
       });
       expect(state.rounds[0].firstTryCorrect).toBe(false);
       expect(state.rounds[1].firstTryCorrect).toBe(true);
+    });
+  });
+
+  describe('unified scoring across all modes', () => {
+    it('play mode uses competitive scoring (10→1 linear decay)', () => {
+      const formulas = createMockFormulas();
+      let state = gameReducer(initialGameState, { type: 'START_GAME', formulas, mode: 'play' });
+
+      const correctAnswer = getCorrectAnswer(formulas[0]);
+      state = gameReducer(state, {
+        type: 'SUBMIT_ANSWER',
+        answer: correctAnswer,
+        elapsedMs: 1500,
+      });
+
+      const expectedPoints = calculateCompetitiveScore(true, 1500, 20000);
+      expect(state.rounds[0].points).toBe(expectedPoints);
+      expect(state.score).toBe(expectedPoints);
+    });
+
+    it('improve mode uses competitive scoring', () => {
+      const formulas = createMockFormulas();
+      let state = gameReducer(initialGameState, { type: 'START_GAME', formulas, mode: 'improve' });
+
+      const correctAnswer = getCorrectAnswer(formulas[0]);
+      state = gameReducer(state, {
+        type: 'SUBMIT_ANSWER',
+        answer: correctAnswer,
+        elapsedMs: 5_000,
+      });
+
+      const expectedPoints = calculateCompetitiveScore(true, 5_000, 20000);
+      expect(state.rounds[0].points).toBe(expectedPoints);
+    });
+
+    it('play and competitive mode produce identical scores for same inputs', () => {
+      const formulas = createMockFormulas();
+      let playState = gameReducer(initialGameState, { type: 'START_GAME', formulas, mode: 'play' });
+      let compState = gameReducer(initialGameState, { type: 'START_GAME', formulas, mode: 'competitive' });
+
+      const correctAnswer = getCorrectAnswer(formulas[0]);
+      playState = gameReducer(playState, { type: 'SUBMIT_ANSWER', answer: correctAnswer, elapsedMs: 3000 });
+      compState = gameReducer(compState, { type: 'SUBMIT_ANSWER', answer: correctAnswer, elapsedMs: 3000 });
+
+      expect(playState.rounds[0].points).toBe(compState.rounds[0].points);
+    });
+
+    it('incorrect answer in play mode uses competitive negative scoring', () => {
+      const formulas = createMockFormulas();
+      let state = gameReducer(initialGameState, { type: 'START_GAME', formulas, mode: 'play' });
+
+      state = gameReducer(state, {
+        type: 'SUBMIT_ANSWER',
+        answer: -999,
+        elapsedMs: 800,
+      });
+
+      const expectedPoints = calculateCompetitiveScore(false, 800, 20000);
+      expect(state.rounds[0].points).toBe(expectedPoints);
+      expect(state.score).toBe(expectedPoints);
     });
   });
 });

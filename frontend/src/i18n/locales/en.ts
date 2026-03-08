@@ -97,6 +97,10 @@ const en = {
   'game.practice': 'Practice',
   /** Default timer display. */
   'game.timerDefault': '50.0s',
+  /** Point label — singular form. */
+  'game.pointSingular': 'point',
+  /** Point label — plural form. */
+  'game.pointPlural': 'points',
 
   // ── Answer Input ───────────────────────────────────────────────
 
@@ -207,6 +211,8 @@ const en = {
   'scores.scorePoints': '{score} points',
   /** Screen reader text for score placement. Placeholders: {ordinal}, {score} */
   'scores.placeScore': '{ordinal} place: {score} points',
+  /** Subtitle clarifying competition exclusion. */
+  'scores.excludingCompetition': 'excluding competition games',
 
   // ── Ordinals ───────────────────────────────────────────────────
 

@@ -69,6 +69,16 @@ describe('RecentHighScores', () => {
     expect(section).toHaveAttribute('aria-labelledby');
   });
 
+  it('renders "excluding competition games" subtitle below heading', () => {
+    render(<RecentHighScores scores={sampleScores} isEmpty={false} />);
+    expect(screen.getByText(/excluding competition games/i)).toBeInTheDocument();
+  });
+
+  it('shows "excluding competition games" subtitle even when scores are empty', () => {
+    render(<RecentHighScores scores={[]} isEmpty={true} />);
+    expect(screen.getByText(/excluding competition games/i)).toBeInTheDocument();
+  });
+
   it('renders fewer items when fewer than 5 scores', () => {
     const twoScores: GameRecord[] = [
       { score: 40, completedAt: 200 },

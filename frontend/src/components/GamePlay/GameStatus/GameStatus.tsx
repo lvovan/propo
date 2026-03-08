@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { useRef, type RefObject } from 'react';
 import styles from './GameStatus.module.css';
 import CountdownBar from '../CountdownBar/CountdownBar';
 import { useTranslation } from '../../../i18n';
@@ -8,7 +8,6 @@ interface GameStatusProps {
   roundNumber: number;
   totalRounds: number;
   score: number;
-  timerRef: RefObject<HTMLElement | null>;
   barRef: RefObject<HTMLDivElement | null>;
   pointLabelRef?: RefObject<HTMLElement | null>;
   isReplay: boolean;
@@ -30,7 +29,6 @@ export default function GameStatus({
   roundNumber,
   totalRounds,
   score,
-  timerRef,
   barRef,
   pointLabelRef,
   isReplay,
@@ -42,6 +40,8 @@ export default function GameStatus({
 }: GameStatusProps) {
   const isFeedback = currentPhase === 'feedback';
   const { t } = useTranslation();
+  const fallbackPointLabelRef = useRef<HTMLElement | null>(null);
+  const resolvedPointLabelRef = pointLabelRef ?? fallbackPointLabelRef;
 
   const rootClassName = [
     styles.status,
@@ -94,24 +94,10 @@ export default function GameStatus({
             )}
           </div>
           {gameMode !== 'improve' && (
-            <>
-              {gameMode !== 'competitive' && (
-                <div className={styles.timer}>
-                  <span
-                    ref={timerRef as RefObject<HTMLSpanElement>}
-                    className="timer"
-                    data-testid="timer"
-                  >
-                    20.0s
-                  </span>
-                </div>
-              )}
-              <CountdownBar
-                barRef={barRef}
-                pointLabelRef={gameMode === 'competitive' ? pointLabelRef : undefined}
-                competitive={gameMode === 'competitive'}
-              />
-            </>
+            <CountdownBar
+              barRef={barRef}
+              pointLabelRef={resolvedPointLabelRef}
+            />
           )}
         </>
       )}

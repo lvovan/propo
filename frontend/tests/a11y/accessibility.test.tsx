@@ -114,8 +114,9 @@ describe('Accessibility — Gameplay (axe)', () => {
 
   it('CountdownBar has no a11y violations', async () => {
     const barRef = createRef<HTMLDivElement>();
+    const pointLabelRef = createRef<HTMLElement>();
     const { container } = render(
-      <CountdownBar barRef={barRef} />,
+      <CountdownBar barRef={barRef} pointLabelRef={pointLabelRef} />,
     );
     const results = await axe(container);
     expect(results).toHaveNoViolations();

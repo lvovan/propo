@@ -1,6 +1,6 @@
 import type { Formula, GameState, Round } from '../types/game';
 import type { GameMode, RoundResult } from '../types/player';
-import { calculateScore, calculateCompetitiveScore } from '../constants/scoring';
+import { calculateCompetitiveScore } from '../constants/scoring';
 
 /** Actions that can be dispatched to the game reducer. */
 export type GameAction =
@@ -113,9 +113,7 @@ function handleSubmitAnswer(state: GameState, answer: number, elapsedMs: number)
   let newScore = state.score;
 
   if (state.status === 'playing') {
-    points = state.gameMode === 'competitive'
-      ? calculateCompetitiveScore(isCorrect, elapsedMs, round.formula.timerDurationMs)
-      : calculateScore(isCorrect, elapsedMs, round.formula.timerDurationMs);
+    points = calculateCompetitiveScore(isCorrect, elapsedMs, round.formula.timerDurationMs);
     newScore = state.score + points;
   }
 
@@ -126,7 +124,8 @@ function handleSubmitAnswer(state: GameState, answer: number, elapsedMs: number)
     playerAnswer: answer,
     isCorrect,
     elapsedMs,
-    points,
+    // Preserve original points from primary play during replay
+    points: state.status === 'playing' ? points : round.points,
     // Set firstTryCorrect only during primary play; preserve existing value during replay
     firstTryCorrect: state.status === 'playing' ? isCorrect : round.firstTryCorrect,
   };
