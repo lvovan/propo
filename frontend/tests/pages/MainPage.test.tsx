@@ -83,7 +83,20 @@ describe('MainPage', () => {
 
   it('displays app title "Propo!" in the header', () => {
     renderMainPage();
-    expect(screen.getByText('Propo!')).toBeInTheDocument();
+    expect(screen.getAllByText('Propo!').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('has a visually-hidden accessible heading on the home page', () => {
+    renderMainPage();
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveClass('sr-only');
+  });
+
+  it('does not display "Ready to play?" or instructions text', () => {
+    renderMainPage();
+    expect(screen.queryByText(/ready to play/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/answer 10 proportion/i)).not.toBeInTheDocument();
   });
 
   it('clicking start begins game with round 1 displayed', async () => {

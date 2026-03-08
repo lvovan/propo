@@ -2,6 +2,7 @@
 import { decodeShareUrl } from '../services/shareUrl';
 import { useTranslation } from '../i18n';
 import Header from '../components/Header/Header';
+import styles from './SharedResultPage.module.css';
 
 export default function SharedResultPage() {
   const { t } = useTranslation();
@@ -11,7 +12,7 @@ export default function SharedResultPage() {
     return (
       <div>
         <Header />
-        <main style={{ padding: '24px 16px', textAlign: 'center' }}>
+        <main className={styles.page}>
           <p role="alert">{t('sharedResult.error')}</p>
         </main>
       </div>
@@ -25,40 +26,23 @@ export default function SharedResultPage() {
   return (
     <div>
       <Header />
-      <main style={{ padding: '24px 16px', textAlign: 'center' }}>
-        <h1>{t('sharedResult.title')}</h1>
-        <div style={{
-          maxWidth: 360,
-          margin: '24px auto',
-          padding: '24px',
-          borderRadius: 12,
-          background: '#f9f9f9',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        }}>
-          <p style={{ margin: '8px 0', fontSize: '1rem' }}>
+      <main className={styles.page}>
+        <h1 className={styles.title}>{t('sharedResult.title')}</h1>
+        <div className={styles.card}>
+          <p className={styles.playerName}>
             <strong>{t('sharedResult.player')}:</strong> {result.playerName}
           </p>
-          <p style={{ margin: '8px 0', fontSize: '1.5rem', fontWeight: 700 }}>
+          <p className={styles.score}>
             <span>{t('sharedResult.score')}:</span> {result.score}
           </p>
-          <p style={{ margin: '8px 0', fontSize: '0.9rem', color: '#666' }}>
+          <p className={styles.seed}>
             <strong>{t('competition.seed')}:</strong> {result.seed}
           </p>
         </div>
         <button
           onClick={handlePlay}
           aria-label={t('sharedResult.playThisGame')}
-          style={{
-            padding: '14px 28px',
-            fontSize: '1.1rem',
-            fontWeight: 600,
-            background: '#4caf50',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 10,
-            cursor: 'pointer',
-            minHeight: 44,
-          }}
+          className={styles.playButton}
         >
           {t('sharedResult.playThisGame')}
         </button>

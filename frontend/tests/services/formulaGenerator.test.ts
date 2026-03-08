@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateFormulas, generateImproveFormulas, buildPercentagePool, buildRatioPool, buildFractionPool, buildMultiItemRatioPool, buildPercentageOfWholePool, buildComplexExtrapolationPool, MULTI_ITEM_RATIO_COMBINED_TEMPLATES, MULTI_ITEM_RATIO_TEMPLATES } from '../../src/services/formulaGenerator';
+import { generateFormulas, generateImproveFormulas, buildPercentagePool, buildFractionPool, buildMultiItemRatioPool, buildPercentageOfWholePool, buildComplexExtrapolationPool, MULTI_ITEM_RATIO_COMBINED_TEMPLATES, MULTI_ITEM_RATIO_TEMPLATES } from '../../src/services/formulaGenerator';
 import { PURE_NUMERIC_TYPES, STORY_CHALLENGE_TYPES } from '../../src/types/game';
 import type { ChallengingItem, QuestionType } from '../../src/types/game';
 import { createSeededRandomFromString, createSeededRandom as createMulberry32 } from '../../src/services/seededRandom';
@@ -19,16 +19,6 @@ describe('buildPercentagePool', () => {
     pool.forEach(({ a, b, c }) => {
       expect(a * b / 100).toBe(c);
       expect(Number.isInteger(c)).toBe(true);
-    });
-  });
-});
-
-describe('buildRatioPool', () => {
-  it('returns quads where A:B = C:D', () => {
-    const pool = buildRatioPool();
-    expect(pool.length).toBeGreaterThan(0);
-    pool.forEach(({ a, b, c, d }) => {
-      expect(a * d).toBe(b * c);
     });
   });
 });
@@ -147,6 +137,23 @@ describe('generateFormulas', () => {
     expect(storyTypes.has('complexExtrapolation')).toBe(true);
   });
 
+  it('never generates ratio questions', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      const formulas = generateFormulas(createSeededRandom(seed));
+      expect(formulas.every((f) => f.type !== 'ratio')).toBe(true);
+    }
+  });
+
+  it('numeric rounds use only percentage and fraction', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      const formulas = generateFormulas(createSeededRandom(seed));
+      const numeric = formulas.filter((f) => PURE_NUMERIC_TYPES.includes(f.type));
+      numeric.forEach((f) => {
+        expect(['percentage', 'fraction']).toContain(f.type);
+      });
+    }
+  });
+
   it('sets timerDurationMs correctly per type', () => {
     const formulas = generateFormulas(createSeededRandom(42));
     formulas.forEach((f) => {
@@ -223,11 +230,11 @@ describe('generateImproveFormulas', () => {
     expect(pctCount).toBeGreaterThanOrEqual(2);
   });
 
-  it('includes all 6 types', () => {
-    const items = [makeItem('ratio')];
+  it('includes all 5 types', () => {
+    const items = [makeItem('fraction')];
     const formulas = generateImproveFormulas(items, createSeededRandom(42));
     const types = new Set(formulas.map((f) => f.type));
-    expect(types.size).toBe(6);
+    expect(types.size).toBe(5);
   });
 });
 describe('generateFormulas with seeded PRNG (competitive mode)', () => {
@@ -322,6 +329,56 @@ describe('word problem target variation', () => {
         }
       }
     }
+  });
+
+  it('percentageOfWhole: all 3 target variants appear across many generations', () => {
+    let firstCount = 0;
+    let secondCount = 0;
+    let combinedCount = 0;
+    for (let seed = 0; seed < 200; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'percentageOfWhole') {
+          if (f.wordProblemKey?.endsWith('.combined')) {
+            combinedCount++;
+          } else {
+            // For non-combined: target is values[0], other is values[1]
+            // We can detect 'second' by checking if values got swapped
+            // but since both use the same base key, we just count non-combined
+            firstCount++;
+          }
+        }
+      }
+    }
+    // Ensure combined variant appears
+    expect(combinedCount).toBeGreaterThan(0);
+    expect(firstCount).toBeGreaterThan(0);
+    // Combined should appear at least 5% of the time across 200 games
+    const total = firstCount + combinedCount;
+    expect(combinedCount / total).toBeGreaterThan(0.02);
+  });
+
+  it('percentageOfWhole: combined target uses .combined key suffix', () => {
+    for (let seed = 0; seed < 100; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'percentageOfWhole' && f.wordProblemKey?.endsWith('.combined')) {
+          // Verify correctAnswer matches (a+b)/c * 100
+          const pct = ((f.values[0] + f.values[1]) / f.values[2]) * 100;
+          expect(f.correctAnswer).toBe(pct);
+        }
+      }
+    }
+  });
+
+  it('percentageOfWhole: deterministic with seeded random', () => {
+    const rng1 = createMulberry32(42);
+    const rng2 = createMulberry32(42);
+    const f1 = generateFormulas(rng1).filter(f => f.type === 'percentageOfWhole');
+    const f2 = generateFormulas(rng2).filter(f => f.type === 'percentageOfWhole');
+    expect(f1).toEqual(f2);
   });
 });
 

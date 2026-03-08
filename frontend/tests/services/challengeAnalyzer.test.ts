@@ -8,7 +8,7 @@ import type { RoundResult } from '../../src/types/player';
 import { STORAGE_KEY } from '../../src/services/playerStorage';
 
 function makeRound(type: 'percentage' | 'ratio' | 'fraction' | 'multiItemRatio' | 'percentageOfWhole' | 'complexExtrapolation', isCorrect: boolean, elapsedMs: number): RoundResult {
-  return { type, values: [1, 2, 3], isCorrect, elapsedMs };
+  return { type: type as RoundResult['type'], values: [1, 2, 3], isCorrect, elapsedMs };
 }
 
 describe('identifyChallengingItems', () => {
@@ -23,7 +23,8 @@ describe('identifyChallengingItems', () => {
     expect(result.length).toBe(2);
     expect(result[0].type).toBe('percentage');
     expect(result[0].mistakeCount).toBe(2);
-    expect(result[1].type).toBe('ratio');
+    // Legacy 'ratio' is mapped to 'fraction'
+    expect(result[1].type).toBe('fraction');
     expect(result[1].mistakeCount).toBe(1);
   });
 
@@ -34,9 +35,9 @@ describe('identifyChallengingItems', () => {
       makeRound('fraction', true, 3000),
     ];
     const result = identifyChallengingItems(rounds);
-    expect(result[0].type).toBe('ratio');
-    expect(result[1].type).toBe('fraction');
-    expect(result[2].type).toBe('percentage');
+    // Legacy 'ratio' is mapped to 'fraction', so ratio+fraction merge
+    expect(result[0].type).toBe('fraction');
+    expect(result[1].type).toBe('percentage');
   });
 
   it('returns empty array for empty input', () => {
@@ -47,18 +48,32 @@ describe('identifyChallengingItems', () => {
     const legacy = [{ factorA: 3, factorB: 4, isCorrect: true, elapsedMs: 1000 }] as unknown as RoundResult[];
     expect(identifyChallengingItems(legacy)).toEqual([]);
   });
+
+  it('maps legacy ratio rounds to fraction', () => {
+    const rounds: RoundResult[] = [
+      makeRound('ratio', false, 5000),
+      makeRound('ratio', false, 6000),
+      makeRound('percentage', true, 2000),
+    ];
+    const result = identifyChallengingItems(rounds);
+    // ratio mistakes should appear under 'fraction'
+    const fractionItem = result.find(i => i.type === 'fraction');
+    expect(fractionItem).toBeDefined();
+    expect(fractionItem!.mistakeCount).toBe(2);
+    // no 'ratio' type in output
+    expect(result.find(i => (i.type as string) === 'ratio')).toBeUndefined();
+  });
 });
 
 describe('extractTrickyCategories', () => {
   it('returns up to 3 tricky types', () => {
     const items = [
       { type: 'percentage' as const, mistakeCount: 5, avgMs: 5000 },
-      { type: 'ratio' as const, mistakeCount: 3, avgMs: 4000 },
-      { type: 'fraction' as const, mistakeCount: 2, avgMs: 3000 },
+      { type: 'fraction' as const, mistakeCount: 3, avgMs: 4000 },
       { type: 'complexExtrapolation' as const, mistakeCount: 1, avgMs: 2000 },
     ];
     const result = extractTrickyCategories(items);
-    expect(result).toEqual(['percentage', 'ratio', 'fraction']);
+    expect(result).toEqual(['percentage', 'fraction', 'complexExtrapolation']);
   });
 
   it('returns empty array for empty input', () => {

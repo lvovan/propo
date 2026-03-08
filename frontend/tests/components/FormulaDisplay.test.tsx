@@ -11,12 +11,13 @@ describe('FormulaDisplay', () => {
     correctAnswer: 20, timerDurationMs: 20000,
   };
 
-  const ratioFormula: Formula = {
+  // Legacy ratio formula — type 'ratio' no longer in QuestionType but may exist in stored records
+  const ratioFormula = {
     type: 'ratio',
     values: [2, 3, 6, 9],
     hiddenPosition: 'D',
     correctAnswer: 9, timerDurationMs: 20000,
-  };
+  } as unknown as Formula;
 
   const fractionFormula: Formula = {
     type: 'fraction',
@@ -42,8 +43,9 @@ describe('FormulaDisplay', () => {
     expect(screen.queryByText('20')).not.toBeInTheDocument();
   });
 
-  it('renders ratio formula with hidden value', () => {
+  it('renders legacy ratio formula as fraction format', () => {
     render(<FormulaDisplay formula={ratioFormula} />);
+    // Legacy ratio should now render using fraction display (A/B = C/D)
     expect(screen.getByText('2')).toBeInTheDocument();
     expect(screen.getByText('6')).toBeInTheDocument();
     expect(screen.getByText('?')).toBeInTheDocument();

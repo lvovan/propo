@@ -84,7 +84,7 @@ When a player opens the home page (mode-selection screen), the heading "Ready to
 - What if no valid triple exists where the sum of the first and second items produces a friendly percentage? The generator falls back to targeting either the first or second item individually. The pool pre-filters for valid combinations, so at least one target option always produces a valid percentage.
 - What happens if the third item count (remainder = total − first − second) is zero or negative? The pool builder enforces `z ≥ 1`, so the third item category always has at least 1 item, ensuring the word problem is logically coherent.
 - Does removing `ratio` affect the question count per game? No. The 5 numeric + 5 story split is preserved. Numeric rounds draw from `percentage` and `fraction` only.
-- What if a `percentageOfWhole` template's wording doesn't make sense for the "combined" target? Templates must support a "first or second" phrasing variant. Templates that cannot grammatically accommodate this are excluded from combined-target rounds.
+- What if a `percentageOfWhole` template's wording doesn't make sense for the "combined" target? All 21 templates follow the same `{a}`/`{b}`/`{c}` structure, so all support the combined phrasing. Every template gets a `.combined` i18n variant.
 - Does the home page header removal affect accessibility (e.g., screen reader landmarks)? The `<h1>` element is removed. The page must still have a programmatically discoverable heading or landmark for screen reader users — the app title in the `<header>` serves this purpose.
 
 ## Requirements *(mandatory)*
@@ -105,9 +105,9 @@ When a player opens the home page (mode-selection screen), the heading "Ready to
 - **FR-007**: The `percentageOfWhole` question generator MUST randomly select the question target from three options: (a) the first item count, (b) the second item count, or (c) the sum of the first and second item counts.
 - **FR-008**: The selected target MUST always produce an integer percentage from the allowed set {10, 20, 25, 50, 75}.
 - **FR-009**: If the randomly selected target option does not produce a valid integer percentage, the generator MUST try the remaining target options before regenerating values.
-- **FR-010**: Question templates MUST support a phrasing variant for the combined target (e.g., "{first} or {second}"). Templates that cannot support this variant MUST be excluded from combined-target rounds.
+- **FR-010**: All 21 `percentageOfWhole` question templates MUST have a `.combined`-suffixed i18n variant that phrases the question about both items (e.g., "What percentage are the kittens or puppies?"). Since all templates follow the same structure (`{a}` of type-1, `{b}` of type-2, total `{c}`), all templates support the combined phrasing — no exclusion mechanism is needed.
 - **FR-011**: Target selection MUST be deterministic when using a seeded random function (Competition mode).
-- **FR-012**: The `percentageOfWhole` pool builder MUST include triples where the sum of the first and second items also yields a valid friendly percentage, in addition to the existing single-item pools.
+- **FR-012**: The `percentageOfWhole` generator MUST check whether the sum of the first and second items yields a valid friendly percentage at generation time. The pool builder itself is not modified — combined-target validity is evaluated per-triple during formula generation, with fallback to first-item or second-item targets when the combined percentage is not in the allowed set.
 
 **Shared-Link Dark Mode Fix**
 
@@ -120,6 +120,10 @@ When a player opens the home page (mode-selection screen), the heading "Ready to
 - **FR-016**: The home page MUST NOT display the "Ready to play?" heading.
 - **FR-017**: The home page MUST NOT display the "Answer 10 proportion questions as fast as you can!" subtitle.
 - **FR-018**: The home page MUST still contain a programmatically identifiable heading or landmark accessible to screen readers.
+
+**Word Problem Answer Unit Spacing**
+
+- **FR-019**: In word problem (story challenge) rounds, the unit label displayed next to the answer input MUST have visible spacing (at least 8px) from the input value for legibility.
 
 ### Key Entities
 
@@ -141,7 +145,7 @@ When a player opens the home page (mode-selection screen), the heading "Ready to
 ## Assumptions
 
 - The existing question distribution (5 numeric + 5 story per game) is preserved. Removing `ratio` means the 5 numeric slots are filled by `percentage` and `fraction` only.
-- The `percentageOfWhole` pool builder already ensures all triples produce at least one valid target with a friendly percentage. The enhancement adds more target options per triple but does not change the pool filtering logic fundamentally.
+- The `percentageOfWhole` pool builder already ensures all triples produce at least one valid target with a friendly percentage (specifically, the first-item target is always valid). The enhancement adds combined and second-item target options checked at generation time, with fallback to first-item when they are not valid.
 - The word problem templates for `percentageOfWhole` use placeholder syntax `{a}`, `{b}`, `{c}` for the three displayed quantities. A new variant mechanism is needed for the "combined" target to adjust the question text accordingly.
 - The challenge analyzer already has a mapping from legacy `ruleOfThree` → `complexExtrapolation`. The same pattern will be used for `ratio` → `fraction`.
 - The shared-result page currently uses inline styles. The fix will replace them with CSS module classes that include dark mode media queries, consistent with how other components (e.g., `ScoreSummary`) handle dark mode.

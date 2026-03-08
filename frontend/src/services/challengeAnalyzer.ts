@@ -24,7 +24,10 @@ export function identifyChallengingItems(allRounds: RoundResult[]): ChallengingI
   const typeMap = new Map<QuestionType, { mistakeCount: number; totalMs: number; occurrences: number }>();
 
   for (const round of validRounds) {
-    const type: QuestionType = (round.type as string) === 'ruleOfThree' ? 'complexExtrapolation' : round.type;
+    const rawType = round.type as string;
+    const type: QuestionType = rawType === 'ruleOfThree' ? 'complexExtrapolation'
+      : rawType === 'ratio' ? 'fraction'
+      : round.type;
     let stats = typeMap.get(type);
     if (!stats) {
       stats = { mistakeCount: 0, totalMs: 0, occurrences: 0 };

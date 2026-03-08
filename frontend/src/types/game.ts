@@ -1,10 +1,10 @@
 import type { GameMode } from './player';
 
-/** The six question categories in the proportional reasoning game. */
-export type QuestionType = 'percentage' | 'ratio' | 'fraction' | 'multiItemRatio' | 'percentageOfWhole' | 'complexExtrapolation';
+/** The five question categories in the proportional reasoning game. */
+export type QuestionType = 'percentage' | 'fraction' | 'multiItemRatio' | 'percentageOfWhole' | 'complexExtrapolation';
 
 /** Pure numeric question types (short timer). */
-export const PURE_NUMERIC_TYPES: QuestionType[] = ['percentage', 'ratio', 'fraction'];
+export const PURE_NUMERIC_TYPES: QuestionType[] = ['percentage', 'fraction'];
 
 /** Story challenge question types (long timer). */
 export const STORY_CHALLENGE_TYPES: QuestionType[] = ['multiItemRatio', 'percentageOfWhole', 'complexExtrapolation'];

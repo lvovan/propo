@@ -18,11 +18,10 @@ function formatFormula(round: Round): string {
   const posIdx = ['A', 'B', 'C', 'D'].indexOf(hiddenPosition);
   const display = values.map((v, i) => (i === posIdx ? '?' : String(v)));
 
-  switch (type) {
+  switch (type as string) {
     case 'percentage':
       return `${display[0]}% of ${display[1]} = ${display[2]}`;
-    case 'ratio':
-      return `${display[0]} : ${display[1]} = ${display[2]} : ${display[3]}`;
+    case 'ratio': // legacy records: display as fraction
     case 'fraction':
       return `${display[0]}/${display[1]} = ${display[2]}/${display[3]}`;
     case 'multiItemRatio':
