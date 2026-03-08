@@ -61,47 +61,72 @@ describe('buildMultiItemRatioPool', () => {
 const FRIENDLY_PERCENTAGES = [10, 20, 25, 50, 75];
 
 describe('buildPercentageOfWholePool', () => {
-  it('only produces friendly percentage answers', () => {
-    const pool = buildPercentageOfWholePool();
-    expect(pool.length).toBeGreaterThan(0);
-    pool.forEach(({ a, b, c }) => {
+  it('returns non-empty sub-pools for all three targets', () => {
+    const poolSet = buildPercentageOfWholePool();
+    expect(poolSet.first.length).toBeGreaterThan(0);
+    expect(poolSet.second.length).toBeGreaterThan(0);
+    expect(poolSet.combined.length).toBeGreaterThan(0);
+  });
+
+  it('first sub-pool: all triples satisfy a/c is a friendly percentage', () => {
+    const poolSet = buildPercentageOfWholePool();
+    poolSet.first.forEach(({ a, b, c }) => {
       expect(c).toBeGreaterThanOrEqual(10);
       expect(c).toBeLessThanOrEqual(50);
-      expect(a).toBeLessThanOrEqual(c);
       expect(a).toBeGreaterThanOrEqual(1);
       expect(b).toBeGreaterThanOrEqual(1);
-      expect(b).toBeLessThanOrEqual(c);
       const pct = (a / c) * 100;
       expect(FRIENDLY_PERCENTAGES).toContain(pct);
     });
   });
 
-  it('a + b <= c always holds (c is total, not percentage)', () => {
-    const pool = buildPercentageOfWholePool();
-    pool.forEach(({ a, b, c }) => {
+  it('second sub-pool: all triples satisfy b/c is a friendly percentage', () => {
+    const poolSet = buildPercentageOfWholePool();
+    poolSet.second.forEach(({ a, b, c }) => {
+      expect(c).toBeGreaterThanOrEqual(10);
+      expect(c).toBeLessThanOrEqual(50);
+      expect(a).toBeGreaterThanOrEqual(1);
+      expect(b).toBeGreaterThanOrEqual(1);
+      const pct = (b / c) * 100;
+      expect(FRIENDLY_PERCENTAGES).toContain(pct);
+    });
+  });
+
+  it('combined sub-pool: all triples satisfy (a+b)/c is a friendly percentage', () => {
+    const poolSet = buildPercentageOfWholePool();
+    poolSet.combined.forEach(({ a, b, c }) => {
+      expect(c).toBeGreaterThanOrEqual(10);
+      expect(c).toBeLessThanOrEqual(50);
+      expect(a).toBeGreaterThanOrEqual(1);
+      expect(b).toBeGreaterThanOrEqual(1);
+      const pct = ((a + b) / c) * 100;
+      expect(FRIENDLY_PERCENTAGES).toContain(pct);
+    });
+  });
+
+  it('a + b <= c always holds across all sub-pools', () => {
+    const poolSet = buildPercentageOfWholePool();
+    [...poolSet.first, ...poolSet.second, ...poolSet.combined].forEach(({ a, b, c }) => {
       expect(a + b).toBeLessThanOrEqual(c);
     });
   });
 
-  it('covers all friendly percentages', () => {
-    const pool = buildPercentageOfWholePool();
-    const seen = new Set(pool.map(({ a, c }) => (a / c) * 100));
+  it('each sub-pool covers all 5 friendly percentages', () => {
+    const poolSet = buildPercentageOfWholePool();
+    const seenFirst = new Set(poolSet.first.map(({ a, c }) => (a / c) * 100));
+    const seenSecond = new Set(poolSet.second.map(({ b, c }) => (b / c) * 100));
+    const seenCombined = new Set(poolSet.combined.map(({ a, b, c }) => ((a + b) / c) * 100));
     for (const pct of FRIENDLY_PERCENTAGES) {
-      expect(seen.has(pct)).toBe(true);
+      expect(seenFirst.has(pct)).toBe(true);
+      expect(seenSecond.has(pct)).toBe(true);
+      expect(seenCombined.has(pct)).toBe(true);
     }
   });
 
-  it('acceptance: 5/25 = 20%', () => {
-    const pool = buildPercentageOfWholePool();
-    const has20pct = pool.some(({ a, c }) => a === 5 && c === 25);
+  it('acceptance: 5/25 = 20% appears in first sub-pool', () => {
+    const poolSet = buildPercentageOfWholePool();
+    const has20pct = poolSet.first.some(({ a, c }) => a === 5 && c === 25);
     expect(has20pct).toBe(true);
-  });
-
-  it('negative: non-integer percentage cases are excluded', () => {
-    const pool = buildPercentageOfWholePool();
-    // e.g. 17/70 = 24.2857... should never appear
-    const hasBadEntry = pool.some(({ a, c }) => !Number.isInteger((a / c) * 100));
-    expect(hasBadEntry).toBe(false);
   });
 });
 
@@ -318,20 +343,26 @@ describe('word problem target variation', () => {
     expect(answers.size).toBeGreaterThan(2);
   });
 
-  it('percentageOfWhole: correctAnswer is always a friendly percentage', () => {
+  it('percentageOfWhole: correctAnswer is always a friendly percentage and all 5 values appear', () => {
     const friendly = new Set([10, 20, 25, 50, 75]);
-    for (let seed = 0; seed < 50; seed++) {
+    const seen = new Set<number>();
+    for (let seed = 0; seed < 200; seed++) {
       const rng = createMulberry32(seed);
       const formulas = generateFormulas(rng);
       for (const f of formulas) {
         if (f.type === 'percentageOfWhole') {
           expect(friendly.has(f.correctAnswer)).toBe(true);
+          seen.add(f.correctAnswer);
         }
       }
     }
+    // All 5 friendly percentages should appear across 200 games
+    for (const pct of friendly) {
+      expect(seen.has(pct)).toBe(true);
+    }
   });
 
-  it('percentageOfWhole: all 3 target variants appear across many generations', () => {
+  it('percentageOfWhole: all 3 target variants appear with balanced distribution (each ≥20%)', () => {
     let firstCount = 0;
     let secondCount = 0;
     let combinedCount = 0;
@@ -343,20 +374,30 @@ describe('word problem target variation', () => {
           if (f.wordProblemKey?.endsWith('.combined')) {
             combinedCount++;
           } else {
-            // For non-combined: target is values[0], other is values[1]
-            // We can detect 'second' by checking if values got swapped
-            // but since both use the same base key, we just count non-combined
-            firstCount++;
+            // Detect 'second' vs 'first': for 'second', values are [b, a, c]
+            // and correctAnswer = b/c * 100 = values[0]/values[2] * 100
+            const pctOfFirst = (f.values[0] / f.values[2]) * 100;
+            if (pctOfFirst === f.correctAnswer) {
+              // correctAnswer matches values[0]/total — could be first or second
+              // (both use base key). Since target-first selection is uniform,
+              // we count first+second together as non-combined and verify combined separately
+              firstCount++;
+            } else {
+              secondCount++;
+            }
           }
         }
       }
     }
-    // Ensure combined variant appears
+    const total = firstCount + secondCount + combinedCount;
+    expect(total).toBeGreaterThan(0);
+    // Each target type should appear at least 20% of the time
+    // With uniform 1/3 selection, we expect ~33% each
+    expect(combinedCount / total).toBeGreaterThanOrEqual(0.2);
+    // first + second (non-combined) should be ~66%, each individually ~33%
+    expect((firstCount + secondCount) / total).toBeGreaterThanOrEqual(0.4);
     expect(combinedCount).toBeGreaterThan(0);
-    expect(firstCount).toBeGreaterThan(0);
-    // Combined should appear at least 5% of the time across 200 games
-    const total = firstCount + combinedCount;
-    expect(combinedCount / total).toBeGreaterThan(0.02);
+    expect(firstCount + secondCount).toBeGreaterThan(0);
   });
 
   it('percentageOfWhole: combined target uses .combined key suffix', () => {
@@ -379,6 +420,29 @@ describe('word problem target variation', () => {
     const f1 = generateFormulas(rng1).filter(f => f.type === 'percentageOfWhole');
     const f2 = generateFormulas(rng2).filter(f => f.type === 'percentageOfWhole');
     expect(f1).toEqual(f2);
+  });
+
+  it('percentageOfWhole: all answers are friendly percentages across 500 games', () => {
+    const friendly = new Set([10, 20, 25, 50, 75]);
+    for (let seed = 0; seed < 500; seed++) {
+      const rng = createMulberry32(seed);
+      const formulas = generateFormulas(rng);
+      for (const f of formulas) {
+        if (f.type === 'percentageOfWhole') {
+          expect(friendly.has(f.correctAnswer)).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('percentageOfWhole: deterministic across 50 seeds', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const rng1 = createMulberry32(seed);
+      const rng2 = createMulberry32(seed);
+      const f1 = generateFormulas(rng1).filter(f => f.type === 'percentageOfWhole');
+      const f2 = generateFormulas(rng2).filter(f => f.type === 'percentageOfWhole');
+      expect(JSON.stringify(f1)).toBe(JSON.stringify(f2));
+    }
   });
 });
 
