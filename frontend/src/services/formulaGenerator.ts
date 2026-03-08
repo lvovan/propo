@@ -355,42 +355,41 @@ export const PERCENTAGE_OF_WHOLE_KEYS: string[] = PERCENTAGE_OF_WHOLE_TEMPLATES.
 
 const FRIENDLY_WHOLE_PERCENTAGES = new Set([10, 20, 25, 50, 75]);
 
-export function buildPercentageOfWholePool(): Triple[] {
-  const pool: Triple[] = [];
-  // a = target count, b = other count, c = total (a + b + remaining)
-  // answer = (a / c) * 100, must be a friendly percentage
+type PercentageTarget = 'first' | 'second' | 'combined';
+
+export interface PercentageOfWholePoolSet {
+  first: Triple[];
+  second: Triple[];
+  combined: Triple[];
+}
+
+export function buildPercentageOfWholePool(): PercentageOfWholePoolSet {
+  const first: Triple[] = [];
+  const second: Triple[] = [];
+  const combined: Triple[] = [];
   for (let x = 1; x <= 20; x++) {
     for (let y = 1; y <= 20; y++) {
       for (let z = 1; z <= 20; z++) {
         const total = x + y + z;
         if (total < 10 || total > 50) continue;
-        const pct = (x / total) * 100;
-        if (FRIENDLY_WHOLE_PERCENTAGES.has(pct)) {
-          pool.push({ a: x, b: y, c: total });
-        }
+        const triple: Triple = { a: x, b: y, c: total };
+        if (FRIENDLY_WHOLE_PERCENTAGES.has((x / total) * 100)) first.push(triple);
+        if (FRIENDLY_WHOLE_PERCENTAGES.has((y / total) * 100)) second.push(triple);
+        const combinedPct = ((x + y) / total) * 100;
+        if (FRIENDLY_WHOLE_PERCENTAGES.has(combinedPct)) combined.push(triple);
       }
     }
   }
-  return pool;
+  return { first, second, combined };
 }
 
-function generatePercentageOfWholeFormula(pool: Triple[], randomFn: () => number): Formula {
-  const triple = pickRandom(pool, randomFn);
+function generatePercentageOfWholeFormula(poolSet: PercentageOfWholePoolSet, randomFn: () => number): Formula {
+  // Pick target uniformly: first, second, or combined
+  const targets: PercentageTarget[] = ['first', 'second', 'combined'];
+  const target = targets[Math.floor(randomFn() * 3)];
+
+  const triple = pickRandom(poolSet[target], randomFn);
   const template = pickRandom(PERCENTAGE_OF_WHOLE_TEMPLATES, randomFn);
-
-  // Compute percentages for all three target options
-  const aPct = (triple.a / triple.c) * 100;  // always valid (pool invariant)
-  const bPct = (triple.b / triple.c) * 100;
-  const combinedPct = ((triple.a + triple.b) / triple.c) * 100;
-
-  // Build list of valid targets
-  type Target = 'first' | 'second' | 'combined';
-  const validTargets: Target[] = ['first'];  // 'first' always valid
-  if (FRIENDLY_WHOLE_PERCENTAGES.has(bPct)) validTargets.push('second');
-  if (FRIENDLY_WHOLE_PERCENTAGES.has(combinedPct)) validTargets.push('combined');
-
-  // Deterministic random selection from valid targets
-  const target = validTargets[Math.floor(randomFn() * validTargets.length)];
 
   let values: number[];
   let correctAnswer: number;
@@ -399,17 +398,17 @@ function generatePercentageOfWholeFormula(pool: Triple[], randomFn: () => number
   switch (target) {
     case 'first':
       values = [triple.a, triple.b, triple.c];
-      correctAnswer = aPct;
+      correctAnswer = (triple.a / triple.c) * 100;
       wordProblemKey = template.key;
       break;
     case 'second':
       values = [triple.b, triple.a, triple.c];
-      correctAnswer = bPct;
+      correctAnswer = (triple.b / triple.c) * 100;
       wordProblemKey = template.key;
       break;
     case 'combined':
       values = [triple.a, triple.b, triple.c];
-      correctAnswer = combinedPct;
+      correctAnswer = ((triple.a + triple.b) / triple.c) * 100;
       wordProblemKey = template.key + '.combined';
       break;
   }
@@ -519,7 +518,7 @@ interface Pools {
   percentage: Triple[];
   fraction: Quad[];
   multiItemRatio: Quad[];
-  percentageOfWhole: Triple[];
+  percentageOfWhole: PercentageOfWholePoolSet;
   complexExtrapolation: Quad[];
 }
 
